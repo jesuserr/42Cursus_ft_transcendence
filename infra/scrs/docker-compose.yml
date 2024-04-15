@@ -7,7 +7,6 @@ services:
     restart: always
     networks:
       - db
-    #depends_on:
     env_file:
       - .env
     stdin_open: true 
