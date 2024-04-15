@@ -1,0 +1,27 @@
+services:
+  postgresql:
+    container_name: postgresql
+    build: ./requirements/postgresql
+    volumes:
+      - data_db:/var/lib/postgresql
+    restart: always
+    networks:
+      - db
+    #depends_on:
+    env_file:
+      - .env
+    stdin_open: true 
+    tty: true
+  
+volumes:
+  data_db:
+    driver: local
+    driver_opts:
+      type: none
+      device: ${HOME}/data/postgresql
+      o: bind
+ 
+networks:
+  db:
+    driver: bridge
+  

@@ -1,0 +1,2 @@
+CREATE USER django WITH PASSWORD 'p4ssw0rd';
+CREATE DATABASE djangodb OWNER django;
