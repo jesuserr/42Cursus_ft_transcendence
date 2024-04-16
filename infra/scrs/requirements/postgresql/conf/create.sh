@@ -1,4 +1,4 @@
-if [ -f "/etc/postgres.check" ]
+if [ -f "/var/lib/postgresql/postgres.check" ]
 then
 	sudo service postgresql start
 	tail -f /dev/null
@@ -8,6 +8,6 @@ else
 	sed "s/DB_DB/$DB_DB/g" /tmp/create.sql > tmp1; cat tmp1 > /tmp/create.sql; rm tmp1
 	sudo service postgresql start
 	sudo -u postgres psql -f /tmp/create.sql
-	sudo touch "/etc/postgres.check"
+	sudo touch "/var/lib/postgresql/postgres.check"
 	tail -f /dev/null
 fi
