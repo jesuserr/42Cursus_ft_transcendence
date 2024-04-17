@@ -1,12 +1,12 @@
 import pygame
 
-# CONSTANTS & INITS
+############################### CONSTANTS & INITS ##############################
 
-WIDTH, HEIGHT = 1800, 1000
+WIDTH, HEIGHT = 1200, 900
 pygame.init()
 pygame.display.set_caption("Pong")
 WIN = pygame.display.set_mode((WIDTH, HEIGHT))
-SCORE_FONT = pygame.font.SysFont("markerfelt", HEIGHT // 10)
+SCORE_FONT = pygame.font.SysFont("markerfelt", HEIGHT // 20)
 
 FPS = 60
 WHITE = (255, 255, 255)
@@ -15,10 +15,11 @@ RED = (255, 0, 0)
 
 PADDLE_WIDTH = WIDTH // 35
 PADDLE_HEIGHT = HEIGHT // 5
+PADDLE_GAP = WIDTH // 25
 BALL_RADIUS = WIDTH // 100
 WINNING_SCORE = 10
 
-# CLASSES
+#################################### CLASSES ###################################
 
 class Paddle:
     COLOR = WHITE
@@ -34,7 +35,7 @@ class Paddle:
         pygame.draw.rect(win, self.COLOR, (self.x, self.y, self.width, self.height))
         
     def move(self, up):
-        if up:
+        if up == True:
             self.y -= self.VEL
         else:
             self.y += self.VEL
@@ -44,15 +45,15 @@ class Paddle:
         self.y = self.original_y
 
 class Ball:
-    MAX_VEL = HEIGHT // 75    
     COLOR = RED
+    MAX_VEL = HEIGHT // 75
 
     def __init__(self, x, y, radius):
-            self.x = self.original_x = x
-            self.y = self.original_y = y
-            self.radius = radius
-            self.x_vel = self.MAX_VEL
-            self.y_vel = 0 
+        self.x = self.original_x = x
+        self.y = self.original_y = y
+        self.radius = radius
+        self.x_vel = self.MAX_VEL
+        self.y_vel = 0
 
     def draw(self, win):
         pygame.draw.circle(win, self.COLOR, (self.x, self.y), self.radius)
@@ -67,7 +68,7 @@ class Ball:
         self.y_vel = 0
         self.x_vel *= -1
 
-# FUNCTIONS
+################################### FUNCTIONS ##################################
 
 def draw(win, paddles, ball, left_score, right_score):
     win.fill(BLACK)
@@ -87,24 +88,25 @@ def handle_collision(ball, left_paddle, right_paddle):
         ball.y_vel *= -1
 
     if ball.x_vel < 0:
-        if ball.y >= left_paddle.y and ball.y <= left_paddle.y + left_paddle.height:
-            if ball.x - ball.radius <= left_paddle.x + left_paddle.width:
-                ball.x_vel *= -1
-                middle_y = left_paddle.y + left_paddle.height / 2
-                difference_in_y = middle_y - ball.y
-                reduction_factor = (left_paddle.height / 2) / ball.MAX_VEL
-                y_vel = difference_in_y / reduction_factor
-                ball.y_vel = -1 * y_vel
-
+        if ball.y >= left_paddle.y and ball.y <= left_paddle.y + left_paddle.height and \
+        ball.x - ball.radius <= left_paddle.x + left_paddle.width and \
+        ball.x - ball.radius >= left_paddle.x:
+            ball.x_vel *= -1
+            middle_y = left_paddle.y + left_paddle.height / 2
+            difference_in_y = middle_y - ball.y
+            reduction_factor = (left_paddle.height / 2) / ball.MAX_VEL
+            y_vel = difference_in_y / reduction_factor
+            ball.y_vel = -1 * y_vel
     else:
-        if ball.y >= right_paddle.y and ball.y <= right_paddle.y + right_paddle.height:
-            if ball.x + ball.radius >= right_paddle.x:
-                ball.x_vel *= -1
-                middle_y = right_paddle.y + right_paddle.height / 2
-                difference_in_y = middle_y - ball.y
-                reduction_factor = (right_paddle.height / 2) / ball.MAX_VEL
-                y_vel = difference_in_y / reduction_factor
-                ball.y_vel = -1 * y_vel
+        if ball.y >= right_paddle.y and ball.y <= right_paddle.y + right_paddle.height and \
+        ball.x + ball.radius >= right_paddle.x and \
+        ball.x + ball.radius <= right_paddle.x + right_paddle.width:
+            ball.x_vel *= -1
+            middle_y = right_paddle.y + right_paddle.height / 2
+            difference_in_y = middle_y - ball.y
+            reduction_factor = (right_paddle.height / 2) / ball.MAX_VEL
+            y_vel = difference_in_y / reduction_factor
+            ball.y_vel = -1 * y_vel
 
 def handle_paddle_movement(keys, left_paddle, right_paddle):
     if keys[pygame.K_w] and left_paddle.y - left_paddle.VEL >= 0:
@@ -116,18 +118,19 @@ def handle_paddle_movement(keys, left_paddle, right_paddle):
     if keys[pygame.K_DOWN] and right_paddle.y + right_paddle.height + right_paddle.VEL <= HEIGHT:
         right_paddle.move(up=False)
 
-# MAIN
+################################# MAIN FUNCTION ################################
 
 def main():
     run = True
     clock = pygame.time.Clock()
-    left_paddle = Paddle(WIDTH // 70, HEIGHT // 2 - PADDLE_HEIGHT // 2, PADDLE_WIDTH, PADDLE_HEIGHT)
-    right_paddle = Paddle(WIDTH - WIDTH // 70 - PADDLE_WIDTH, HEIGHT // 2 - PADDLE_HEIGHT // 2, PADDLE_WIDTH, PADDLE_HEIGHT)
+    left_paddle = Paddle(PADDLE_GAP, HEIGHT // 2 - PADDLE_HEIGHT // 2, PADDLE_WIDTH, PADDLE_HEIGHT)
+    right_paddle = Paddle(WIDTH - PADDLE_GAP - PADDLE_WIDTH, HEIGHT // 2 - PADDLE_HEIGHT // 2, PADDLE_WIDTH, PADDLE_HEIGHT)
     ball = Ball(WIDTH // 2, HEIGHT // 2, BALL_RADIUS)
     left_score = 0
     right_score = 0
-
     keys = pygame.key.get_pressed()
+
+    ### GAME LOOP ###
     while run:
         clock.tick(FPS)
         draw(WIN, [left_paddle, right_paddle], ball, left_score, right_score)
@@ -141,7 +144,7 @@ def main():
         ball.move()
         handle_collision(ball, left_paddle, right_paddle)
 
-        if ball.x < WIDTH // 70 + left_paddle.width / 2:
+        if ball.x < 0:
             right_score += 1
             ball.reset()
         elif ball.x > WIDTH:
@@ -161,7 +164,7 @@ def main():
             text = SCORE_FONT.render(win_text, 1, WHITE)
             WIN.blit(text, (WIDTH // 2 - text.get_width() // 2, HEIGHT // 2 - text.get_height() // 2))
             pygame.display.update()
-            pygame.time.delay(5000)
+            pygame.time.delay(3000)
             ball.reset()
             left_paddle.reset()
             right_paddle.reset()
