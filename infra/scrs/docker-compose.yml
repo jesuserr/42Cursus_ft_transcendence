@@ -9,7 +9,7 @@ services:
       - db
     env_file:
       - .env
-    ports:
+    expose:
       - '5432:5432'
     stdin_open: true 
     tty: true
@@ -24,11 +24,28 @@ services:
       - django
     env_file:
       - .env
-    ports:
+    expose:
       - '8000:8000'
+    ports:
       - '22:22'
     depends_on:
       - postgresql
+    stdin_open: true 
+    tty: true  
+  nginx:
+    container_name: nginx
+    build: ./requirements/nginx
+    volumes:
+      - data_django:/pong
+    restart: always
+    networks:
+       - django
+    env_file:
+      - .env
+    ports:
+      - '80:80'
+    depends_on:
+      - django
     stdin_open: true 
     tty: true  
 volumes:

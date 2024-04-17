@@ -6,6 +6,7 @@ RUN 	apt update && apt install  openssh-server sudo nano build-essential python3
 RUN 	sed "s/#PermitRootLogin prohibit-password/PermitRootLogin yes/g" /etc/ssh/sshd_config > tmp1; sudo cat tmp1 > /etc/ssh/sshd_config; sudo rm tmp1
 RUN 	pip install django
 RUN 	pip install psycopg2
+RUN 	pip install gunicorn
 COPY 	./conf/entry.sh /bin/entry.sh
 COPY    ./conf/settings.py /tmp/settings.py
 WORKDIR /pong
