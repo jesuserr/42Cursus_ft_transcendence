@@ -13,7 +13,24 @@ services:
       - '5432:5432'
     stdin_open: true 
     tty: true
-  
+  django:
+    container_name: django
+    build: ./requirements/django
+    volumes:
+      - data_django:/pong
+    restart: always
+    networks:
+      - db
+      - django
+    env_file:
+      - .env
+    ports:
+      - '8000:8000'
+      - '22:22'
+    depends_on:
+      - postgresql
+    stdin_open: true 
+    tty: true  
 volumes:
   data_db:
     driver: local
@@ -21,8 +38,17 @@ volumes:
       type: none
       device: ${HOME}/data/postgresql
       o: bind
+  data_django:
+    driver: local
+    driver_opts:
+      type: none
+      device: ${HOME}/data/django
+      o: bind
  
 networks:
   db:
     driver: bridge
+  django:
+    driver: bridge
+  
   

@@ -3,6 +3,8 @@ all:
 	@chmod 777 ${HOME}/data >/dev/null 2>&1 || true
 	@mkdir ${HOME}/data/postgresql >/dev/null 2>&1 || true
 	@chmod 777 ${HOME}/data/postgresql >/dev/null 2>&1 || true
+	@mkdir ${HOME}/data/django >/dev/null 2>&1 || true
+	@chmod 777 ${HOME}/data/django >/dev/null 2>&1 || true
 	@docker-compose -f ./scrs/docker-compose.yml up -d --build 
 
 down:
