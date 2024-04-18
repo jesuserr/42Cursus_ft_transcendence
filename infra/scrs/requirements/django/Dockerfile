@@ -13,7 +13,7 @@ COPY    ./conf/known_hosts /root/.ssh/known_hosts
 RUN 	chmod 100 /root/.ssh/id_rsa
 COPY 	./conf/entry.sh /bin/entry.sh
 COPY    ./conf/settings.py /tmp/settings.py
-WORKDIR /pong
+WORKDIR /pong/base/www
 CMD 	bash /bin/entry.sh
 
 
