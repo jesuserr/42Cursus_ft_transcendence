@@ -128,3 +128,4 @@ DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
 STATIC_URL = "/static/"
 STATIC_ROOT = "/pong/base/www/static"
+CSRF_TRUSTED_ORIGINS = ['https://localhost']

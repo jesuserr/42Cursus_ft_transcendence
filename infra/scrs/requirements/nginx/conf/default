@@ -1,6 +1,12 @@
 server {
-    listen 80;
-    server_name 127.0.0.1;
+	listen 443 ssl;
+	listen [::]:443 ssl;
+
+	server_name pong.42;
+	ssl_certificate		/etc/nginx/cescanue.crt;
+	ssl_certificate_key	/etc/nginx/cescanue.key;
+
+	ssl_protocols		TLSv1.2 TLSv1.3;
 
     location = /favicon.ico { access_log off; log_not_found off; }
     location /static/ {
