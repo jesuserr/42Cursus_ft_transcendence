@@ -2,9 +2,9 @@ server {
 	listen 443 ssl;
 	listen [::]:443 ssl;
 
-	server_name pong.42;
-	ssl_certificate		/etc/nginx/cescanue.crt;
-	ssl_certificate_key	/etc/nginx/cescanue.key;
+	server_name www.pong42.com;
+	ssl_certificate		/etc/nginx/www.pong42.com.crt;
+	ssl_certificate_key	/etc/nginx/www.pong42.com.key;
 
 	ssl_protocols		TLSv1.2 TLSv1.3;
 
