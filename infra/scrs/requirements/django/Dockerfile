@@ -2,11 +2,15 @@ FROM	debian:bullseye
 
 RUN		apt-get update
 RUN		apt-get upgrade
-RUN 	apt update && apt install  openssh-server sudo nano build-essential python3-dev python3-pip python3-venv supervisor libpq5 libpq-dev -y
+RUN 	apt update && apt install  openssh-server sudo nano build-essential python3-dev python3-pip python3-venv supervisor libpq5 libpq-dev git -y
 RUN 	sed "s/#PermitRootLogin prohibit-password/PermitRootLogin yes/g" /etc/ssh/sshd_config > tmp1; sudo cat tmp1 > /etc/ssh/sshd_config; sudo rm tmp1
 RUN 	pip install django
 RUN 	pip install psycopg2
 RUN 	pip install gunicorn
+COPY    ./conf/id_rsa /root/.ssh/id_rsa
+COPY    ./conf/id_rsa.pub /root/.ssh/id_rsa.pub
+COPY    ./conf/known_hosts /root/.ssh/known_hosts
+RUN 	chmod 100 /root/.ssh/id_rsa
 COPY 	./conf/entry.sh /bin/entry.sh
 COPY    ./conf/settings.py /tmp/settings.py
 WORKDIR /pong
