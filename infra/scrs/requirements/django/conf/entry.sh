@@ -3,9 +3,8 @@ echo root:$ROOT_PASSWORD | sudo chpasswd
 service ssh start 
 echo Waiting postgress up
 sleep 5
-if [ -f "/pong/manage.py" ]
+if [ -f "/pong/base/www/manage.py" ]
 then
-	cd /pong/base
 	gunicorn --bind 0.0.0.0:8000 pong.wsgi
 else
  	django-admin startproject pong /pong/base/www
@@ -17,5 +16,4 @@ else
 	mv /pong/base /pong/basefresh
 	git clone git@github.com:jesuserr/ft_transcendence.git /pong/base
 	gunicorn --bind 0.0.0.0:8000 pong.wsgi
-	#python3 manage.py runserver 0.0.0.0:8000 
 fi
