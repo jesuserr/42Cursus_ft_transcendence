@@ -12,6 +12,7 @@ FPS = 60
 WHITE = (255, 255, 255)
 BLACK = (0, 0, 0)
 RED = (255, 0, 0)
+BLUE = (0, 0, 255)
 
 PADDLE_WIDTH = WIDTH // 35
 PADDLE_HEIGHT = HEIGHT // 5
@@ -22,8 +23,8 @@ WINNING_SCORE = 10
 #################################### CLASSES ###################################
 
 class Paddle:
-    COLOR = WHITE
-    VEL = HEIGHT // 166 + 1
+    COLOR = BLUE
+    VEL = HEIGHT // 166 + 1                     ## Speed never 0 no matter HEIGHT
     
     def __init__(self, x, y, width, height):
         self.x = self.original_x = x
@@ -46,7 +47,7 @@ class Paddle:
 
 class Ball:
     COLOR = RED
-    MAX_VEL = HEIGHT // 75
+    MAX_VEL = HEIGHT // 75 + 1                  ## Speed never 0 no matter HEIGHT
 
     def __init__(self, x, y, radius):
         self.x = self.original_x = x
@@ -82,10 +83,12 @@ def draw(win, paddles, ball, left_score, right_score):
     pygame.display.update()
 
 def handle_collision(ball, left_paddle, right_paddle):
-    if ball.y + ball.radius >= HEIGHT:
+    if ball.y + ball.radius > HEIGHT:
         ball.y_vel *= -1
-    elif ball.y - ball.radius <= 0:
+        return              ## Return to avoid ball trapped at bottom (Iria bug)
+    elif ball.y - ball.radius < 0:
         ball.y_vel *= -1
+        return              ## Return to avoid ball trapped at top (Iria bug)
 
     if ball.x_vel < 0:
         if ball.y >= left_paddle.y and ball.y <= left_paddle.y + left_paddle.height and \
@@ -128,6 +131,7 @@ def main():
     ball = Ball(WIDTH // 2, HEIGHT // 2, BALL_RADIUS)
     left_score = 0
     right_score = 0
+    won = False
     keys = pygame.key.get_pressed()
 
     ### GAME LOOP ###
@@ -140,7 +144,7 @@ def main():
                 break
         
         keys = pygame.key.get_pressed()
-        handle_paddle_movement(keys, left_paddle, right_paddle)        
+        handle_paddle_movement(keys, left_paddle, right_paddle)
         ball.move()
         handle_collision(ball, left_paddle, right_paddle)
 
@@ -151,13 +155,12 @@ def main():
             left_score += 1
             ball.reset()
 
-        won = False
         if left_score >= WINNING_SCORE:
             won = True
-            win_text = "Left Player Won!"
+            win_text = "Left Player Wins!!"
         elif right_score >= WINNING_SCORE:
             won = True
-            win_text = "Right Player Won!"
+            win_text = "Right Player Wins!!"
 
         if won:
             draw(WIN, [left_paddle, right_paddle], ball, left_score, right_score)
@@ -170,6 +173,7 @@ def main():
             right_paddle.reset()
             left_score = 0
             right_score = 0
+            won = False
 
     pygame.quit()
 
