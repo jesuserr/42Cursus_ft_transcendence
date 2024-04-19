@@ -1,4 +1,5 @@
 import os
+import subprocess
 from django.shortcuts import render
 from django.http import HttpResponse
 from django.template import loader
@@ -9,6 +10,5 @@ def index(request):
     return HttpResponse(template.render())
 
 def run(request):
-    stream = os.popen('ls -la')
-    output = stream.read()
-    return HttpResponse(output)
+    stream = subprocess.run(["ls", "-l"], capture_output=True)
+    return HttpResponse(stream.stdout)
