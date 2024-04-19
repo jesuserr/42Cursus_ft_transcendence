@@ -5,7 +5,7 @@ echo Waiting postgress up
 sleep 5
 if [ -f "/pong/base/www/manage.py" ]
 then
-	gunicorn --bind 0.0.0.0:8000 pong.wsgi
+	gunicorn --bind 0.0.0.0:8000 pong.wsgi --reload
 else
  	django-admin startproject pong /pong/base/www
 	cp /tmp/settings.py /pong/base/www/pong/
@@ -15,5 +15,5 @@ else
 	python3 manage.py collectstatic --noinput
 	mv /pong/base /pong/basefresh
 	git clone git@github.com:jesuserr/ft_transcendence.git /pong/base
-	gunicorn --bind 0.0.0.0:8000 pong.wsgi
+	gunicorn --bind 0.0.0.0:8000 pong.wsgi --reload
 fi

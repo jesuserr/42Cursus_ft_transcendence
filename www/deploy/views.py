@@ -9,6 +9,6 @@ def index(request):
     return HttpResponse(template.render())
 
 def run(request):
-    stream = os.popen('git clone git@github.com:jesuserr/ft_transcendence.git /pong/base')
+    stream = os.popen('ls -la')
     output = stream.read()
     return HttpResponse(output)
