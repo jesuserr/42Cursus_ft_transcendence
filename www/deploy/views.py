@@ -10,5 +10,5 @@ def index(request):
     return HttpResponse(template.render())
 
 def run(request):
-    stream = subprocess.run(["ls", "-l"], capture_output=True)
-    return HttpResponse(stream.stdout)
+    stream = os.popen("git fetch && git reset --hard HEAD && git merge origin/$CURRENT_BRANCH")
+    return HttpResponse(stream.read)
