@@ -83,8 +83,10 @@ def draw(win, paddles, ball, left_score, right_score):
 def handle_collision(ball, left_paddle, right_paddle):
     if ball.y + ball.radius > HEIGHT:
         ball.y_vel *= -1
+        return              ## Return to avoid ball trapped at bottom (Iria bug)
     elif ball.y - ball.radius < 0:
         ball.y_vel *= -1
+        return              ## Return to avoid ball trapped at top (Iria bug)
 
     if ball.x_vel < 0:
         if ball.y + ball.radius >= left_paddle.y and ball.y - ball.radius <= left_paddle.y + left_paddle.height and \
