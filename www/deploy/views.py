@@ -1,7 +1,7 @@
 import os
 import time
 from django.shortcuts import render
-from django.http import HttpResponse
+from django.http import HttpResponse, HttpResponseRedirect
 from django.template import loader
 
 
@@ -12,7 +12,7 @@ def index(request):
 def run(request):
     deploypass = os.environ["DEPLOY_PASSWORD"]
     if deploypass == "" or deploypass != request.POST.get("DEPLOY_PASSWORD"):
-        return HttpResponse("Password error")
+        return HttpResponseRedirect("/")
     else:
         os.popen("sudo mkdir /pong/basebackup")
         os.popen("sudo mkdir /pong/basenew")
@@ -21,4 +21,6 @@ def run(request):
         while os.path.exists("/pong/basenew"):
             time.sleep(1)
         os.popen("pkill gunicorn")
-        return HttpResponse("Deploy finalizado")
+        time.sleep(2)
+        time.sleep(5)
+        return HttpResponseRedirect("/")

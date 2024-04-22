@@ -3,7 +3,7 @@ echo root:$ROOT_PASSWORD | sudo chpasswd
 service ssh start 
 if [ -f "/pong/base/www/manage.py" ]
 then
-	gunicorn --bind 0.0.0.0:8000 pong.wsgi --reload
+	gunicorn --bind 0.0.0.0:8000 pong.wsgi --reload 
 else
 	echo Waiting postgresql .....
 	sleep 4
