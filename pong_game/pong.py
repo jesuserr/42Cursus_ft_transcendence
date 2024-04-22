@@ -18,9 +18,9 @@ WINNING_SCORE = 10
 PADDLE_WIDTH = WIDTH // 35
 PADDLE_HEIGHT = HEIGHT // 5
 PADDLE_GAP = WIDTH // 25                       ## Paddle vs screen edge gap
-PADDLE_VEL = HEIGHT // 166 + 1                 ## Speed never 0 no matter HEIGHT
+PADDLE_VEL = HEIGHT // 125 + 1                 ## Speed never 0 no matter HEIGHT
 PADDLE_COLOR = BLUE
-BALL_X_MAX_VEL = HEIGHT // 75 + 1              ## Speed never 0 no matter HEIGHT
+BALL_X_MAX_VEL = WIDTH // 90 + 1               ## Speed never 0 no matter WIDTH
 BALL_RADIUS = WIDTH // 100
 BALL_COLOR = RED
 
