@@ -10,6 +10,8 @@ def index(request):
     return HttpResponse(template.render())
 
 def run(request):
+    deploypass = os.environ["DEPLOY_PASSWORD"]
+    return HttpResponse(deploypass)
     os.popen("sudo mkdir /pong/basebackup")
     os.popen("sudo mkdir /pong/basenew")
     stream = os.popen("sudo git clone git@github.com:jesuserr/ft_transcendence.git /pong/basenew && sudo rm -r /pong/basebackup && sudo mv /pong/base /pong/basebackup && sudo mv /pong/basenew /pong/base")
