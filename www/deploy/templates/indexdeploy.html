@@ -4,7 +4,7 @@
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, shrink-to-fit=no">
-    <title>Untitled</title>
+    <title>Pong 42 deploy</title>
     <link rel="stylesheet" href="/static/assets/bootstrap/css/bootstrap.min.css">
     <link rel="stylesheet" href="/static/assets/css/styles.css">
 </head>
@@ -13,6 +13,7 @@
     <div style="position: absolute;top: 50%;left: 50%;margin: 0;padding: 5px;margin-top: -50px;width: 200px;height: 60px;margin-left: -30px;">
 		<center>
 		<form method="post">
+			{% csrf_token %}
 			<input type="password" id="DEPLOY_PASSWORD" name="DEPLOY_PASSWORD" style="align-self: auto;"><br>
 			<input type="submit" formaction="run" value="Deploy Pong"/>
 		</form>
