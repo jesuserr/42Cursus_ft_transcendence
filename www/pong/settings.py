@@ -45,7 +45,7 @@ MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.common.CommonMiddleware',
-    #'django.middleware.csrf.CsrfViewMiddleware',
+    'django.middleware.csrf.CsrfViewMiddleware',
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
@@ -132,4 +132,4 @@ DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 STATIC_URL = "/static/"
 STATIC_ROOT = "/pong/base/www/static"
 
-CSRF_TRUSTED_ORIGINS = ['https://localhost', 'https://127.0.0.1', 'https://wwww.pong42.com']
+CSRF_TRUSTED_ORIGINS = ['https://www.pong42.com','https://localhost', 'https://127.0.0.1', 'https://wwww.pong42.com']

@@ -2,12 +2,11 @@ import os
 import time
 from django.shortcuts import render
 from django.http import HttpResponse, HttpResponseRedirect
-from django.template import loader
+from django.template import loader, RequestContext
 
 
 def index(request):
-    template = loader.get_template("indexdeploy.html")
-    return HttpResponse(template.render())
+    return HttpResponse(render(request, "indexdeploy.html"))
 
 def run(request):
     deploypass = os.environ["DEPLOY_PASSWORD"]
@@ -20,7 +19,5 @@ def run(request):
         time.sleep(2)
         while os.path.exists("/pong/basenew"):
             time.sleep(1)
-        os.popen("pkill gunicorn")
-        time.sleep(2)
-        time.sleep(5)
+        #os.popen("pkill gunicorn")
         return HttpResponseRedirect("/")
