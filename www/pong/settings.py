@@ -132,4 +132,4 @@ DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 STATIC_URL = "/static/"
 STATIC_ROOT = "/pong/base/www/static"
 
-CSRF_TRUSTED_ORIGINS = ['https://www.pong42.com','https://localhost', 'https://127.0.0.1', 'https://wwww.pong42.com']
+CSRF_TRUSTED_ORIGINS = ['https://www.pong42.com', 'https://www.pongpi.com','https://localhost', 'https://127.0.0.1', 'https://wwww.pong42.com']
