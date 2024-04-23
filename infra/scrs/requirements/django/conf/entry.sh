@@ -3,6 +3,8 @@ echo root:$ROOT_PASSWORD | sudo chpasswd
 service ssh start 
 if [ -f "/pong/base/www/manage.py" ]
 then
+	python3 manage.py makemigrations
+	python3 manage.py migrate
 	gunicorn --bind 0.0.0.0:8000 pong.wsgi --reload 
 else
 	echo Waiting postgresql .....
