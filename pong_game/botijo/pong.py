@@ -131,14 +131,16 @@ def handle_collision(ball, left_paddle, right_paddle):
             reduction_factor = (right_paddle.height / 2) / BALL_X_MAX_VEL
             ball.y_vel = difference_in_y / reduction_factor             
 
-def handle_paddle_movement(keys, left_paddle, right_paddle):
+def handle_paddle_movement(keys, left_paddle, right_paddle, ball):
     if keys[pygame.K_w] and left_paddle.y - PADDLE_VEL >= 0:
         left_paddle.move(up=True)
     if keys[pygame.K_s] and left_paddle.y + left_paddle.height + PADDLE_VEL <= HEIGHT:
         left_paddle.move(up=False)
-    if keys[pygame.K_UP] and right_paddle.y - PADDLE_VEL >= 0:
+    # Carlos, cuanto mas subas el valor "/ 2" en las lineas 140 y 142 más busca la IA las esquinas de la pala
+    # con "/ 2" busca el centro de la pala siempre - Enjoy!!
+    if ball.y < right_paddle.y + right_paddle.height / 2 and right_paddle.y - PADDLE_VEL >= 0:
         right_paddle.move(up=True)
-    if keys[pygame.K_DOWN] and right_paddle.y + right_paddle.height + PADDLE_VEL <= HEIGHT:
+    if ball.y > right_paddle.y + right_paddle.height / 2 and right_paddle.y + right_paddle.height + PADDLE_VEL <= HEIGHT:
         right_paddle.move(up=False)
 
 def print_winner_and_reset(left_paddle, right_paddle, ball, score):
@@ -172,7 +174,7 @@ def main():
                 run = False
                 break
         keys = pygame.key.get_pressed()
-        handle_paddle_movement(keys, left_paddle, right_paddle)
+        handle_paddle_movement(keys, left_paddle, right_paddle, ball)
         ball.move()
         handle_collision(ball, left_paddle, right_paddle)
         score.update(ball)
