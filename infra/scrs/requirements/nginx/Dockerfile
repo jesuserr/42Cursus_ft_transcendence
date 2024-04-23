@@ -1,7 +1,7 @@
 FROM	debian:bullseye
 
 RUN		apt-get update
-RUN		apt-get upgrade
+RUN		apt-get -y upgrade
 RUN 	apt install sudo nano build-essential nginx openssl -y
 RUN openssl req -newkey rsa:4096 -x509 -sha256 -days 365 -nodes \
        -out /etc/nginx/www.pong42.com.crt \
