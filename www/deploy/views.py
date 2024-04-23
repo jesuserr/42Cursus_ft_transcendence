@@ -21,3 +21,9 @@ def run(request):
             time.sleep(1)
         #os.popen("pkill gunicorn")
         return HttpResponseRedirect("/")
+
+def reboot(request):
+    deploypass = os.environ["DEPLOY_PASSWORD"]
+    os.popen("pkill gunicorn")
+    return HttpResponseRedirect("/")
+    
