@@ -15,6 +15,8 @@ else
 	python3 manage.py collectstatic --noinput
 	mv /pong/base /pong/basefresh
 	git clone git@github.com:jesuserr/ft_transcendence.git /pong/base
+	python3 manage.py makemigrations
+	python3 manage.py migrate
 	#gunicorn --bind 0.0.0.0:8000 pong.wsgi --reload 
 	#python3 manage.py runserver 0.0.0.0:8000
 fi
