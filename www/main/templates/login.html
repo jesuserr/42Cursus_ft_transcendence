@@ -1,3 +1,4 @@
+{% include "menu.html" %}   
 <!DOCTYPE html>
 <html lang="en">
 
@@ -16,9 +17,11 @@
             {{ form.as_p }}
             <button type="submit">Login</button>
         </form>
+		<a href="/main/newuser">
+			<button>New User</button>
+		 </a>
 	</center>
 	</div>
-    <script src="/static/assets/bootstrap/js/bootstrap.min.js"></script>
 </body>
 
 </html>

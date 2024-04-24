@@ -3,10 +3,15 @@ import time
 from django.shortcuts import render
 from django.http import HttpResponse, HttpResponseRedirect
 from django.template import loader, RequestContext
+from main.models import User
 
 
 def index(request):
-    return HttpResponse(render(request, "indexdeploy.html"))
+    try:
+        tmp = User.objects.get(sessionid=request.COOKIES.get('sessionid')).displayname
+        return HttpResponse(render(request, "indexdeploy.html", {'BOTON': 'Deploy Pong', 'ACCION': 'run', 'username': tmp}))
+    except:
+        return HttpResponse(render(request, "indexdeploy.html", {'BOTON': 'Deploy Pong', 'ACCION': 'run'}))
 
 def run(request):
     deploypass = os.environ["DEPLOY_PASSWORD"]
@@ -23,7 +28,17 @@ def run(request):
         return HttpResponseRedirect("/")
 
 def reboot(request):
+    try:
+        tmp = User.objects.get(sessionid=request.COOKIES.get('sessionid')).displayname
+        return HttpResponse(render(request, "indexdeploy.html", {'BOTON': 'Reboot Pong', 'ACCION': 'rebootrun', 'username': tmp}))
+    except:
+        return HttpResponse(render(request, "indexdeploy.html", {'BOTON': 'Reboot Pong', 'ACCION': 'rebootrun'}))
+
+
+def rebootrun(request):
     deploypass = os.environ["DEPLOY_PASSWORD"]
+    if deploypass == "" or deploypass != request.POST.get("DEPLOY_PASSWORD"):
+        return HttpResponseRedirect("/")
     os.popen("pkill gunicorn")
     return HttpResponseRedirect("/")
     
