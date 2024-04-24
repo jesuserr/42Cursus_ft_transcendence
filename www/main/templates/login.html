@@ -4,13 +4,20 @@
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, shrink-to-fit=no">
-    <title>Pong 42 Main</title>
+    <title>Pong 42 New User</title>
     <link rel="stylesheet" href="/static/assets/bootstrap/css/bootstrap.min.css">
     <link rel="stylesheet" href="/static/assets/css/styles.css">
 </head>
 
 <body style="background: url(&quot;/static/assets/img/fondo.jpeg&quot;);">
-	{{ username }}
+	<div style="position: absolute;top: 50%;left: 50%;margin: 0;padding: 5px;margin-top: -250px;width: 200px;height: 60px;margin-left: -30px;">
+	<center>
+	<form method="POST" class="post-form">{% csrf_token %}
+            {{ form.as_p }}
+            <button type="submit">Login</button>
+        </form>
+	</center>
+	</div>
     <script src="/static/assets/bootstrap/js/bootstrap.min.js"></script>
 </body>
 
