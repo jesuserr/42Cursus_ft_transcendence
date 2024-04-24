@@ -13,7 +13,7 @@
 <body style="background: url(&quot;/static/assets/img/fondo.jpeg&quot;);">
     <div style="position: absolute;top: 50%;left: 50%;margin: 0;padding: 5px;margin-top: -50px;width: 200px;height: 60px;margin-left: -30px;">
 		<center>
-		<form method="post">
+		<form method="post" onSubmit="return confirm('Are you sure?') ">
 			{% csrf_token %}
 			<input type="password" id="DEPLOY_PASSWORD" name="DEPLOY_PASSWORD" style="align-self: auto;"><br>
 			<input type="submit" formaction="{{ ACCION }}" value="{{ BOTON }}"/>
