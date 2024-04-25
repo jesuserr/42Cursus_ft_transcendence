@@ -9,7 +9,7 @@ from pong.utils import urlavatar
 def index(request):
     try:
         tmp = User.objects.get(sessionid=request.COOKIES.get('sessionid'))
-        return HttpResponse(render(request, "indexdeploy.html", {'BOTON': 'Deploy Pong', 'ACCION': 'run', 'username': tmp.displayname, 'AVATAR': urlavatar(tmp.avatar)}))
+        return HttpResponse(render(request, "indexdeploy.html", {'BOTON': 'Deploy Pong', 'ACCION': 'run', 'USERNAME': tmp.displayname, 'AVATAR': urlavatar(tmp.avatar)}))
     except:
         return HttpResponse(render(request, "indexdeploy.html", {'BOTON': 'Deploy Pong', 'ACCION': 'run'}))
 
@@ -30,10 +30,7 @@ def run(request):
 def reboot(request):
     try:
         tmp = User.objects.get(sessionid=request.COOKIES.get('sessionid'))
-        avatar = str(tmp.avatar)
-        if not avatar.find('static/avatars'):
-             avatar = '/' + avatar
-        return HttpResponse(render(request, "indexdeploy.html", {'BOTON': 'Reboot Pong', 'ACCION': 'rebootrun', 'username': tmp.displayname, 'AVATAR': urlavatar(tmp.avatar)}))
+        return HttpResponse(render(request, "indexdeploy.html", {'BOTON': 'Reboot Pong', 'ACCION': 'rebootrun', 'USERNAME': tmp.displayname, 'AVATAR': urlavatar(tmp.avatar)}))
     except:
         return HttpResponse(render(request, "indexdeploy.html", {'BOTON': 'Reboot Pong', 'ACCION': 'rebootrun'}))
 
