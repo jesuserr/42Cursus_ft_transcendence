@@ -19,12 +19,15 @@ def index(request):
         return HttpResponseRedirect("login")
  
 def newuser(request):
-    #falta por comprobar antes de poner el codigo que los datos del formulario son validos
     if request.method == 'POST':
-        if not (str(request.POST['securitycode'])):
+        form = NewUserForm(request.POST, request.FILES)
+        if not (form.is_valid()):
+            form.fields['avatar'].widget = forms.HiddenInput()
+            return render(request, 'newuser.html', {'form': form, 'ACCION': 'Create User', 'SECURITYCODE': 'input type=hidden name=securitycode maxlength=10'})
+        elif not (str(request.POST['securitycode'])):
             tmpcode = str(random.randint(100000,999999))
             form = NewUserForm(request.POST, request.FILES)
-            send_mail("Pong42 Security Code","Your Pong42 security code is: " + str(random.randint(100000,999999)),"pong42pong@outlook.com",[request.POST['email']],fail_silently=False)
+            send_mail("Pong42 Security Code","Your Pong42 security code is: " + tmpcode,"pong42pong@outlook.com",[request.POST['email']],fail_silently=False)
             form.fields['email'].widget = forms.HiddenInput()
             form.fields['password'].widget = forms.HiddenInput()
             form.fields['displayname'].widget = forms.HiddenInput()
@@ -32,16 +35,22 @@ def newuser(request):
             response = render(request, 'newuser.html', {'form': form, 'ACCION': 'Security Code', 'SECURITYCODE': 'input type=text name=securitycode maxlength=10'})
             try:
                  tmp = SecurityCode.objects.get(email=request.POST['email'])
-                 tmp.delete
+                 tmp.delete()
+                 tmp = SecurityCode()
+                 tmp.email = request.POST['email']
+                 tmp.code = tmpcode
+                 tmp.save() 
             except:
                 tmp = SecurityCode()
-                tmp.email = email=request.POST['email']
-                tmp.code = email=tmpcode
+                tmp.email = request.POST['email']
+                tmp.code = tmpcode
                 tmp.save() 
             return response
         else:
             form = NewUserForm(request.POST, request.FILES)
-            if form.is_valid():
+            print(SecurityCode.objects.get(email=request.POST['email']).code)
+            print(request.POST['securitycode'])
+            if form.is_valid() and SecurityCode.objects.get(email=request.POST['email']).code == request.POST['securitycode']:
                 sessionid = hashlib.sha256(str(time.time()).encode('utf-8')).hexdigest()
                 tmp = form.save(commit=False)
                 tmp.password = hashlib.sha256(str(request.POST['password']).encode('utf-8')).hexdigest()
@@ -51,7 +60,12 @@ def newuser(request):
                 response.set_cookie('sessionid', sessionid)
                 return response
             else:
-                response = render(request, 'newuser.html', {'form': form, 'ACCION': 'Create User'})
+                form = NewUserForm(request.POST, request.FILES)
+                form.fields['email'].widget = forms.HiddenInput()
+                form.fields['password'].widget = forms.HiddenInput()
+                form.fields['displayname'].widget = forms.HiddenInput()
+                form.fields['avatar'].widget = forms.HiddenInput()
+                response = render(request, 'newuser.html', {'form': form, 'ACCION': 'Security Code', 'SECURITYCODE': 'input type=text name=securitycode maxlength=10'})
                 return response
     else:
         try:
@@ -59,6 +73,7 @@ def newuser(request):
             return HttpResponseRedirect("/")
         except:
              form = NewUserForm()
+             form.fields['avatar'].widget = forms.HiddenInput()
              response = render(request, 'newuser.html', {'form': form, 'ACCION': 'Create User', 'SECURITYCODE': 'input type=hidden name=securitycode maxlength=10'})
              return response
 
