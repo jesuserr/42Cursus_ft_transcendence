@@ -24,7 +24,7 @@ def newuser(request):
             tmp.password = hashlib.sha256(str(request.POST['password']).encode('utf-8')).hexdigest()
             tmp.sessionid = sessionid
             tmp.save()
-            response = render(request, 'indexmain.html', {'username': tmp.displayname, 'AVATAR': urlavatar(tmp.avatar)})
+            response = render(request, 'indexmain.html', {'USERNAME': tmp.displayname, 'AVATAR': urlavatar(tmp.avatar)})
             response.set_cookie('sessionid', sessionid)
             return response
         else:
