@@ -4,12 +4,12 @@ from django.shortcuts import render
 from django.http import HttpResponse, HttpResponseRedirect
 from django.template import loader, RequestContext
 from main.models import User
-
+from pong.utils import urlavatar
 
 def index(request):
     try:
-        tmp = User.objects.get(sessionid=request.COOKIES.get('sessionid')).displayname
-        return HttpResponse(render(request, "indexdeploy.html", {'BOTON': 'Deploy Pong', 'ACCION': 'run', 'username': tmp}))
+        tmp = User.objects.get(sessionid=request.COOKIES.get('sessionid'))
+        return HttpResponse(render(request, "indexdeploy.html", {'BOTON': 'Deploy Pong', 'ACCION': 'run', 'username': tmp.displayname, 'AVATAR': urlavatar(tmp.avatar)}))
     except:
         return HttpResponse(render(request, "indexdeploy.html", {'BOTON': 'Deploy Pong', 'ACCION': 'run'}))
 
@@ -29,8 +29,11 @@ def run(request):
 
 def reboot(request):
     try:
-        tmp = User.objects.get(sessionid=request.COOKIES.get('sessionid')).displayname
-        return HttpResponse(render(request, "indexdeploy.html", {'BOTON': 'Reboot Pong', 'ACCION': 'rebootrun', 'username': tmp}))
+        tmp = User.objects.get(sessionid=request.COOKIES.get('sessionid'))
+        avatar = str(tmp.avatar)
+        if not avatar.find('static/avatars'):
+             avatar = '/' + avatar
+        return HttpResponse(render(request, "indexdeploy.html", {'BOTON': 'Reboot Pong', 'ACCION': 'rebootrun', 'username': tmp.displayname, 'AVATAR': urlavatar(tmp.avatar)}))
     except:
         return HttpResponse(render(request, "indexdeploy.html", {'BOTON': 'Reboot Pong', 'ACCION': 'rebootrun'}))
 
