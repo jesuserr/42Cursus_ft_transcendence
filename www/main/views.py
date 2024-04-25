@@ -48,8 +48,6 @@ def newuser(request):
             return response
         else:
             form = NewUserForm(request.POST, request.FILES)
-            print(SecurityCode.objects.get(email=request.POST['email']).code)
-            print(request.POST['securitycode'])
             if form.is_valid() and SecurityCode.objects.get(email=request.POST['email']).code == request.POST['securitycode']:
                 sessionid = hashlib.sha256(str(time.time()).encode('utf-8')).hexdigest()
                 tmp = form.save(commit=False)
