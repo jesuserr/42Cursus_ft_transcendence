@@ -4,8 +4,11 @@ import time
 from django.http import HttpResponse, HttpResponseRedirect
 from django.template import loader
 from .forms import NewUserForm, LoginUserForm
-from .models import User
+from .models import User, SecurityCode
 from pong.utils import urlavatar
+from django import forms
+from django.core.mail import send_mail
+import random
 
 def index(request):
     try:
@@ -16,35 +19,66 @@ def index(request):
         return HttpResponseRedirect("login")
  
 def newuser(request):
+    #falta por comprobar antes de poner el codigo que los datos del formulario son validos
     if request.method == 'POST':
-        form = NewUserForm(request.POST, request.FILES)
-        if form.is_valid():
-            sessionid = hashlib.sha256(str(time.time()).encode('utf-8')).hexdigest()
-            tmp = form.save(commit=False)
-            tmp.password = hashlib.sha256(str(request.POST['password']).encode('utf-8')).hexdigest()
-            tmp.sessionid = sessionid
-            tmp.save()
-            response = render(request, 'indexmain.html', {'USERNAME': tmp.displayname, 'AVATAR': urlavatar(tmp.avatar)})
-            response.set_cookie('sessionid', sessionid)
+        if not (str(request.POST['securitycode'])):
+            tmpcode = str(random.randint(100000,999999))
+            form = NewUserForm(request.POST, request.FILES)
+            send_mail("Pong42 Security Code","Your Pong42 security code is: " + str(random.randint(100000,999999)),"pong42pong@outlook.com",[request.POST['email']],fail_silently=False)
+            form.fields['email'].widget = forms.HiddenInput()
+            form.fields['password'].widget = forms.HiddenInput()
+            form.fields['displayname'].widget = forms.HiddenInput()
+            form.fields['avatar'].widget = forms.HiddenInput()
+            response = render(request, 'newuser.html', {'form': form, 'ACCION': 'Security Code', 'SECURITYCODE': 'input type=text name=securitycode maxlength=10'})
+            try:
+                 tmp = SecurityCode.objects.get(email=request.POST['email'])
+                 tmp.delete
+            except:
+                tmp = SecurityCode()
+                tmp.email = email=request.POST['email']
+                tmp.code = email=tmpcode
+                tmp.save() 
             return response
         else:
-            response = render(request, 'newuser.html', {'form': form, 'ACCION': 'Create User'})
-            return response
+            form = NewUserForm(request.POST, request.FILES)
+            if form.is_valid():
+                sessionid = hashlib.sha256(str(time.time()).encode('utf-8')).hexdigest()
+                tmp = form.save(commit=False)
+                tmp.password = hashlib.sha256(str(request.POST['password']).encode('utf-8')).hexdigest()
+                tmp.sessionid = sessionid
+                tmp.save()
+                response = render(request, 'indexmain.html', {'USERNAME': tmp.displayname, 'AVATAR': urlavatar(tmp.avatar)})
+                response.set_cookie('sessionid', sessionid)
+                return response
+            else:
+                response = render(request, 'newuser.html', {'form': form, 'ACCION': 'Create User'})
+                return response
     else:
         try:
             tmp = User.objects.get(sessionid=request.COOKIES.get('sessionid'))
             return HttpResponseRedirect("/")
         except:
              form = NewUserForm()
-             response = render(request, 'newuser.html', {'form': form, 'ACCION': 'Create User'})
+             response = render(request, 'newuser.html', {'form': form, 'ACCION': 'Create User', 'SECURITYCODE': 'input type=hidden name=securitycode maxlength=10'})
              return response
 
 def edituser(request):
-    #Falta el codigo de guardar los cambios
+    if request.method == 'POST':
+        try:
+             tmp = User.objects.get(sessionid=request.COOKIES.get('sessionid'))
+             form = NewUserForm(request.POST, request.FILES, instance=tmp)
+             if form.is_valid():
+                tmp = form.save(commit=False)
+                tmp.password = hashlib.sha256(str(request.POST['password']).encode('utf-8')).hexdigest()
+                tmp.save()
+                return HttpResponseRedirect("/")
+        except:
+            return HttpResponseRedirect("/")
     try:
         tmp = User.objects.get(sessionid=request.COOKIES.get('sessionid'))
         form = NewUserForm(instance=tmp)
         form.initial["password"] = ""
+        form.fields['email'].widget = forms.HiddenInput()
         response = render(request, 'newuser.html', {'form': form, 'ACCION': 'Update User Data', 'USERNAME': tmp.displayname, 'AVATAR': urlavatar(tmp.avatar)})
         return response
     except:
