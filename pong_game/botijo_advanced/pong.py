@@ -1,6 +1,7 @@
 import pygame
 import time
 import copy                         # To copy classes without copy constructor
+import random
 
 ############################### CONSTANTS & INITS ##############################
 
@@ -55,7 +56,7 @@ class Ball:
         self.y = self.original_y = y
         self.radius = radius
         self.x_vel = BALL_X_MAX_VEL
-        self.y_vel = 0
+        self.y_vel = random.uniform(-2, 2)
 
     def draw(self, win):
         pygame.draw.circle(win, BALL_COLOR, (self.x, self.y), self.radius)
@@ -67,7 +68,7 @@ class Ball:
     def reset(self):
         self.x = self.original_x
         self.y = self.original_y
-        self.y_vel = 0
+        self.y_vel = random.uniform(-2, 2)
         self.x_vel *= -1
 
 class Score:
@@ -153,21 +154,21 @@ def print_winner_and_reset(left_paddle, right_paddle, ball, score):
     score.reset()
 
 def computer_player(right_paddle, ball_image):
-    impact_point = ball_image.y + (((right_paddle.x - ball_image.x) / ball_image.x_vel) * ball_image.y_vel)
-    if impact_point < 0:
-        impact_point = -1 * impact_point
-    if impact_point > HEIGHT:
-        impact_point = impact_point - (2 * (impact_point - HEIGHT))
-    print(ball_image.x, ball_image.y, ball_image.x_vel, ball_image.y_vel, impact_point)
-    if ball_image.x_vel < 0:                  # Paddle back to center when ball goes left, removing this would be easier level
+    paddle_impact_point = ball_image.y + (((right_paddle.x - ball_image.x) / ball_image.x_vel) * ball_image.y_vel)
+    if paddle_impact_point < 0:
+        paddle_impact_point = -1 * paddle_impact_point
+    if paddle_impact_point > HEIGHT:
+        paddle_impact_point = (2 * HEIGHT) - paddle_impact_point
+    print(ball_image.x, ball_image.y, ball_image.x_vel, ball_image.y_vel, paddle_impact_point)
+    if ball_image.x_vel < 0:                  # Paddle back to center pos when ball goes left, removing this would be easier level
         if (right_paddle.y + right_paddle.height // 2 > HEIGHT // 2):
             right_paddle.move(up=True)
         if (right_paddle.y + right_paddle.height // 2 < HEIGHT // 2):
             right_paddle.move(up=False)
-    else:
-        if impact_point < right_paddle.y + right_paddle.height / 2 and right_paddle.y - PADDLE_VEL >= 0:
+    else:                                       # Less challenging if 0.15 and 0.85 are 0.5 (center of the paddle)
+        if paddle_impact_point < right_paddle.y + right_paddle.height * 0.15 and right_paddle.y - PADDLE_VEL >= 0:
             right_paddle.move(up=True)
-        if impact_point > right_paddle.y + right_paddle.height / 2 and right_paddle.y + right_paddle.height + PADDLE_VEL <= HEIGHT:
+        if paddle_impact_point > right_paddle.y + right_paddle.height * 0.85 and right_paddle.y + right_paddle.height + PADDLE_VEL <= HEIGHT:
             right_paddle.move(up=False)
 
 ################################# MAIN FUNCTION ################################

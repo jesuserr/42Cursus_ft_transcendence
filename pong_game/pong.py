@@ -1,4 +1,5 @@
 import pygame
+import random
 
 ############################### CONSTANTS & INITS ##############################
 
@@ -52,7 +53,7 @@ class Ball:
         self.y = self.original_y = y
         self.radius = radius
         self.x_vel = BALL_X_MAX_VEL
-        self.y_vel = 0
+        self.y_vel = random.uniform(-2, 2)
 
     def draw(self, win):
         pygame.draw.circle(win, BALL_COLOR, (self.x, self.y), self.radius)
@@ -64,7 +65,7 @@ class Ball:
     def reset(self):
         self.x = self.original_x
         self.y = self.original_y
-        self.y_vel = 0
+        self.y_vel = random.uniform(-2, 2)
         self.x_vel *= -1
 
 class Score:
