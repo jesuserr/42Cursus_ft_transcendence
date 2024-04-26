@@ -8,4 +8,5 @@ urlpatterns = [
 	path("edituser", views.edituser, name="edituser"),
 	path("login", views.login, name="login"),
 	path("logoff", views.logoff, name="logoff"),
+	path("42auth", views.auth42, name="42auth"),
 ]

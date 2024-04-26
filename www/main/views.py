@@ -9,6 +9,8 @@ from pong.utils import urlavatar
 from django import forms
 from django.core.mail import send_mail
 import random
+import requests
+import json
 
 def index(request):
     try:
@@ -134,4 +136,25 @@ def logoff(request):
         return HttpResponseRedirect("/")
     except:
         return HttpResponseRedirect("/")
+
+def auth42(request):
+    accesscode = request.GET.get('code')
+    redirect_uri = 'http://www.example.com'
+    url = 'https://api.intra.42.fr/oauth/token'
+    postdata = {
+        'grant_type': 'authorization_code',
+        'client_id' : 'u-s4t2ud-38baf166fb3ab0e52361312910fa3d2e092d59ac233a0b66c4410ba09eed6cc8',
+		'client_secret' : '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',
+		'code' : accesscode,
+		'redirect_uri': 'https://localhost/main/42auth',
+    }
+    r = requests.post(url, data=postdata)
+    print(r.status_code)
+    print(r.json())
+    t = r.json()
+    print(t['access_token'])
+    
+    
+    print(request.GET.get('code'))
+    return HttpResponse(request.GET.get('code'))
 

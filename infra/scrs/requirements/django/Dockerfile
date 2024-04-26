@@ -10,6 +10,7 @@ RUN 	pip3 install gunicorn
 RUN 	pip3 install --upgrade pip setuptools wheel
 RUN 	pip3 install Pillow
 RUN 	pip3 install -U setuptools
+RUN 	pip3 install requests
 COPY    ./conf/id_rsa /root/.ssh/id_rsa
 COPY    ./conf/id_rsa.pub /root/.ssh/id_rsa.pub
 COPY    ./conf/known_hosts /root/.ssh/known_hosts

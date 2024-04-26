@@ -1,0 +1,12 @@
+https://api.intra.42.fr/oauth/authorize?client_id=u-s4t2ud-6a82747239e0d5858c3b6734100e04166542c3bd73c20edb3539a3918ed61b5f&redirect_uri=https%3A%2F%2Fpongpongpong.pong&response_type=code
+
+
+curl -F grant_type=authorization_code \
+-F client_id=u-s4t2ud-6a82747239e0d5858c3b6734100e04166542c3bd73c20edb3539a3918ed61b5f \
+-F client_secret=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 \
+-F code=8034b3ff25194e851d6331c432a8750333c798aa956ea38830b4efeace58d16a \
+-F redirect_uri=https://pongpongpong.pong \
+-X POST https://api.intra.42.fr/oauth/token
+
+
+curl -H "Authorization: Bearer c12388976729a3a403b8e4a931802bfe7371dbee563b09aa0bf9f6d02d6847a5" https://api.intra.42.fr/v2/me
