@@ -138,8 +138,8 @@ def logoff(request):
         return HttpResponseRedirect("/")
 
 def auth42(request):
+    #https://api.intra.42.fr/oauth/authorize?client_id=u-s4t2ud-38baf166fb3ab0e52361312910fa3d2e092d59ac233a0b66c4410ba09eed6cc8&redirect_uri=https%3A%2F%2Flocalhost%2Fmain%2F42auth&response_type=code
     accesscode = request.GET.get('code')
-    redirect_uri = 'http://www.example.com'
     url = 'https://api.intra.42.fr/oauth/token'
     postdata = {
         'grant_type': 'authorization_code',
@@ -149,12 +149,9 @@ def auth42(request):
 		'redirect_uri': 'https://localhost/main/42auth',
     }
     r = requests.post(url, data=postdata)
-    print(r.status_code)
-    print(r.json())
     t = r.json()
-    print(t['access_token'])
-    
-    
-    print(request.GET.get('code'))
-    return HttpResponse(request.GET.get('code'))
+    r1=requests.get("https://api.intra.42.fr/v2/me", headers={"Authorization": "Bearer " + t['access_token']})
+    r2 = r1.json()
+    print(r2)
+    return HttpResponse(r2['email'])
 

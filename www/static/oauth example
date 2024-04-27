@@ -1,5 +1,4 @@
-https://api.intra.42.fr/oauth/authorize?client_id=u-s4t2ud-6a82747239e0d5858c3b6734100e04166542c3bd73c20edb3539a3918ed61b5f&redirect_uri=https%3A%2F%2Fpongpongpong.pong&response_type=code
-
+https://api.intra.42.fr/oauth/authorize?client_id=u-s4t2ud-38baf166fb3ab0e52361312910fa3d2e092d59ac233a0b66c4410ba09eed6cc8&redirect_uri=https%3A%2F%2Flocalhost%2Fmain%2F42auth&response_type=code
 
 curl -F grant_type=authorization_code \
 -F client_id=u-s4t2ud-6a82747239e0d5858c3b6734100e04166542c3bd73c20edb3539a3918ed61b5f \
