@@ -24,6 +24,7 @@ PADDLE_COLOR = BLUE
 BALL_X_MAX_VEL = WIDTH // 90 + 1               ## Speed never 0 no matter WIDTH
 BALL_RADIUS = WIDTH // 100
 BALL_COLOR = RED
+BALL_VEL_INCREASE = 1.015                       ## Speed increase after each hit
 
 #################################### CLASSES ###################################
 
@@ -78,11 +79,11 @@ class Score:
     def update(self, ball):
         if ball.x < 0:
             self.right_score += 1
-            ball.x_vel *= 1.01
+            ball.x_vel = BALL_X_MAX_VEL
             ball.reset()
         elif ball.x > WIDTH:
             self.left_score += 1
-            ball.x_vel *= 1.01
+            ball.x_vel = BALL_X_MAX_VEL
             ball.reset()
         if self.left_score >= WINNING_SCORE:
             self.won = True
@@ -120,14 +121,14 @@ def handle_collision(ball, left_paddle, right_paddle):
     if ball.x_vel < 0:
         if ball.y + ball.radius >= left_paddle.y and ball.y - ball.radius <= left_paddle.y + left_paddle.height and \
         ball.x - ball.radius <= left_paddle.x + left_paddle.width and ball.x - ball.radius >= left_paddle.x:
-            ball.x_vel *= -1
+            ball.x_vel *= -BALL_VEL_INCREASE
             difference_in_y = ball.y - left_paddle.y - left_paddle.height / 2
             reduction_factor = (left_paddle.height / 2) / BALL_X_MAX_VEL
             ball.y_vel = difference_in_y / reduction_factor             
     else:
         if ball.y + ball.radius >= right_paddle.y and ball.y - ball.radius <= right_paddle.y + right_paddle.height and \
         ball.x + ball.radius >= right_paddle.x and ball.x + ball.radius <= right_paddle.x + right_paddle.width:
-            ball.x_vel *= -1
+            ball.x_vel *= -BALL_VEL_INCREASE
             difference_in_y = ball.y - right_paddle.y - right_paddle.height / 2
             reduction_factor = (right_paddle.height / 2) / BALL_X_MAX_VEL
             ball.y_vel = difference_in_y / reduction_factor             
@@ -179,6 +180,7 @@ def main():
         score.update(ball)
         if score.won:
             print_winner_and_reset(left_paddle, right_paddle, ball, score)
+        print(ball.x_vel)
     pygame.quit()
 
 if __name__ == '__main__':
