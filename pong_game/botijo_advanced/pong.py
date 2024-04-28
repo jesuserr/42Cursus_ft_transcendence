@@ -26,8 +26,8 @@ PADDLE_COLOR = BLUE
 BALL_X_MAX_VEL = WIDTH // 90 + 1    # Speed never 0 no matter WIDTH
 BALL_RADIUS = WIDTH // 100
 BALL_COLOR = RED
+BALL_VEL_INC = 1.015                # Speed increment after each paddle hit
 AI_TIME_INTERVAL_BALL_POS = 1       # AI interval time to check ball pos in secs
-BALL_VEL_INCREASE = 1.015            # Speed increase after each paddle hit
 
 #################################### CLASSES ###################################
 
@@ -124,14 +124,14 @@ def handle_collision(ball, left_paddle, right_paddle):
     if ball.x_vel < 0:
         if ball.y + ball.radius >= left_paddle.y and ball.y - ball.radius <= left_paddle.y + left_paddle.height and \
         ball.x - ball.radius <= left_paddle.x + left_paddle.width and ball.x - ball.radius >= left_paddle.x:
-            ball.x_vel *= -BALL_VEL_INCREASE
+            ball.x_vel *= -BALL_VEL_INC
             difference_in_y = ball.y - left_paddle.y - left_paddle.height / 2
             reduction_factor = (left_paddle.height / 2) / BALL_X_MAX_VEL
             ball.y_vel = difference_in_y / reduction_factor             
     else:
         if ball.y + ball.radius >= right_paddle.y and ball.y - ball.radius <= right_paddle.y + right_paddle.height and \
         ball.x + ball.radius >= right_paddle.x and ball.x + ball.radius <= right_paddle.x + right_paddle.width:
-            ball.x_vel *= -BALL_VEL_INCREASE
+            ball.x_vel *= -BALL_VEL_INC
             difference_in_y = ball.y - right_paddle.y - right_paddle.height / 2
             reduction_factor = (right_paddle.height / 2) / BALL_X_MAX_VEL
             ball.y_vel = difference_in_y / reduction_factor             
@@ -155,18 +155,18 @@ def print_winner_and_reset(left_paddle, right_paddle, ball, score):
     score.reset()
 
 def computer_player(right_paddle, ball_image):
-    paddle_impact_point = ball_image.y + (((right_paddle.x - ball_image.x) / ball_image.x_vel) * ball_image.y_vel)
-    if paddle_impact_point < 0:
-        paddle_impact_point = -1 * paddle_impact_point
-    if paddle_impact_point > HEIGHT:
-        paddle_impact_point = (2 * HEIGHT) - paddle_impact_point
-    print(ball_image.x, ball_image.y, ball_image.x_vel, ball_image.y_vel, paddle_impact_point)
     if ball_image.x_vel < 0:                  # Paddle back to center pos when ball goes left, removing this would be easier level
         if (right_paddle.y + right_paddle.height // 2 > HEIGHT // 2):
             right_paddle.move(up=True)
         if (right_paddle.y + right_paddle.height // 2 < HEIGHT // 2):
             right_paddle.move(up=False)
     else:                                       # Less challenging if 0.15 and 0.85 are 0.5 (center of the paddle)
+        paddle_impact_point = ball_image.y + (((right_paddle.x - ball_image.x) / ball_image.x_vel) * ball_image.y_vel)
+        if paddle_impact_point < 0:
+            paddle_impact_point = -1 * paddle_impact_point
+        if paddle_impact_point > HEIGHT:
+            paddle_impact_point = (2 * HEIGHT) - paddle_impact_point
+        #print(ball_image.x, ball_image.y, ball_image.x_vel, ball_image.y_vel, paddle_impact_point)
         if paddle_impact_point < right_paddle.y + right_paddle.height * 0.15 and right_paddle.y - PADDLE_VEL >= 0:
             right_paddle.move(up=True)
         if paddle_impact_point > right_paddle.y + right_paddle.height * 0.85 and right_paddle.y + right_paddle.height + PADDLE_VEL <= HEIGHT:
