@@ -32,7 +32,7 @@
                 </ul>
                 <div class="d-md-none my-2"><button class="btn btn-light me-2" type="button">Button</button><button class="btn btn-primary" type="button">Button</button></div>
 			</div>
-			<div><p style="color:black;">{{ USERNAME }}</p><img src="{{ AVATAR }}" width="50" height="50" alt="" onerror="this.onerror=null; this.src='/static/avatars/default.jpg'"/></div>
+			<div><p style="color:black;">{{ User.displayname }}</p><img src="/{{User.avatar}}" width="50" height="50" alt="" onerror="this.onerror=null; this.src='/static/avatars/default.jpg'"/></div>
             <div class="d-none d-md-block"></div>
         </div>
     </nav>

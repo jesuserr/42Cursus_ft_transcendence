@@ -4,7 +4,7 @@ from django.shortcuts import render
 from django.http import HttpResponse, HttpResponseRedirect
 from django.template import loader, RequestContext
 from main.models import User
-from pong.utils import urlavatar
+from main.userManagent import urlavatar
 
 def index(request):
     try:

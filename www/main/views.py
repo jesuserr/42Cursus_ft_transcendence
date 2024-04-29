@@ -10,29 +10,23 @@ def newuser(request):
 		#Request email
 		return newUserEmailform(request)
 	else:
-		try:
-			if request.POST['securitycode'] != '':
-				#Check security code
-				return newUserCheckCodeform(request)
-			elif (request.POST['securitycode'] == ''):
-				#Send and ask the security code
-				return newUserSendCodeform(request)
-		except:
-			pass
+		if request.POST.get('securitycode') != '':
+			#Check security code
+			return newUserCheckCodeform(request)
+		elif (request.POST.get('securitycode') == ''):
+			#Send and ask the security code
+			return newUserSendCodeform(request)
 	return HttpResponseRedirect("/")
 
 def edituser(request):
-    
 	return HttpResponse('edituser')
     
 def login(request):
-    
-	return HttpResponse('login')
+	return loginPage(request)
  
 def logoff(request):
+	return logoffPage(request)
 
-	return HttpResponse('logoff')
-
-def auth42(request):
+def fourtwo(request):
     
 	return HttpResponse('42auth')

@@ -8,13 +8,54 @@ from .models import User, SecurityCode
 import hashlib
 import time
 
+
+## Logoff ##
+
+def logoffPage(request):
+       response = render(request, 'indexmain.html')
+       response.set_cookie('sessionid', '')
+       return response
+
+## Login ##
+
+FormDataLogin = {'ErrorMsg': ''}
+def loginPage(request):
+    if not request.method == 'POST':
+           try:
+                  tmpuser = User.objects.get(sessionid=request.COOKIES.get('sessionid'))
+           except:
+                  tmpuser = ''
+           form = LoginUserForm()
+           response = render(request, 'login.html', {'form': form, 'User': tmpuser})
+           return response
+    else:
+           try:
+                  tmpuser = User.objects.get(email=request.POST['email'])
+                  if (tmpuser.password == hashlib.sha256(str(request.POST['password']).encode('utf-8')).hexdigest()):
+                        response = render(request, 'indexmain.html', {'User': tmpuser})
+                        response.set_cookie('sessionid', tmpuser.sessionid)
+                        return response
+                  else:
+                    FormDataLogin['ErrorMsg'] = 'The password is wrong'
+                    form = LoginUserForm(request.POST)
+                    form.errors['email'] = form.error_class()
+                    form.errors['password'] = form.error_class()
+                    response = render(request, 'login.html', {'form': form, 'Data': FormDataLogin})
+                    return response
+           except:
+                  FormDataLogin['ErrorMsg'] = 'The indicated email is not registered as a user'
+                  form = LoginUserForm(request.POST)
+                  form.errors['email'] = form.error_class()
+                  form.errors['password'] = form.error_class()
+                  response = render(request, 'login.html', {'form': form, 'Data': FormDataLogin})
+                  return response
+
 ## Main page ##
 
 def maniPage(request):
     try:
-        print(sessionid=request.COOKIES.get('sessionid'))
         tmp = User.objects.get(sessionid=request.COOKIES.get('sessionid'))
-        response = render(request, 'indexmain.html', {'USERNAME': 'tmp.displayname', 'AVATAR': 'urlavatar(tmp.avatar)'})
+        response = render(request, 'indexmain.html', {'User': tmp})
         return response
     except:
         return HttpResponseRedirect("login")
@@ -25,6 +66,10 @@ def maniPage(request):
 FormData = {'Action': '', 'SecurityCode': 'input type=text name=securitycode maxlength=10 required="required"', 'TopMsg': '', 'ErrorMsg': ''}
 #New user form asking for your email address
 def newUserEmailform(request, error = ''):
+        try:
+               tmpuser = User.objects.get(sessionid=request.COOKIES.get('sessionid'))
+        except:
+            tmpuser = ''
         FormData['Action'] = 'Check Email'
         FormData['SecurityCode'] = 'input type=hidden name=securitycode maxlength=10'
         FormData['TopMsg'] = 'Specify with which email address you want to register.'
@@ -33,7 +78,7 @@ def newUserEmailform(request, error = ''):
         form.fields['password'].widget = forms.HiddenInput()
         form.fields['displayname'].widget = forms.HiddenInput()
         form.fields['avatar'].widget = forms.HiddenInput()
-        response = render(request, 'newuser.html', {'form': form, 'Data': FormData})
+        response = render(request, 'newuser.html', {'form': form, 'Data': FormData, 'User': tmpuser})
         return response
 
 #New user form that sends you the security code and checks it.
@@ -100,12 +145,9 @@ def NewUserCodeOkFillData(request):
                         formtmp.password = hashlib.sha256(str(request.POST['password']).encode('utf-8')).hexdigest()
                         formtmp.sessionid = sessionid
                         formtmp.save()
-                        ##revisar desde
-                        response = render(request, 'indexmain.html', {'USERNAME': 'tmp.displayname', 'AVATAR': 'urlavatar(tmp.avatar)'})
+                        response = render(request, 'indexmain.html', {'User': formtmp})
                         response.set_cookie('sessionid', sessionid)
-                        print("grabar session + " + sessionid)
                         return response
-                		##hasta aqui
         except:
                 return HttpResponseRedirect("/")      
         FormData['Action'] = 'Create User'
@@ -114,4 +156,9 @@ def NewUserCodeOkFillData(request):
         form.fields['email'].widget = forms.HiddenInput()
         response = render(request, 'newuser.html', {'form': form, 'Data': FormData})
         return response
-        
+
+def urlavatar(ori):
+    avatar = str(ori)
+    if not avatar.find('static/avatars'):
+         avatar = '/' + avatar
+    return avatar
