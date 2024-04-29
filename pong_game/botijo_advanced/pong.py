@@ -5,7 +5,8 @@ import random
 
 ############################### CONSTANTS & INITS ##############################
 
-WIDTH, HEIGHT = 1200, 900
+#WIDTH, HEIGHT = 1200, 900          # 4:3
+WIDTH, HEIGHT = 1440, 810           # 16:9
 pygame.init()
 pygame.display.set_caption("Pong")
 WIN = pygame.display.set_mode((WIDTH, HEIGHT))
@@ -20,7 +21,7 @@ WINNING_SCORE = 10
 
 PADDLE_WIDTH = WIDTH // 35
 PADDLE_HEIGHT = HEIGHT // 5
-PADDLE_GAP = WIDTH // 25            # Paddle vs screen edge gap
+PADDLE_GAP = WIDTH // 50            # Paddle vs screen edge gap
 PADDLE_VEL = HEIGHT // 125 + 1      # Speed never 0 no matter HEIGHT
 PADDLE_COLOR = BLUE
 BALL_X_MAX_VEL = WIDTH // 90 + 1    # Speed never 0 no matter WIDTH
@@ -206,6 +207,7 @@ def main():
         score.update(ball)
         if score.won:
             print_winner_and_reset(left_paddle, right_paddle, ball, score)
+        print(ball.x_vel)
     pygame.quit()
 
 if __name__ == '__main__':
