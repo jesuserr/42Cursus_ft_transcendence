@@ -1,3 +1,6 @@
+#https://websockets.readthedocs.io/en/stable/howto/quickstart.html
+#!/usr/bin/env python
+
 import asyncio
 import websockets
 
@@ -7,10 +10,10 @@ async def hello():
         name = input("What's your name? ")
 
         await websocket.send(name)
-        print(f'Client sent: {name}')
+        print(f">>> {name}")
 
         greeting = await websocket.recv()
-        print(f"Client received: {greeting}")
+        print(f"<<< {greeting}")
 
 if __name__ == "__main__":
     asyncio.run(hello())

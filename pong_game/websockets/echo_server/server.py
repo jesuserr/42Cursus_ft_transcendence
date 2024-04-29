@@ -1,3 +1,4 @@
+#https://websockets.readthedocs.io/en/stable/index.html
 #!/usr/bin/env python
 
 import asyncio
@@ -5,7 +6,7 @@ from websockets.server import serve
 
 async def echo(websocket):
     async for message in websocket:
-        await websocket.send(message + "hola")
+        await websocket.send(message)
 
 async def main():
     async with serve(echo, "localhost", 8765):
