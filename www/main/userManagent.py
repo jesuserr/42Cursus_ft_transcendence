@@ -5,9 +5,25 @@ from django import forms
 from django.core.mail import send_mail
 import random
 from .models import User, SecurityCode
+import hashlib
+import time
 
+## Main page ##
+
+def maniPage(request):
+    try:
+        print(sessionid=request.COOKIES.get('sessionid'))
+        tmp = User.objects.get(sessionid=request.COOKIES.get('sessionid'))
+        response = render(request, 'indexmain.html', {'USERNAME': 'tmp.displayname', 'AVATAR': 'urlavatar(tmp.avatar)'})
+        return response
+    except:
+        return HttpResponseRedirect("login")
+        
+## New user section ##
+
+#Dictionary for the new user form
 FormData = {'Action': '', 'SecurityCode': 'input type=text name=securitycode maxlength=10 required="required"', 'TopMsg': '', 'ErrorMsg': ''}
-
+#New user form asking for your email address
 def newUserEmailform(request, error = ''):
         FormData['Action'] = 'Check Email'
         FormData['SecurityCode'] = 'input type=hidden name=securitycode maxlength=10'
@@ -19,7 +35,8 @@ def newUserEmailform(request, error = ''):
         form.fields['avatar'].widget = forms.HiddenInput()
         response = render(request, 'newuser.html', {'form': form, 'Data': FormData})
         return response
-	
+
+#New user form that sends you the security code and checks it.
 def newUserSendCodeform(request, error = ''):
         try:
                 tmp = User.objects.get(email=request.POST['email'])
@@ -57,9 +74,11 @@ def newUserSendCodeform(request, error = ''):
         response = render(request, 'newuser.html', {'form': form, 'Data': FormData})
         return response
 
+##Function that checks the security code
 def newUserCheckCodeform(request):
         FormData['Action'] = 'Check Code'
-        FormData['SecurityCode'] = 'input type=text name=securitycode maxlength=10 required="required"'
+        if (request.POST['securitycode'] == ''):
+                FormData['SecurityCode'] = 'input type=text name=securitycode maxlength=10 required="required"'
         FormData['TopMsg'] = 'We have sent you an email with a security code, please enter it to verify your email address.'
         try:
                tmp = SecurityCode.objects.get(email=request.POST['email'])
@@ -70,15 +89,29 @@ def newUserCheckCodeform(request):
         except:
                 return newUserSendCodeform(request, 'This email does not have any pending security code.....')
 
+#Function that once the security code has been confirmed asks for the other data.
 def NewUserCodeOkFillData(request):
+        form = NewUserForm(request.POST, request.FILES)
+        try:
+                tmp = SecurityCode.objects.get(email=request.POST['email'])
+                if (request.POST['password'] != "" and tmp.code == request.POST['securitycode'] and form.is_valid()):
+                        sessionid = hashlib.sha256(str(time.time()).encode('utf-8')).hexdigest()
+                        formtmp = form.save(commit=False)
+                        formtmp.password = hashlib.sha256(str(request.POST['password']).encode('utf-8')).hexdigest()
+                        formtmp.sessionid = sessionid
+                        formtmp.save()
+                        ##revisar desde
+                        response = render(request, 'indexmain.html', {'USERNAME': 'tmp.displayname', 'AVATAR': 'urlavatar(tmp.avatar)'})
+                        response.set_cookie('sessionid', sessionid)
+                        print("grabar session + " + sessionid)
+                        return response
+                		##hasta aqui
+        except:
+                return HttpResponseRedirect("/")      
         FormData['Action'] = 'Create User'
-        FormData['SecurityCode'] = 'input type=hidden name=securitycode maxlength=10'
+        FormData['SecurityCode'] = 'input type=hidden name=securitycode maxlength=10 value=' + request.POST['securitycode']
         FormData['TopMsg'] = request.POST['email']
-        form = NewUserForm(request.POST)
         form.fields['email'].widget = forms.HiddenInput()
         response = render(request, 'newuser.html', {'form': form, 'Data': FormData})
         return response
         
-        
-               
-
