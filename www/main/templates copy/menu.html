@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, shrink-to-fit=no">
+    <title>Pong 42</title>
+    <link rel="stylesheet" href="/static/assets/bootstrap/css/bootstrap.min.css">
+    <link rel="stylesheet" href="/static/assets/fonts/fontawesome-all.min.css">
+    <link rel="stylesheet" href="/static/assets/css/Navbar-Centered-Brand.css">
+    <link rel="stylesheet" href="/static/assets/css/styles.css">
+</head>
+
+<body>
+    <nav class="navbar navbar-light navbar-expand-md py-3" style="color: var(--bs-pink);background: var(--bs-success);">
+        <div class="container"><a class="navbar-brand d-flex align-items-center" href="/"><span class="bs-icon-sm bs-icon-rounded bs-icon-primary d-flex justify-content-center align-items-center me-2 bs-icon" style="background: var(--bs-purple);"><i class="fas fa-basketball-ball"></i></span><span>Pong 42</span></a><button data-bs-toggle="collapse" class="navbar-toggler" data-bs-target="#navcol-4"><span class="visually-hidden">Toggle navigation</span><span class="navbar-toggler-icon"></span></button>
+            <div class="collapse navbar-collapse flex-grow-0 order-md-first" id="navcol-4">
+                <ul class="navbar-nav me-auto">
+                    <li class="nav-item"></li>
+                    <li class="nav-item"></li>
+                    <li class="nav-item dropdown"><a class="dropdown-toggle nav-link" aria-expanded="false" data-bs-toggle="dropdown" href="">User Managemet</a>
+                        <div class="dropdown-menu"><a class="dropdown-item" href="/main/login">Login</a><a class="dropdown-item" href="/main/edituser">Edit profile</a>
+                            <div class="dropdown-divider"></div><a onclick="return confirm('Are you sure you want to close the session?')"class="dropdown-item" href="/main/logoff">Logoff</a>
+                        </div>
+                    </li>
+                    <li class="nav-item dropdown"><a class="dropdown-toggle nav-link" aria-expanded="false" data-bs-toggle="dropdown" href="#">Deploy</a>
+                        <div class="dropdown-menu"><a class="dropdown-item" href="/deploy">Deploy</a><a class="dropdown-item" href="/deploy/reboot">Reboot</a></div>
+                    </li>
+                    <li class="nav-item dropdown"><a class="dropdown-toggle nav-link" aria-expanded="false" data-bs-toggle="dropdown" href="#">Game&nbsp;</a>
+                        <div class="dropdown-menu"><a class="dropdown-item" href="#">First Item</a><a class="dropdown-item" href="#">Second Item</a><a class="dropdown-item" href="#">Third Item</a></div>
+                    </li>
+                </ul>
+                <div class="d-md-none my-2"><button class="btn btn-light me-2" type="button">Button</button><button class="btn btn-primary" type="button">Button</button></div>
+			</div>
+			<div><p style="color:black;">{{ USERNAME }}</p><img src="{{ AVATAR }}" width="50" height="50" alt="" onerror="this.onerror=null; this.src='/static/avatars/default.jpg'"/></div>
+            <div class="d-none d-md-block"></div>
+        </div>
+    </nav>
+    <script src="/static/assets/bootstrap/js/bootstrap.min.js"></script>
+</body>
+
+</html>
