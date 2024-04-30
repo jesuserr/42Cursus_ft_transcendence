@@ -1,5 +1,6 @@
 from django.http import HttpResponse, HttpResponseRedirect
-from .userManagent import *
+from .userManagement import *
+from .userManagement42 import *
 from django.core.mail import send_mail
 
 def index(request):
@@ -27,6 +28,5 @@ def login(request):
 def logoff(request):
 	return logoffPage(request)
 
-def fourtytwo(request):
-    
-	return HttpResponse('42auth')
+def fourtytwo(request):    
+	return fourtytwoLogin(request)
