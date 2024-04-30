@@ -27,6 +27,6 @@ def login(request):
 def logoff(request):
 	return logoffPage(request)
 
-def fourtwo(request):
+def fourtytwo(request):
     
 	return HttpResponse('42auth')

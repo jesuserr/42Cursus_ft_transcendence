@@ -9,6 +9,7 @@ class User(models.Model):
     displayname = models.CharField(max_length=20, verbose_name = "Display Name", unique=True)
     avatar = models.ImageField(verbose_name= "Avatar", blank=True, upload_to = 'static/avatars/',)
     sessionid = models.CharField(max_length=500, blank=True)
+    fourtytwo = models.BooleanField(default=False)
         
 class SecurityCode(models.Model):
     email = models.EmailField(primary_key=True)
