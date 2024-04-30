@@ -9,6 +9,32 @@ import hashlib
 import time
 
 
+## EditProfile ##
+
+def editProfile(request):
+    FormData = {'Action': 'Save Changes', 'SecurityCode': '/"', 'TopMsg': '', 'ErrorMsg': ''}
+    try:
+        tmpuser = User.objects.get(sessionid=request.COOKIES.get('sessionid'))
+    except:
+        return HttpResponseRedirect("/")
+    if not request.method == 'POST':
+           form = NewUserForm(instance=tmpuser)
+           form.fields['email'].widget.attrs['readonly'] = True
+           form.initial["password"] = ''
+           response = render(request, 'newuser.html', {'form': form, 'User': tmpuser, 'Data': FormData})
+           return response
+    else:
+          form = NewUserForm(request.POST, request.FILES, instance=tmpuser)
+          if (form.is_valid):
+                formtmp = form.save(commit=False)
+                formtmp.password = hashlib.sha256(str(request.POST['password']).encode('utf-8')).hexdigest()
+                formtmp.save()
+                return HttpResponseRedirect("/")
+          else:
+                form = NewUserForm(request.POST)
+                response = render(request, 'newuser.html', {'form': form, 'User': tmpuser, 'Data': FormData})
+                return response
+
 ## Logoff ##
 
 def logoffPage(request):

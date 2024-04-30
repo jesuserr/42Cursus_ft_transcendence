@@ -19,7 +19,7 @@ def newuser(request):
 	return HttpResponseRedirect("/")
 
 def edituser(request):
-	return HttpResponse('edituser')
+	return editProfile(request)
     
 def login(request):
 	return loginPage(request)
