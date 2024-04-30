@@ -15,6 +15,10 @@ def editProfile(request):
     FormData = {'Action': 'Save Changes', 'SecurityCode': '/"', 'TopMsg': '', 'ErrorMsg': ''}
     try:
         tmpuser = User.objects.get(sessionid=request.COOKIES.get('sessionid'))
+        if (tmpuser.fourtytwo == True):
+            FormData['ErrorMsg'] = 'You are using a 42 network user, to edit the profile you have to do it from the intranet.'
+            response = render(request, 'indexmain.html', {'Data': FormData, 'User': tmpuser})
+            return response
     except:
         return HttpResponseRedirect("/")
     if not request.method == 'POST':
@@ -29,6 +33,12 @@ def editProfile(request):
                 formtmp = form.save(commit=False)
                 formtmp.password = hashlib.sha256(str(request.POST['password']).encode('utf-8')).hexdigest()
                 formtmp.save()
+                ##add / to url of avatar
+                tmpuser =  User.objects.get(email=formtmp.email)
+                if (str(tmpuser.avatar) != ''):
+                    tmpuser.avatar = '/' + str(tmpuser.avatar)
+                    tmpuser.save()
+                ##end add / to url of avatar
                 return HttpResponseRedirect("/")
           else:
                 form = NewUserForm(request.POST)
@@ -171,7 +181,13 @@ def NewUserCodeOkFillData(request):
                         formtmp.password = hashlib.sha256(str(request.POST['password']).encode('utf-8')).hexdigest()
                         formtmp.sessionid = sessionid
                         formtmp.save()
-                        response = render(request, 'indexmain.html', {'User': formtmp})
+                        ##add / to url of avatar
+                        tmpuser =  User.objects.get(email=formtmp.email)
+                        if (str(tmpuser.avatar) != ''):
+                            tmpuser.avatar = '/' + str(tmpuser.avatar)
+                            tmpuser.save()
+                        ##end add / to url of avatar
+                        response = render(request, 'indexmain.html', {'User': tmpuser})
                         response.set_cookie('sessionid', sessionid)
                         return response
         except:
