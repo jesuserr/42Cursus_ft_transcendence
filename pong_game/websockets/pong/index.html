@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Pong Game WebSocket Client</title>
+</head>
+<body>
+    <h1>Pong Game WebSocket Client</h1>
+    <p id="position"></p>
+    <script>
+        const socket = new WebSocket('ws://localhost:8765');
+        const positionElement = document.getElementById('position');
+
+        // Connection opened
+        socket.addEventListener('open', (event) => {
+            console.log('Connection opened');
+        });
+
+        // Listen for messages
+        socket.addEventListener('message', (event) => {
+            const position = JSON.parse(event.data);
+            console.log(`Ball position: ${position}`);
+            positionElement.textContent = `Ball position: x=${position.x}, y=${position.y}`;
+        });
+
+        // Connection closed
+        socket.addEventListener('close', (event) => {
+            console.log('Connection closed');
+        });
+
+        // Connection error
+        socket.addEventListener('error', (event) => {
+            console.error('WebSocket error: ', event);
+        });
+    </script>
+</body>
+</html>
