@@ -54,7 +54,7 @@ def logoffPage(request):
 
 ## Login ##
 
-FormDataLogin = {'ErrorMsg': '', '42URL': os.environ["42URL"]}
+FormDataLogin = {'ErrorMsg': '', 'URL42': os.environ["URL42"]}
 def loginPage(request):
     if not request.method == 'POST':
            try:
