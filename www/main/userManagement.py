@@ -7,7 +7,7 @@ import random
 from .models import User, SecurityCode
 import hashlib
 import time
-
+import os
 
 ## EditProfile ##
 
@@ -54,7 +54,7 @@ def logoffPage(request):
 
 ## Login ##
 
-FormDataLogin = {'ErrorMsg': ''}
+FormDataLogin = {'ErrorMsg': '', '42URL': os.environ["42URL"]}
 def loginPage(request):
     if not request.method == 'POST':
            try:
@@ -62,7 +62,7 @@ def loginPage(request):
            except:
                   tmpuser = ''
            form = LoginUserForm()
-           response = render(request, 'login.html', {'form': form, 'User': tmpuser})
+           response = render(request, 'login.html', {'form': form, 'User': tmpuser, 'Data': FormDataLogin})
            return response
     else:
            try:
@@ -76,7 +76,7 @@ def loginPage(request):
                     form = LoginUserForm(request.POST)
                     form.errors['email'] = form.error_class()
                     form.errors['password'] = form.error_class()
-                    response = render(request, 'login.html', {'form': form, 'Data': FormDataLogin})
+                    response = render(request, 'login.html', {'form': form, 'Data': FormDataLogin, 'Data': FormDataLogin})
                     return response
            except:
                   FormDataLogin['ErrorMsg'] = 'The indicated email is not registered as a user'
