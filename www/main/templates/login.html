@@ -1,5 +1,4 @@
-
-	{% include "menu.html" %}
+{% include "menu.html" %}
 <!DOCTYPE html>
 <html lang="en">
 
@@ -9,9 +8,44 @@
     <title>Pong 42 New User</title>
     <link rel="stylesheet" href="/static/assets/bootstrap/css/bootstrap.min.css">
     <link rel="stylesheet" href="/static/assets/css/login.css">
+    <style>
+        .welcome-message {
+            position: fixed;
+            top: 50%;
+            left: 50%;
+			height: 300px;
+			width: 600px;
+            transform: translate(-50%, -50%);
+            background-color: rgba(255, 255, 255, 0.9);
+            padding: 20px;
+            border-radius: 10px;
+            text-align: center;
+            animation: fadeInOut 3s ease-in-out forwards;
+            z-index: 9999;
+        }
+
+        @keyframes fadeInOut {
+            0% {
+                opacity: 1;
+            }
+            50% {
+                opacity: 1;
+            }
+            100% {
+                opacity: 0;
+            }
+        }
+        body.welcome-message-active > *:not(.welcome-message) {
+            visibility: hidden;
+        }
+    </style>
 </head>
 
 <body>
+	<div class="welcome-message">
+		<h2 class="welcome">Let's trascend!</h2>
+		<p>This is the best place to be.</p>
+	</div>
 	<div class="all-login">
     	<div class="login">
 			<form class="post-form" method="POST">{% csrf_token %}
@@ -22,9 +56,20 @@
 			<button type="submit" class="submit">Login</button>
 			<a href="/main/newuser"><button class="submit">New User</button></a>
 			<a href={{Data.URL42}}><button class="submit">Log with 42 user</button></a>
-        	<div><p style="color:black;">{{ Data.ErrorMsg }}</p></div>
+			<div><p style="color:black;">{{ Data.ErrorMsg }}</p></div>
 			</div>
 	</div>
 	</div>
+	<script>
+		document.body.classList.add('welcome-message-active');
+		setTimeout(function() {
+			var welcomeMessage = document.querySelector('.welcome-message');
+			if (welcomeMessage) {
+				welcomeMessage.style.display = 'none';
+				document.body.classList.remove('welcome-message-active');
+			}
+		}, 3000);
+	</script>
 </body>
 
+</html>
