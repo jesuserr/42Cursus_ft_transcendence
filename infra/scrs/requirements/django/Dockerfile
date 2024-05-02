@@ -4,13 +4,10 @@ RUN		apt-get update
 RUN 	apt update && apt install  openssh-server sudo nano build-essential python3-dev python3-pip python3-venv supervisor libpq5 libpq-dev git libjpeg-dev zlib1g-dev -y
 RUN		apt-get -y upgrade
 RUN 	sed "s/#PermitRootLogin prohibit-password/PermitRootLogin yes/g" /etc/ssh/sshd_config > tmp1; sudo cat tmp1 > /etc/ssh/sshd_config; sudo rm tmp1
-RUN 	pip3 install django
-RUN 	pip3 install psycopg2
-RUN 	pip3 install gunicorn
 RUN 	pip3 install --upgrade pip setuptools wheel
-RUN 	pip3 install Pillow
 RUN 	pip3 install -U setuptools
-RUN 	pip3 install requests
+COPY    ./conf/requirements.txt /tmp/requirements.txt
+RUN 	pip3 install -r /tmp/requirements.txt
 COPY    ./conf/id_rsa /root/.ssh/id_rsa
 COPY    ./conf/id_rsa.pub /root/.ssh/id_rsa.pub
 COPY    ./conf/known_hosts /root/.ssh/known_hosts

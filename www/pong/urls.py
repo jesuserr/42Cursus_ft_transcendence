@@ -23,5 +23,6 @@ urlpatterns = [
 	path("main/", include("main.urls")),
 	path("deploy/", include("deploy.urls")),
 	path('', RedirectView.as_view(url='/main/', permanent=True)),
+	path("chat/", include("chat.urls")),
 
 ]
