@@ -5,7 +5,8 @@ if [ -f "/pong/base/www/manage.py" ]
 then
 	python3 manage.py makemigrations --noinput
 	python3 manage.py migrate --noinput
-	gunicorn --bind 0.0.0.0:8000 pong.wsgi --reload 
+	python3 manage.py runserver 0.0.0.0:8000
+	#gunicorn --bind 0.0.0.0:8000 pong.wsgi pong.asgi --reload 
 else
 	echo Waiting postgresql .....
 	sleep 4

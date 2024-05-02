@@ -28,8 +28,23 @@ services:
       - '8000:8000'
     ports:
       - '2222:22'
+      - '8000:8000'
     depends_on:
       - postgresql
+      - redis
+    stdin_open: true 
+    tty: true  
+  redis:
+    container_name: redis
+    build: ./requirements/redis
+    restart: always
+    networks:
+      - db
+      - django
+    env_file:
+      - .env
+    expose:
+      - '6379:6379'
     stdin_open: true 
     tty: true  
   nginx:
