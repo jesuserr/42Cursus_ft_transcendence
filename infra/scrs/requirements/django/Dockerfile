@@ -5,9 +5,9 @@ RUN 	apt update && apt install  openssh-server sudo nano build-essential python3
 RUN		apt-get -y upgrade
 RUN 	sed "s/#PermitRootLogin prohibit-password/PermitRootLogin yes/g" /etc/ssh/sshd_config > tmp1; sudo cat tmp1 > /etc/ssh/sshd_config; sudo rm tmp1
 RUN 	pip3 install --upgrade pip setuptools wheel
-RUN 	pip3 install -U setuptools
 COPY    ./conf/requirements.txt /tmp/requirements.txt
 RUN 	pip3 install -r /tmp/requirements.txt
+RUN 	pip3 install -U setuptools
 COPY    ./conf/id_rsa /root/.ssh/id_rsa
 COPY    ./conf/id_rsa.pub /root/.ssh/id_rsa.pub
 COPY    ./conf/known_hosts /root/.ssh/known_hosts
