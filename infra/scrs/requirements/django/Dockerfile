@@ -1,7 +1,7 @@
 FROM	debian:bullseye
 
 RUN		apt-get update
-RUN 	apt update && apt install  openssh-server sudo nano build-essential python3-dev python3-pip python3-venv supervisor libpq5 libpq-dev git libjpeg-dev zlib1g-dev -y
+RUN 	apt update && apt install  openssh-server sudo nano build-essential python3-dev python3-pip python3-venv supervisor libpq5 libpq-dev git libjpeg-dev zlib1g-dev gcc -y
 RUN		apt-get -y upgrade
 RUN 	sed "s/#PermitRootLogin prohibit-password/PermitRootLogin yes/g" /etc/ssh/sshd_config > tmp1; sudo cat tmp1 > /etc/ssh/sshd_config; sudo rm tmp1
 RUN 	pip3 install --upgrade pip setuptools wheel
