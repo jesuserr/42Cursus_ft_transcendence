@@ -34,6 +34,11 @@ BALL_VEL_INC = 1.015                # Speed increment after each paddle hit
 AI_TIME_INTERVAL_BALL_POS = 1       # AI interval time to check ball pos in secs
 PLAYERS = 1                         # 1 -> Player vs CPU // 2 -> PvP
 
+KEY_W = '87'
+KEY_S = '83'
+KEY_UP = '38'
+KEY_DOWN = '40'
+
 #################################### CLASSES ###################################
 
 class Paddle:
@@ -118,15 +123,15 @@ def draw(win, paddles, ball, score):
     ball.draw(win)
     pygame.display.update()
 
-def handle_paddle_movement(keys, left_paddle, right_paddle, players):
-    if keys[pygame.K_w] and left_paddle.y - PADDLE_VEL >= 0:
+def handle_paddle_movement(key_states, left_paddle, right_paddle, players):
+    if key_states.get(KEY_W) and left_paddle.y - PADDLE_VEL >= 0:
         left_paddle.move(up=True)
-    if keys[pygame.K_s] and left_paddle.y + left_paddle.height + PADDLE_VEL <= HEIGHT:
+    if key_states.get('83') and left_paddle.y + left_paddle.height + PADDLE_VEL <= HEIGHT:
         left_paddle.move(up=False)
     if players == 2:
-        if keys[pygame.K_UP] and right_paddle.y - PADDLE_VEL >= 0:
+        if key_states.get('38') and right_paddle.y - PADDLE_VEL >= 0:
             right_paddle.move(up=True)
-        if keys[pygame.K_DOWN] and right_paddle.y + right_paddle.height + PADDLE_VEL <= HEIGHT:
+        if key_states.get('40') and right_paddle.y + right_paddle.height + PADDLE_VEL <= HEIGHT:
             right_paddle.move(up=False)
 
 def computer_player(right_paddle, ball_image):
@@ -188,9 +193,11 @@ async def send_gameboard(websocket, ball, l_paddle, r_paddle, score):
         "ball_x": ball.x, "ball_y": ball.y, "ball_radius": ball.radius,
         "left_paddle_x": l_paddle.x, "left_paddle_y": l_paddle.y,
         "right_paddle_x": r_paddle.x, "right_paddle_y": r_paddle.y,
-        "paddle_width": r_paddle.width, "paddle_height": r_paddle.height
+        "paddle_width": r_paddle.width, "paddle_height": r_paddle.height,
+        "score_left": score.left_score, "score_right": score.right_score,
         }
     await websocket.send(json.dumps(gameboard))
+    print(gameboard)
 
 async def main(websocket):
     clock = pygame.time.Clock()
@@ -199,20 +206,22 @@ async def main(websocket):
     ball = Ball(WIDTH // 2, HEIGHT // 2, BALL_RADIUS)
     ball_image = copy.copy(ball)
     score = Score()
-    keys = pygame.key.get_pressed()
+    key_states = {}
     last_peek_time = time.time()
     run = True
     while run:                                              ### GAME LOOP ###
         clock.tick(FPS)
         draw(WIN, [left_paddle, right_paddle], ball, score)
         await send_gameboard(websocket, ball, left_paddle, right_paddle, score)
+        try:
+            key_states = json.loads(await asyncio.wait_for(websocket.recv(), timeout=0.0001))
+        except asyncio.TimeoutError:
+            pass            
         for event in pygame.event.get():
-            if event.type == pygame.QUIT or keys[pygame.K_ESCAPE]:
+            if event.type == pygame.QUIT:
                 run = False
                 break
-        keys = pygame.key.get_pressed()
-
-        handle_paddle_movement(keys, left_paddle, right_paddle, PLAYERS)
+        handle_paddle_movement(key_states, left_paddle, right_paddle, PLAYERS)
         if PLAYERS == 1:
             current_time = time.time()
             if current_time - last_peek_time >= AI_TIME_INTERVAL_BALL_POS:
@@ -225,7 +234,6 @@ async def main(websocket):
         score.update(ball)
         if score.won:
             print_winner_and_reset(left_paddle, right_paddle, ball, score)
-        print(ball.x_vel)
     pygame.quit()
 
 async def start_server():
