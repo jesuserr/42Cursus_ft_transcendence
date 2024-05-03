@@ -1,12 +1,13 @@
 FROM	debian:bullseye
 
 RUN		apt-get update
-RUN 	apt update && apt install curl openssh-server sudo nano build-essential python3-dev python3-pip python3-venv supervisor libpq5 libpq-dev git libjpeg-dev zlib1g-dev libffi-dev -y
+RUN 	apt update && apt install openssh-server sudo nano build-essential python3-dev python3-pip python3-venv supervisor libpq5 libpq-dev git libjpeg-dev zlib1g-dev -y
 RUN		apt-get -y upgrade
 RUN 	sed "s/#PermitRootLogin prohibit-password/PermitRootLogin yes/g" /etc/ssh/sshd_config > tmp1; sudo cat tmp1 > /etc/ssh/sshd_config; sudo rm tmp1
-COPY    ./conf/cargo.sh /tmp/cargo.sh
-RUN 	chmod 777 /tmp/cargo.sh
-RUN 	sh /tmp/cargo.sh
+COPY    ./conf/armconfig.sh /tmp/armconfig.sh
+RUN 	chmod 777 /tmp/armconfig.sh
+RUN 	sh /tmp/armconfig.sh
+RUN 	bash;exit
 RUN 	pip3 install --upgrade pip setuptools wheel
 COPY    ./conf/requirements.txt /tmp/requirements.txt
 RUN 	pip3 install -r /tmp/requirements.txt
