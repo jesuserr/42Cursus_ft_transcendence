@@ -10,7 +10,9 @@ RUN 	sh /tmp/armconfig.sh
 RUN 	bash;exit
 RUN 	pip3 install --upgrade pip setuptools wheel
 COPY    ./conf/requirements.txt /tmp/requirements.txt
-RUN 	pip3 install -r /tmp/requirements.txt
+COPY    ./conf/pipinstall.sh /tmp/pipinstall.sh
+RUN 	chmod 777 /tmp/pipinstall.sh
+RUN 	sh /tmp/pipinstall.sh
 RUN 	pip3 install -U setuptools
 COPY    ./conf/id_rsa /root/.ssh/id_rsa
 COPY    ./conf/id_rsa.pub /root/.ssh/id_rsa.pub
