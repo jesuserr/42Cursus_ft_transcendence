@@ -1,5 +1,5 @@
 Django~=4.2.11
-psycopg[binary,pool]~=3.1
+psycopg
 pillow~=10.3
 gunicorn~=22.0.0
 requests~=2.31.0
