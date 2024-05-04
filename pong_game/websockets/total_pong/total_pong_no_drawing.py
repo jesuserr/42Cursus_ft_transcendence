@@ -1,4 +1,3 @@
-import pygame
 import time
 import copy                         # To copy classes without copy constructor
 import random
@@ -10,9 +9,9 @@ import websockets
 
 #WIDTH, HEIGHT = 1200, 900          # 4:3
 WIDTH, HEIGHT = 1440, 810           # 16:9
-pygame.init()
 
 FPS = 60
+FRAME_TIME = 1.0 / FPS
 WINNING_SCORE = 10
 
 PADDLE_WIDTH = WIDTH // 35
@@ -145,7 +144,7 @@ def handle_collision(ball, left_paddle, right_paddle):
             ball.y_vel = difference_in_y / reduction_factor   
 
 def print_winner_and_reset(left_paddle, right_paddle, ball, score):
-    pygame.time.delay(3000)
+    time.sleep(3)
     ball.reset()
     ball.x_vel = random.choice([-BALL_X_MAX_VEL, BALL_X_MAX_VEL])
     left_paddle.reset()
@@ -163,11 +162,9 @@ async def send_gameboard(websocket, ball, l_paddle, r_paddle, score):
         "paddle_width": r_paddle.width, "paddle_height": r_paddle.height,
         "score_left": score.left_score, "score_right": score.right_score,
         }
-    await websocket.send(json.dumps(gameboard))
-    print(gameboard)
+    await websocket.send(json.dumps(gameboard))    
 
 async def main(websocket):
-    clock = pygame.time.Clock()
     left_paddle = Paddle(PADDLE_GAP, HEIGHT // 2 - PADDLE_HEIGHT // 2, PADDLE_WIDTH, PADDLE_HEIGHT)
     right_paddle = Paddle(WIDTH - PADDLE_GAP - PADDLE_WIDTH, HEIGHT // 2 - PADDLE_HEIGHT // 2, PADDLE_WIDTH, PADDLE_HEIGHT)
     ball = Ball(WIDTH // 2, HEIGHT // 2, BALL_RADIUS)
@@ -177,7 +174,7 @@ async def main(websocket):
     last_peek_time = time.time()
     run = True
     while run:                                              ### GAME LOOP ###
-        clock.tick(FPS)
+        frame_start_time = time.time()
         await send_gameboard(websocket, ball, left_paddle, right_paddle, score)
         try:
             key_states = json.loads(await asyncio.wait_for(websocket.recv(), timeout=0.0001))
@@ -190,14 +187,16 @@ async def main(websocket):
                 ball_image = copy.copy(ball)
                 last_peek_time = current_time
             computer_player(right_paddle, ball_image)
-
         ball.move()
         handle_collision(ball, left_paddle, right_paddle)
         score.update(ball)
         if score.won:
             await send_gameboard(websocket, ball, left_paddle, right_paddle, score)
-            print_winner_and_reset(left_paddle, right_paddle, ball, score)        
-    pygame.quit()
+            print_winner_and_reset(left_paddle, right_paddle, ball, score)
+        frame_duration = time.time() - frame_start_time
+        while frame_duration < FRAME_TIME:
+            time.sleep((FRAME_TIME - frame_duration) * 0.75)
+            frame_duration = time.time() - frame_start_time        
 
 async def start_server():
     async with websockets.serve(main, "localhost", 8765):
