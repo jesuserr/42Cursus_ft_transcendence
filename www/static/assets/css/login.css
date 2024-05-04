@@ -59,7 +59,7 @@ html, body {
 		opacity: 1;
 	}
     100% {
-        opacity: 
+        opacity: 0; 
     }
 }
 
