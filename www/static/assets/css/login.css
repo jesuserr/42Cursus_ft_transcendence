@@ -1,14 +1,20 @@
+@import "https://fonts.googleapis.com/css?family=Press%20Start%202P";
+
 html, body {
+	font-family: 'Press Start 2P';
 	height: 100%;
 	margin: 0;
 	padding: 0;
-	background: linear-gradient(115deg, #1FA2FF 10%, #A6FFCB 90%);
+	background-color: #221;
+	text-transform: uppercase;
+
 }
 
 .welcome {
 	font-size: 60px;
 	 letter-spacing: 10px;
 	 margin-top: 70px;
+
 }
 
 .all-login {
@@ -44,14 +50,27 @@ html, body {
 	height: 400px;
 }
 
+@keyframes aparecer {
+    0% {
+        opacity: 0;
+    }
+    100% {
+        opacity: 1;
+    }
+}
+
 h2 {
 	text-align: center;
-	color: #333;
-	background: -webkit-linear-gradient(right, #1FA2FF, #12D8FA, #A6FFCB);
-	-webkit-background-clip: text;
-	-webkit-text-fill-color: transparent;
+/*	color: #333;
+	background: linear-gradient(to right, #FFFF00 0%, #FFD700 100%);
+			-webkit-background-clip: text;
+    background-clip: text;
+	color: transparent;*/
 	font-size: 50px;
+	animation: aparecer 1.5s infinite;
 }
+
+
 
 label {
 	font-weight: bold;
@@ -69,21 +88,22 @@ input[type="text"], input[type="email"], textarea {
 }
 
 button {
-	background: #333;
 	display: block;
-	color: #fff;
 	border: 0;
 	padding: 10px 10px;
 	width: 200px;
-	border-radius: 4px;
 	cursor: pointer;
 	font-size: 18px;
 	margin-left: auto;
 	margin-right: auto;
 	margin-bottom: 5px;
-	text-decoration: none;
 }
 
 button:hover {
 	background: #555;
+}
+
+a {
+  text-decoration: none;
+  color: #fff090;
 }
