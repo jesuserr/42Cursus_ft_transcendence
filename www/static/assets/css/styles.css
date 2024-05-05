@@ -1,0 +1,7 @@
+@import "https://fonts.googleapis.com/css?family=Press%20Start%202P";
+
+html, body {
+	background-image: url('giphy.gif');
+	color: white;
+	font-family: 'Press Start 2P';
+ }
