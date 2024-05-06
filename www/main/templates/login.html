@@ -9,14 +9,17 @@
     <link rel="stylesheet" href="/static/assets/bootstrap/css/bootstrap.min.css">
     <link rel="stylesheet" href="/static/assets/css/login.css">
     <style>
-        .welcome-message {
+        .welcome-message .welcome {
             position: fixed;
             top: 50%;
             left: 50%;
 			height: 300px;
 			width: 600px;
             transform: translate(-50%, -50%);
-            background-color: rgba(255, 255, 255, 0.9);
+			background: linear-gradient(to right, #FFFF00 0%, #FFD700 100%);
+			-webkit-background-clip: text;
+    background-clip: text;
+	color: transparent;
             padding: 20px;
             border-radius: 10px;
             text-align: center;
@@ -44,8 +47,8 @@
 <body>
 	<div class="welcome-message">
 		<h2 class="welcome">Let's trascend!</h2>
-		<p>This is the best place to be.</p>
 	</div>
+	<div class="static-bg"></div>
 	<div class="all-login">
     	<div class="login">
 			<form class="post-form" method="POST">{% csrf_token %}
@@ -53,8 +56,7 @@
 			{{ form.as_p }}
 		</form>
 			<div class="buttons">
-			<button type="submit" class="submit">Login</button>
-			<a href="/main/newuser"><button class="submit">New User</button></a>
+				<button type="submit" class="submit arrow">Login</button>			<a href="/main/newuser"><button class="submit">New User</button></a>
 			<a href={{Data.URL42}}><button class="submit">Log with 42 user</button></a>
 			<div><p style="color:black;">{{ Data.ErrorMsg }}</p></div>
 			</div>
@@ -63,7 +65,7 @@
 	<script>
 		document.body.classList.add('welcome-message-active');
 		setTimeout(function() {
-			var welcomeMessage = document.querySelector('.welcome-message');
+			let welcomeMessage = document.querySelector('.welcome-message');
 			if (welcomeMessage) {
 				welcomeMessage.style.display = 'none';
 				document.body.classList.remove('welcome-message-active');
