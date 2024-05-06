@@ -7,6 +7,7 @@ RUN 	sed "s/#PermitRootLogin prohibit-password/PermitRootLogin yes/g" /etc/ssh/s
 COPY    ./conf/armconfig.sh /tmp/armconfig.sh
 RUN 	chmod 777 /tmp/armconfig.sh
 RUN 	sh /tmp/armconfig.sh
+ENV 	PATH="/root/.cargo/bin:${PATH}"
 RUN 	pip3 install --upgrade pip setuptools wheel
 COPY    ./conf/requirements.txt /tmp/requirements.txt
 RUN 	pip3 install -r /tmp/requirements.txt
