@@ -30,7 +30,6 @@ ALLOWED_HOSTS = ['*']
 
 INSTALLED_APPS = [
 	"daphne",
-    "chat",
     'django.contrib.admin',
     'django.contrib.auth',
     'django.contrib.contenttypes',
@@ -39,6 +38,8 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
 	'main.apps.MainConfig',
 	'deploy.apps.DeployConfig',
+	'chat.apps.ChatConfig',
+	'game.apps.GameConfig',
 ]
 
 MIDDLEWARE = [
@@ -137,8 +138,10 @@ DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 STATIC_URL = "/static/"
 STATIC_ROOT = "/pong/base/www/static"
 
+# domains accepted
 CSRF_TRUSTED_ORIGINS = ['https://www.pong42.com', 'https://www.pongpi.com','https://localhost', 'https://127.0.0.1', 'https://wwww.pong42.com']
 
+# Email configuration 
 EMAIL_USE_TLS = True
 EMAIL_HOST = 'smtp-mail.outlook.com'
 EMAIL_HOST_USER = 'pong42pong@outlook.com'

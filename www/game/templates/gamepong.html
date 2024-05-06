@@ -1,0 +1,16 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Pong Game</title>
+    <style>
+        #canvas {
+            background-color: black;
+        }
+    </style>
+</head>
+<body>
+    <canvas id="canvas"></canvas>
+	{{ game_name|json_script:"game_name" }}
+    <script src="/static/game/pong.js"></script>
+</body>
+</html>
