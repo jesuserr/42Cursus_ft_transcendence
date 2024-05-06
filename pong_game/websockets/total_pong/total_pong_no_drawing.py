@@ -24,11 +24,6 @@ BALL_VEL_INC = 1.015                # Speed increment after each paddle hit
 AI_TIME_INTERVAL_BALL_POS = 1       # AI interval time to check ball pos in secs
 PLAYERS = 1                         # 1 -> Player vs CPU // 2 -> PvP
 
-KEY_W = '87'
-KEY_S = '83'
-KEY_UP = '38'
-KEY_DOWN = '40'
-
 #################################### CLASSES ###################################
 
 class Paddle:
@@ -94,14 +89,14 @@ class Score:
 ################################### FUNCTIONS ##################################
 
 def handle_paddle_movement(key_states, left_paddle, right_paddle, players):
-    if key_states.get(KEY_W) and left_paddle.y - PADDLE_VEL >= 0:
+    if key_states.get('KeyW') and left_paddle.y - PADDLE_VEL >= 0:
         left_paddle.move(up=True)
-    if key_states.get('83') and left_paddle.y + left_paddle.height + PADDLE_VEL <= HEIGHT:
+    if key_states.get('KeyS') and left_paddle.y + left_paddle.height + PADDLE_VEL <= HEIGHT:
         left_paddle.move(up=False)
     if players == 2:
-        if key_states.get('38') and right_paddle.y - PADDLE_VEL >= 0:
+        if key_states.get('ArrowUp') and right_paddle.y - PADDLE_VEL >= 0:
             right_paddle.move(up=True)
-        if key_states.get('40') and right_paddle.y + right_paddle.height + PADDLE_VEL <= HEIGHT:
+        if key_states.get('ArrowDown') and right_paddle.y + right_paddle.height + PADDLE_VEL <= HEIGHT:
             right_paddle.move(up=False)
 
 def computer_player(right_paddle, ball_image):
