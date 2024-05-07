@@ -1,4 +1,4 @@
-{% include "menu.html" %}
+{% include "main_menu.html" %}
 <!DOCTYPE html>
 <html lang="en">
 
@@ -54,9 +54,10 @@
 			<form class="post-form" method="POST">{% csrf_token %}
         	<h2>Welcome</h2>
 			{{ form.as_p }}
+			<button type="submit" class="submit arrow">Login</button>
 		</form>
 			<div class="buttons">
-				<button type="submit" class="submit arrow">Login</button>			<a href="/main/newuser"><button class="submit">New User</button></a>
+			<a href="/main/newuser"><button class="submit">New User</button></a>
 			<a href={{Data.URL42}}><button class="submit">Log with 42 user</button></a>
 			<div><p style="color:black;">{{ Data.ErrorMsg }}</p></div>
 			</div>

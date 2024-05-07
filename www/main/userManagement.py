@@ -17,7 +17,7 @@ def editProfile(request):
         tmpuser = User.objects.get(sessionid=request.COOKIES.get('sessionid'))
         if (tmpuser.fourtytwo == True):
             FormData['ErrorMsg'] = 'You are using a 42 network user, to edit the profile you have to do it from the intranet.'
-            response = render(request, 'indexmain.html', {'Data': FormData, 'User': tmpuser})
+            response = render(request, 'main_index.html', {'Data': FormData, 'User': tmpuser})
             return response
     except:
         return HttpResponseRedirect("/")
@@ -25,7 +25,7 @@ def editProfile(request):
            form = NewUserForm(instance=tmpuser)
            form.fields['email'].widget.attrs['readonly'] = True
            form.initial["password"] = ''
-           response = render(request, 'newuser.html', {'form': form, 'User': tmpuser, 'Data': FormData})
+           response = render(request, 'main_newuser.html', {'form': form, 'User': tmpuser, 'Data': FormData})
            return response
     else:
           form = NewUserForm(request.POST, request.FILES, instance=tmpuser)
@@ -42,13 +42,13 @@ def editProfile(request):
                 return HttpResponseRedirect("/")
           else:
                 form = NewUserForm(request.POST)
-                response = render(request, 'newuser.html', {'form': form, 'User': tmpuser, 'Data': FormData})
+                response = render(request, 'main_newuser.html', {'form': form, 'User': tmpuser, 'Data': FormData})
                 return response
 
 ## Logoff ##
 
 def logoffPage(request):
-       response = render(request, 'indexmain.html')
+       response = render(request, 'main_index.html')
        response.set_cookie('sessionid', '')
        return response
 
@@ -62,13 +62,13 @@ def loginPage(request):
            except:
                   tmpuser = ''
            form = LoginUserForm()
-           response = render(request, 'login.html', {'form': form, 'User': tmpuser, 'Data': FormDataLogin})
+           response = render(request, 'main_login.html', {'form': form, 'User': tmpuser, 'Data': FormDataLogin})
            return response
     else:
            try:
                   tmpuser = User.objects.get(email=request.POST['email'])
                   if (tmpuser.password == hashlib.sha256(str(request.POST['password']).encode('utf-8')).hexdigest()):
-                        response = render(request, 'indexmain.html', {'User': tmpuser})
+                        response = render(request, 'main_index.html', {'User': tmpuser})
                         response.set_cookie('sessionid', tmpuser.sessionid)
                         return response
                   else:
@@ -76,14 +76,14 @@ def loginPage(request):
                     form = LoginUserForm(request.POST)
                     form.errors['email'] = form.error_class()
                     form.errors['password'] = form.error_class()
-                    response = render(request, 'login.html', {'form': form, 'Data': FormDataLogin, 'Data': FormDataLogin})
+                    response = render(request, 'main_login.html', {'form': form, 'Data': FormDataLogin, 'Data': FormDataLogin})
                     return response
            except:
                   FormDataLogin['ErrorMsg'] = 'The indicated email is not registered as a user'
                   form = LoginUserForm(request.POST)
                   form.errors['email'] = form.error_class()
                   form.errors['password'] = form.error_class()
-                  response = render(request, 'login.html', {'form': form, 'Data': FormDataLogin})
+                  response = render(request, 'main_login.html', {'form': form, 'Data': FormDataLogin})
                   return response
 
 ## Main page ##
@@ -91,7 +91,7 @@ def loginPage(request):
 def maniPage(request):
     try:
         tmp = User.objects.get(sessionid=request.COOKIES.get('sessionid'))
-        response = render(request, 'indexmain.html', {'User': tmp})
+        response = render(request, 'main_index.html', {'User': tmp})
         return response
     except:
         return HttpResponseRedirect("login")
@@ -114,7 +114,7 @@ def newUserEmailform(request, error = ''):
         form.fields['password'].widget = forms.HiddenInput()
         form.fields['displayname'].widget = forms.HiddenInput()
         form.fields['avatar'].widget = forms.HiddenInput()
-        response = render(request, 'newuser.html', {'form': form, 'Data': FormData, 'User': tmpuser})
+        response = render(request, 'main_newuser.html', {'form': form, 'Data': FormData, 'User': tmpuser})
         return response
 
 #New user form that sends you the security code and checks it.
@@ -152,7 +152,7 @@ def newUserSendCodeform(request, error = ''):
         form.fields['avatar'].widget = forms.HiddenInput()
         form.errors['password'] = form.error_class()
         form.errors['displayname'] = form.error_class()
-        response = render(request, 'newuser.html', {'form': form, 'Data': FormData})
+        response = render(request, 'main_newuser.html', {'form': form, 'Data': FormData})
         return response
 
 ##Function that checks the security code
@@ -187,7 +187,7 @@ def NewUserCodeOkFillData(request):
                             tmpuser.avatar = '/' + str(tmpuser.avatar)
                             tmpuser.save()
                         ##end add / to url of avatar
-                        response = render(request, 'indexmain.html', {'User': tmpuser})
+                        response = render(request, 'main_index.html', {'User': tmpuser})
                         response.set_cookie('sessionid', sessionid)
                         return response
         except:
@@ -196,7 +196,7 @@ def NewUserCodeOkFillData(request):
         FormData['SecurityCode'] = 'input type=hidden name=securitycode maxlength=10 value=' + request.POST['securitycode']
         FormData['TopMsg'] = request.POST['email']
         form.fields['email'].widget = forms.HiddenInput()
-        response = render(request, 'newuser.html', {'form': form, 'Data': FormData})
+        response = render(request, 'main_newuser.html', {'form': form, 'Data': FormData})
         return response
 
 def urlavatar(ori):

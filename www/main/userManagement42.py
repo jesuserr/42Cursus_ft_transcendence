@@ -31,7 +31,7 @@ def fourtytwoLogin(request):
 			## if the user exist however is not from 42 network
 			if (tmpuser[fourtytwoLogin] == False):
 				FormData['ErrorMsg'] = 'This email is already registered in the database but not through 42 network.'
-				response = render(request, 'indexmain.html', {'Data': FormData})
+				response = render(request, 'main_index.html', {'Data': FormData})
 				return response
 		except:
 			## if a new user
@@ -46,12 +46,12 @@ def fourtytwoLogin(request):
 		tmpuser.fourtytwo = True
 		tmpuser.save()
 		FormData['ErrorMsg'] = 'You have logged in with the user of 42'
-		response = render(request, 'indexmain.html', {'Data': FormData, 'User': tmpuser})
+		response = render(request, 'main_index.html', {'Data': FormData, 'User': tmpuser})
 		response.set_cookie('sessionid', sessionid)
 		return response
 
 	except:
 		FormData['ErrorMsg'] = 'Something was not working as expected, contact the administrator (probably the connectivity data to 42 is not correct).'
-		response = render(request, 'indexmain.html', {'Data': FormData})
+		response = render(request, 'main_index.html', {'Data': FormData})
 		return response
 		
