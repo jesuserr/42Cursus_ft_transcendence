@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8" />
+    <title>Pong 42 Chat</title>
+</head>
+<body>
+	<div id="displayname" style="float: left;">DisplayName</div>
+	<div style="float: right;"><img id="connection_status" src="/static/chat/disconnect.png" width="15" height="15" /><p id=status>Disconnect</p></div>
+	<div>&nbsp;</div>
+	<div>
+	<hr/>
+		<label>
+			<span>User list</span>
+				<select id=userlist name="Connected user" size="10"></select>
+		</label>
+		<label>
+			<span>Block users</span>
+				<select id=blockusers name="Block Users" size="10"></select>
+			</label>
+		<label>
+			<span>Chat</span>
+				<textarea id="chat" cols="50" rows="10"></textarea>
+			</label>
+	</div>
+	&nbsp;
+	<div>
+		<input id="send_msg" type="button" value="Send message">
+		<input id="chat_message_input" type="text" size="50"><br>
+	</div>
+	&nbsp;
+	<div>
+		<input id="chat_all_users" type="button" value="Chat with all users">
+		<input id="chat_selected_user" type="button" value="Chat with selected user">
+		<input id="block_selected_user" type="button" value="Block selected user">
+		<input id="unblock_selected_user" type="button" value="Unblock selected user">
+	</div>
+	
+	<style>
+		span, input {        
+		vertical-align: top;
+		}
+	</style>
+	<script src="/static/chat/chat.js"></script>
+</body>
+</html>
