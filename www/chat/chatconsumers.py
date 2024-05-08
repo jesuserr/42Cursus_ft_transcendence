@@ -40,6 +40,7 @@ class ChatConsumer(AsyncWebsocketConsumer):
     
     async def sendUserList(self):
         data = await self.getUserList()
+        print(data)
         await self.send(text_data=data)
 
     async def chat_message(self, event):
@@ -48,8 +49,11 @@ class ChatConsumer(AsyncWebsocketConsumer):
         
     @database_sync_to_async
     def getUserList(self):
+          print("getUserList")
           data = serializers.serialize('json', User.objects.all(), fields=('displayname'))
-          return data
+          data_obj = json.loads(data)
+          new_obj = {'list_users': data_obj,}
+          return json.dumps(new_obj)
      
     @database_sync_to_async
     def getUser(self):

@@ -16,12 +16,11 @@ if (socket.readyState != WebSocket.CLOSED) {
 
  socket.onmessage = function (e) {
 	const data = JSON.parse(e.data);
-
 	//esto rellena el select
-	for (let i = 0; i < data.length; i++) {
+	for (let i = 0; i < data.list_users.length; i++) {
 		const opt = document.createElement("option");
-		opt.value = data[i].fields.displayname;
-		opt.text = data[i].fields.displayname;
+		opt.value = data.list_users[i].pk;
+		opt.text = data.list_users[i].fields.displayname;
 		document.getElementById("userlist").add(opt, null)
 	};
 
