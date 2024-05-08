@@ -34,7 +34,6 @@ class GameConsumer(AsyncWebsocketConsumer):
             "score_left": score.left_score, "score_right": score.right_score,
             }
         await self.send(text_data=json.dumps(gameboard))
-        await asyncio.sleep(1 / 600)
 
     async def playGame(self):
         left_paddle = Paddle(PADDLE_GAP, HEIGHT // 2 - PADDLE_HEIGHT // 2, PADDLE_WIDTH, PADDLE_HEIGHT)
@@ -60,8 +59,10 @@ class GameConsumer(AsyncWebsocketConsumer):
             score.update(ball)
             if score.won:
                 await self.send_gameboard(ball, left_paddle, right_paddle, score)
+                await asyncio.sleep(FRAME_TIME)
                 print_winner_and_reset(left_paddle, right_paddle, ball, score)
             frame_duration = time.time() - frame_start_time
             while frame_duration < FRAME_TIME:
-               time.sleep((FRAME_TIME - frame_duration) * 0.75)
+               await asyncio.sleep((FRAME_TIME - frame_duration) * 0.0001)
                frame_duration = time.time() - frame_start_time
+            #print((time.time() - frame_start_time) * 1000)
