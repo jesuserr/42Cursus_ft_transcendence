@@ -5,36 +5,40 @@
     <title>Pong 42 Chat</title>
 </head>
 <body>
-	<div id="displayname" style="float: left;"></div>
-	<div style="float: right;"><img id="connection_status" src="/static/chat/disconnect.png" width="15" height="15" /><cd 
-		p id=status>Disconnect</p></div>
+	<div id="DISPLAYNAME" style="float: left;"></div>
+	<div style="float: right;"><img id="CONNECTION_STATUS" src="/static/chat/disconnect.png" width="15" height="15" /><cd 
+		p id=STATUS>Disconnect</p></div>
 	<div>&nbsp;</div>
 	<div>
 	<hr/>
 		<label>
 			<span>User list</span>
-				<select id=userlist name="Connected user" size="10"></select>
+				<select id="USERLIST" name="All user list" size="10"></select>
+		</label>
+		<label>
+			<span>Users connected</span>
+				<select id="CONNECTEDUSERLIST" name="Connected Users" size="10"></select>
 		</label>
 		<label>
 			<span>Block users</span>
-				<select id=blockusers name="Block Users" size="10"></select>
+				<select id="BLOCKUSERS" name="Block Users" size="10"></select>
 			</label>
 		<label>
 			<span>Chat</span>
-				<textarea id="chat" cols="50" rows="10"></textarea>
+				<textarea id="CHATTEXT" cols="50" rows="10"></textarea>
 			</label>
 	</div>
 	&nbsp;
 	<div>
-		<input id="send_msg" type="button" value="Send message">
-		<input id="chat_message_input" type="text" size="50"><br>
+		<input id="SEND_MSG" type="button" value="Send message">
+		<input id="CHAT_MSG_INPUT" type="text" size="50"><br>
 	</div>
 	&nbsp;
 	<div>
-		<input id="chat_all_users" type="button" value="Chat with all users">
-		<input id="chat_selected_user" type="button" value="Chat with selected user">
-		<input id="block_selected_user" type="button" value="Block selected user">
-		<input id="unblock_selected_user" type="button" value="Unblock selected user">
+		<input id="CHAT_ALL_USERS" type="button" value="Chat with all users">
+		<input id="CHAT_SELECTED_USER" type="button" value="Chat with selected user">
+		<input id="BLOCK_SELECTED_USER" type="button" value="Block selected user">
+		<input id="UNBLOCK_SELECTED_USER" type="button" value="Unblock selected user">
 	</div>
 	
 	<style>

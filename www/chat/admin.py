@@ -1,3 +1,5 @@
 from django.contrib import admin
+from .models import Connected_Users
 
-# Register your models here.
+admin.site.register(Connected_Users)
+
