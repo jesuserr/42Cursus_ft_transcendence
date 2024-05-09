@@ -1,4 +1,3 @@
-import time
 import copy                         # To copy classes without copy constructor
 import random
 import asyncio
@@ -15,9 +14,9 @@ WINNING_SCORE = 10
 
 PADDLE_WIDTH = WIDTH // 35
 PADDLE_HEIGHT = HEIGHT // 5
-PADDLE_GAP = WIDTH // 50            # Paddle vs screen edge gap
+PADDLE_GAP = WIDTH // 70            # Paddle vs screen edge gap
 PADDLE_VEL = HEIGHT // 125 + 1      # Speed never 0 no matter HEIGHT
-BALL_X_MAX_VEL = WIDTH // 90 + 1    # Speed never 0 no matter WIDTH
+BALL_X_MAX_VEL = 0.9 * WIDTH // 90 + 1    # Speed never 0 no matter WIDTH
 BALL_RADIUS = WIDTH // 100
 BALL_VEL_INC = 1.015                # Speed increment after each paddle hit
 AI_TIME_INTERVAL_BALL_POS = 1       # AI interval time to check ball pos in secs
@@ -138,7 +137,6 @@ def handle_collision(ball, left_paddle, right_paddle):
             ball.y_vel = difference_in_y / reduction_factor   
 
 def print_winner_and_reset(left_paddle, right_paddle, ball, score):
-    time.sleep(3)
     ball.reset()
     ball.x_vel = random.choice([-BALL_X_MAX_VEL, BALL_X_MAX_VEL])
     left_paddle.reset()
