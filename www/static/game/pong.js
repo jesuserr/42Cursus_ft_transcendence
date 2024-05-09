@@ -1,44 +1,51 @@
+document.body.style.backgroundColor = 'black';
 const canvas = document.getElementById('canvas');
 canvas.style.display = 'block';
 canvas.style.margin = '0 auto';
 const ctx = canvas.getContext('2d');
-const scale = 1.00;
-const keys = {};
-let prevKeys= {};
+const scale = 0.75;
+let keys = {}, prevKeys = {};
+let first_message = 0;
 
 const gameName = JSON.parse(document.getElementById('game_name').textContent);
 const socket = new WebSocket(
-	'wss://'
-	+ window.location.host
-	+ '/ws/game/'
-	+ gameName
-	+ '/'
+	'wss://' + window.location.host + '/ws/game/' + gameName + '/'
 );
 
 socket.onmessage = function(event) {
-    const position = JSON.parse(event.data);
-    canvas.width = position.width * scale;
-    canvas.height = position.height * scale;
-
-    // Clear the canvas
-    ctx.clearRect(0, 0, canvas.width, canvas.height);
-
-    // Draw the ball
-    ctx.beginPath();
-    ctx.arc(position.ball_x * scale, position.ball_y * scale, position.ball_radius * scale, 0, 2 * Math.PI, false);
-    ctx.fillStyle = 'red';
-    ctx.fill();
-
-    // Draw the paddles
-    ctx.fillStyle = 'blue';
-    ctx.fillRect(position.left_paddle_x * scale, position.left_paddle_y * scale, position.paddle_width * scale, position.paddle_height * scale);
-    ctx.fillRect(position.right_paddle_x * scale, position.right_paddle_y * scale, position.paddle_width * scale, position.paddle_height * scale);
-
-    // Print the scores
-    ctx.fillStyle = 'white';
-    ctx.font = `${40 * scale}px Arial`;
-    ctx.fillText(`${position.score_left}`, canvas.width * 0.25 - 20 * scale, canvas.height / 12);
-    ctx.fillText(`${position.score_right}`, canvas.width * 0.75 - 20 * scale, canvas.height / 12);    
+    let position = JSON.parse(event.data);
+    console.log(position);    
+    if (first_message == 0) {
+        canvas.width = position.width * scale;
+        canvas.height = position.height * scale;        
+        first_message++;
+    }
+    else {
+        // Clear the canvas and draw central dotted line
+        ctx.clearRect(0, 0, canvas.width, canvas.height);
+        ctx.beginPath();
+        ctx.setLineDash([5, 15]);
+        ctx.moveTo(canvas.width / 2, 0);
+        ctx.lineTo(canvas.width / 2, canvas.height);
+        ctx.strokeStyle = 'white';
+        ctx.stroke();
+        // Draw the ball
+        ctx.beginPath();
+        ctx.arc(position.ball_x * scale, position.ball_y * scale, position.ball_radius * scale, 0, 2 * Math.PI, false);
+        ctx.fillStyle = 'red';
+        ctx.fill();
+        // Draw the paddles
+        ctx.beginPath();
+        ctx.fillStyle = 'blue';
+        ctx.fillRect(position.left_paddle_x * scale, position.left_paddle_y * scale, position.paddle_width * scale, position.paddle_height * scale);
+        ctx.fillRect(position.right_paddle_x * scale, position.right_paddle_y * scale, position.paddle_width * scale, position.paddle_height * scale);
+        // Print the scores
+        ctx.beginPath();
+        ctx.fillStyle = 'white';
+        ctx.font = `${40 * scale}px Arial`;
+        ctx.fillText(`${position.score_left}`, canvas.width * 0.25 - 20 * scale, canvas.height / 12);
+        ctx.fillText(`${position.score_right}`, canvas.width * 0.75 - 20 * scale, canvas.height / 12);
+    }   
 };
 
 // Listen for keydown events and mark the key pressed as pressed :)

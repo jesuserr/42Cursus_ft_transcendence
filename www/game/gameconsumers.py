@@ -27,11 +27,11 @@ class GameConsumer(AsyncWebsocketConsumer):
     async def send_gameboard(self, ball, l_paddle, r_paddle, score):
         gameboard = {
             "width": WIDTH, "height": HEIGHT,
-            "ball_x": ball.x, "ball_y": ball.y, "ball_radius": ball.radius,
+            "ball_x": int(ball.x), "ball_y": int(ball.y), "ball_radius": ball.radius,
             "left_paddle_x": l_paddle.x, "left_paddle_y": l_paddle.y,
             "right_paddle_x": r_paddle.x, "right_paddle_y": r_paddle.y,
             "paddle_width": r_paddle.width, "paddle_height": r_paddle.height,
-            "score_left": score.left_score, "score_right": score.right_score,
+            "score_left": score.left_score, "score_right": score.right_score
             }
         await self.send(text_data=json.dumps(gameboard))
 
