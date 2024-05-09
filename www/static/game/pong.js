@@ -1,9 +1,8 @@
-document.body.style.backgroundColor = 'black';
 const canvas = document.getElementById('canvas');
-canvas.style.display = 'block';
-canvas.style.margin = '0 auto';
 const ctx = canvas.getContext('2d');
 const scale = 0.75;
+const onePlayer = document.getElementById('playBtn1');
+const twoPlayers = document.getElementById('playBtn2');
 let keys = {}, prevKeys = {};
 let first_message = 0;
 
@@ -12,9 +11,20 @@ const socket = new WebSocket(
 	'wss://' + window.location.host + '/ws/game/' + gameName + '/'
 );
 
+onePlayer.addEventListener("click", actionOnePlayer);
+twoPlayers.addEventListener("click", actionTwoPlayers);
+
+function actionOnePlayer() {
+    console.log ("One player")
+}
+
+function actionTwoPlayers() {
+    console.log ("Two players")
+}
+
 socket.onmessage = function(event) {
     let position = JSON.parse(event.data);
-    console.log(position);    
+    //console.log(position);    
     if (first_message == 0) {
         canvas.width = position.width * scale;
         canvas.height = position.height * scale;        

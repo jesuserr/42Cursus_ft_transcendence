@@ -2,15 +2,12 @@
 <html>
 <head>
     <title>Pong Game</title>
-    <style>
-        #canvas {
-            background-color: black;
-            border: 10px solid green;
-        }
-    </style>
+    <link rel="stylesheet" href="/static/game/pong.css">
 </head>
-<body>
+<body id="gameContainer">
     <canvas id="canvas"></canvas>
+    <button id="playBtn1" class="buttonStyle">1 Player</button>
+    <button id="playBtn2" class="buttonStyle">2 Players</button>
 	{{ game_name|json_script:"game_name" }}
     <script src="/static/game/pong.js"></script>
 </body>
