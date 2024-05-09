@@ -15,6 +15,8 @@ socket.onopen = function(e) {
 	socket.send(JSON.stringify({'GET_USER_LIST': 'GET_USER_LIST'}));
 	//send a message to the server to get the list of connected users
 	socket.send(JSON.stringify({'GET_CONNECTED_USERS': 'GET_CONNECTED_USERS'}));
+	//send a message to the server to get the list of blocked users
+	socket.send(JSON.stringify({'GET_BLOCKED_USERS': 'GET_BLOCKED_USERS'}));
 
 };
 // When the socket is closed, display the connection status
@@ -39,6 +41,9 @@ socket.onmessage = function (e) {
 	//if the command is "list_connected_users", display the list of connected users
 	else if (data.hasOwnProperty("SET_CONNECTED_USERS"))
 		Set_Connected_Users(data);
+	//if the command is "list_blocked_users", display the list of blocked users
+	else if (data.hasOwnProperty("SET_BLOCKED_USERS"))
+		Set_Blocked_Users(data);
 };
 
 //function to fill connected user list
@@ -79,6 +84,42 @@ function Set_User_List(data)
 	};
 };
 
+//function to fill blocked user list
+function Set_Blocked_Users(data)
+{
+	document.getElementById("BLOCKUSERS").length = 0;
+	for (let i = 0; i < data.SET_BLOCKED_USERS.length; i++) 
+	{
+		const opt = document.createElement("option");
+		opt.value = data.SET_BLOCKED_USERS[i].pk;
+		opt.text = data.SET_BLOCKED_USERS[i].fields.displayname;
+		document.getElementById("BLOCKUSERS").add(opt, null)
+	};
+};
+
+// When the user clicks the block button, send the command to server
+document.querySelector('#BLOCK_SELECTED_USER').onclick = function (e) {
+    var userList = document.getElementById("USERLIST");
+    var selectedOption = userList.options[userList.selectedIndex];
+
+    if (selectedOption == null || selectedOption.value == '') {
+        alert("Please select a user to block, form the list of users");
+    } else {
+        socket.send(JSON.stringify({'BLOCK_USER': selectedOption.value}));
+    }
+};
+
+// When the user clicks the unblock button, send the command to server
+document.querySelector('#UNBLOCK_SELECTED_USER').onclick = function (e) {
+    var userList = document.getElementById("BLOCKUSERS");
+    var selectedOption = userList.options[userList.selectedIndex];
+
+    if (selectedOption == null || selectedOption.value == '') {
+        alert("Please select a user to unblock, form the list of blocked users");
+    } else {
+        socket.send(JSON.stringify({'UNBLOCK_USER': selectedOption.value}));
+    }
+};
 
 
 // When the user clicks the send button, send the command to server
@@ -89,3 +130,14 @@ document.querySelector('#CHAT_SELECTED_USER').onclick = function (e) {
 		socket.send(JSON.stringify({'CHAT_SELECTED_USER': ''}));
 	};
 
+// Unselect the other select elements when one is selected
+var selects = document.querySelectorAll('select');
+selects.forEach(function(select) {
+    select.addEventListener('change', function() {
+        selects.forEach(function(otherSelect) {
+            if (otherSelect !== select) {
+                otherSelect.selectedIndex = -1;
+            }
+        });
+    });
+});
