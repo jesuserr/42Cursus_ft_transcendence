@@ -4,7 +4,7 @@ from channels.generic.websocket import AsyncJsonWebsocketConsumer
 from main.models import User
 from channels.db import database_sync_to_async
 from django.core import serializers
-from .models import Connected_Users, ChatRooms, Blocked_Users
+from .models import Connected_Users, ChatRooms, Blocked_Users, Messages
 
 class ChatConsumer(AsyncJsonWebsocketConsumer):
     #When the connection is established
@@ -42,6 +42,7 @@ class ChatConsumer(AsyncJsonWebsocketConsumer):
 
 	#When receive a message
     async def receive_json(self, data):
+        print(data)
         #check the command
         if 'GET_USER_LIST' in data:
             await self.sendUserList()
@@ -55,6 +56,37 @@ class ChatConsumer(AsyncJsonWebsocketConsumer):
             await self.unblockUser(data['UNBLOCK_USER'])
         elif 'GET_BLOCKED_USERS' in data:
             await self.sendBlockUserList()
+        elif 'SEND_MESSAGE_ROOM' in data:
+            await self.sendMessageRoom(data['SEND_MESSAGE_ROOM'])
+
+	#Send message to room
+    async def sendMessageRoom(self, data):
+        await self.sendMessageRoomModel(data)
+        message_data = {
+        	'room_name': self.room_group_name,
+        	'email': self.user.email,
+        	'displayname': self.user.displayname,
+        	'message': data,
+		}
+        await self.channel_layer.group_send(
+			self.room_group_name,
+			{
+				'type': 'chat.room.message',
+				'message': json.dumps(message_data),
+			}
+		)
+        
+    #Send message to room model
+    @database_sync_to_async
+    def sendMessageRoomModel(self, data):
+        tmp = Messages(room_name=self.ChatRoom, email=self.user.email, displayname=self.user.displayname, message=data)
+        tmp.save()
+
+	#Send message to the group
+    async def chat_room_message(self, event):
+        data_obj = json.loads(event['message'])
+        new_obj = {'NEW_ROOM_MSG': data_obj,}
+        await self.send_json(new_obj)
             
 	#Send the block user list to the client
     async def sendBlockUserList(self):

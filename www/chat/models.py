@@ -15,3 +15,10 @@ class Blocked_Users(models.Model):
 	room_name = models.ForeignKey(ChatRooms, on_delete=models.CASCADE)
 	email = models.EmailField(primary_key=True)
 	displayname = models.CharField(max_length=50, unique=True)
+
+class Messages(models.Model):
+	room_name = models.ForeignKey(ChatRooms, on_delete=models.CASCADE)
+	email = models.EmailField()
+	displayname = models.CharField(max_length=50)
+	message = models.TextField()
+	timestamp = models.DateTimeField(auto_now_add=True)

@@ -44,7 +44,42 @@ socket.onmessage = function (e) {
 	//if the command is "list_blocked_users", display the list of blocked users
 	else if (data.hasOwnProperty("SET_BLOCKED_USERS"))
 		Set_Blocked_Users(data);
+	//if the command is "chat_message", display the chat message
+	else if (data.hasOwnProperty("NEW_ROOM_MSG"))
+		New_Room_msg(data['NEW_ROOM_MSG']);
 };
+
+//Press enter to send the chat message
+const messageInput = document.getElementById('CHAT_MSG_INPUT');
+messageInput.addEventListener('keypress', function(event) {
+    if (event.key === 'Enter') {
+        event.preventDefault();
+        sendButton.click();
+    }
+});
+
+//function to display the room chat message
+function New_Room_msg(data)
+{
+	document.getElementById('CHATTEXT').value += data.displayname + ': ' + data.message + '\n';
+	document.getElementById('CHATTEXT').scrollTop = document.getElementById('CHATTEXT').scrollHeight;
+}
+
+//Send chat message to the server
+const sendButton = document.getElementById('SEND_MSG');
+sendButton.addEventListener('click', function() {
+	const messageInput = document.getElementById('CHAT_MSG_INPUT');
+    if (messageInput.value == '') {
+		alert("Please enter a message to send");
+		return;
+	}
+	else
+	{
+		const message = messageInput.value;
+		socket.send(JSON.stringify({ 'SEND_MESSAGE_ROOM': message }));
+		messageInput.value = '';
+	}
+});
 
 //function to fill connected user list
 function Set_Connected_Users(data)
