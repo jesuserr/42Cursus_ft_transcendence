@@ -6,11 +6,11 @@
 </head>
 <body>
 	<div id="DISPLAYNAME" style="float: left;"></div>
-	<div style="float: right;"><img id="CONNECTION_STATUS" src="/static/chat/disconnect.png" width="15" height="15" /><cd 
-		p id=STATUS>Disconnect</p></div>
+	<div style="float: right;"><img id="CONNECTION_STATUS" src="/static/chat/disconnect.png" width="15" height="15" /><p id=STATUS>Disconnect</p></div>
 	<div>&nbsp;</div>
-	<div>
 	<hr/>
+	<div style="display: flex;">
+	
 		<label>
 			<span>User list</span>
 				<select id="USERLIST" name="All user list" size="10"></select>
@@ -23,9 +23,11 @@
 			<span>Block users</span>
 				<select id="BLOCKUSERS" name="Block Users" size="10"></select>
 			</label>
-		<label>
+		<label style="display: flex; align-items: flex-start;">
 			<span>Chat</span>
+			<div id="CONTAINER_CHAT_TEXT">
 				<textarea id="CHATTEXT" cols="50" rows="10"></textarea>
+			</div>
 			</label>
 	</div>
 	&nbsp;

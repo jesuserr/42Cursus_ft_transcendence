@@ -58,7 +58,32 @@ class ChatConsumer(AsyncJsonWebsocketConsumer):
             await self.sendBlockUserList()
         elif 'SEND_MESSAGE_ROOM' in data:
             await self.sendMessageRoom(data['SEND_MESSAGE_ROOM'])
+        elif 'GET_CHAT_HISTORY' in data:
+            await self.getChatHistory(data)
+            
+	#Get chat history
+    async def getChatHistory(self, data):
+        await self.sendChatHistory(await self.getChatHistoryModel(data))
+        
+	#Get chat history from model
+    @database_sync_to_async
+    def getChatHistoryModel(self, data):
+        if 'LENGTH' in data:
+            size = data['LENGTH']
+        else:
+            size = 100
+        if (data['GET_CHAT_HISTORY'] == ''):
+ 
+            self.ChatRoom = ChatRooms.objects.get(room_name=self.room_group_name)
+            data = serializers.serialize('json', Messages.objects.filter(room_name=self.ChatRoom).order_by('-id')[:size][::-1], fields=('email', 'displayname', 'message'))
+            data_obj = json.loads(data)
+            new_obj = {'SET_CHAT_HISTORY': '', 'DATA': data_obj,}
+            return new_obj
 
+	#Send chat history to the client
+    async def sendChatHistory(self, data):
+        await self.send_json(data)
+	
 	#Send message to room
     async def sendMessageRoom(self, data):
         await self.sendMessageRoomModel(data)
@@ -75,7 +100,18 @@ class ChatConsumer(AsyncJsonWebsocketConsumer):
 				'message': json.dumps(message_data),
 			}
 		)
-        
+   
+    @database_sync_to_async
+    def is_user_blocked(self, user_email):
+        print(user_email)
+        try:
+            Blocked_Users.objects.filter(user=self.user, email=user_email).exists()
+            print(Blocked_Users.objects.filter(user=self.user, email=user_email).exists())
+            user_blocked = True
+        except:
+            user_blocked = False
+        return user_blocked
+
     #Send message to room model
     @database_sync_to_async
     def sendMessageRoomModel(self, data):
@@ -85,8 +121,10 @@ class ChatConsumer(AsyncJsonWebsocketConsumer):
 	#Send message to the group
     async def chat_room_message(self, event):
         data_obj = json.loads(event['message'])
-        new_obj = {'NEW_ROOM_MSG': data_obj,}
-        await self.send_json(new_obj)
+        print(await self.is_user_blocked(data_obj['email']))
+        if (await self.is_user_blocked(data_obj['email']) == False):
+            new_obj = {'NEW_ROOM_MSG': data_obj,}
+            await self.send_json(new_obj)
             
 	#Send the block user list to the client
     async def sendBlockUserList(self):

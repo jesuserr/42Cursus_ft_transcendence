@@ -17,6 +17,8 @@ socket.onopen = function(e) {
 	socket.send(JSON.stringify({'GET_CONNECTED_USERS': 'GET_CONNECTED_USERS'}));
 	//send a message to the server to get the list of blocked users
 	socket.send(JSON.stringify({'GET_BLOCKED_USERS': 'GET_BLOCKED_USERS'}));
+	//send a message to the server to get the history of the chat room
+	socket.send(JSON.stringify({'GET_CHAT_HISTORY': '', 'LENGTH': 100}));
 
 };
 // When the socket is closed, display the connection status
@@ -47,7 +49,39 @@ socket.onmessage = function (e) {
 	//if the command is "chat_message", display the chat message
 	else if (data.hasOwnProperty("NEW_ROOM_MSG"))
 		New_Room_msg(data['NEW_ROOM_MSG']);
+	//if the command is "chat_history", display the chat history
+	else if (data.hasOwnProperty("SET_CHAT_HISTORY"))
+		Set_Chat_History(data);
 };
+
+function Set_Chat_History(alldata)
+{
+	console.log(alldata['SET_CHAT_HISTORY']);
+	let data = alldata['DATA']
+	if (alldata['SET_CHAT_HISTORY'] == '')
+	{
+		
+		document.getElementById('CHATTEXT').value = '';
+		for (let i = 0; i < data.length; i++) 
+		{
+			document.getElementById('CHATTEXT').value += data[i].fields.displayname + ': ' + data[i].fields.message + '\n';
+			document.getElementById('CHATTEXT').scrollTop = document.getElementById('CHATTEXT').scrollHeight;
+		}
+	}
+	else
+	{
+		let container = document.getElementById('CONTAINER_CHAT_TEXT');
+		let textarea = container.querySelector(alldata['SET_CHAT_HISTORY']);
+		if (textarea) 
+		{
+			console.log('Existe un textarea dentro del contenedor CONTAINER_CHAT_TEXT');
+		} 
+		else 
+		{
+			console.log('No existe un textarea dentro del contenedor CONTAINER_CHAT_TEXT');
+		}
+	}
+}
 
 //Press enter to send the chat message
 const messageInput = document.getElementById('CHAT_MSG_INPUT');
@@ -69,12 +103,7 @@ function New_Room_msg(data)
 const sendButton = document.getElementById('SEND_MSG');
 sendButton.addEventListener('click', function() {
 	const messageInput = document.getElementById('CHAT_MSG_INPUT');
-    if (messageInput.value == '') {
-		alert("Please enter a message to send");
-		return;
-	}
-	else
-	{
+    if (messageInput.value != '') {
 		const message = messageInput.value;
 		socket.send(JSON.stringify({ 'SEND_MESSAGE_ROOM': message }));
 		messageInput.value = '';
