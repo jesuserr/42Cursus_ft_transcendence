@@ -2,52 +2,114 @@
 <html>
 <head>
     <meta charset="utf-8" />
-    <title>Pong 42 Chat</title>
+    <title>Pong 42 Chat - Star Wars Edition</title>
+    <style>
+        @keyframes stars {
+            from { background-position: 0 0; }
+            to { background-position: 10000px 5000px; }
+        }
+		
+        body {
+            background: #000 url('https://www.transparenttextures.com/patterns/stardust.png');
+            animation: stars 50s linear infinite;
+            color: #FFD700;
+            font-family: 'Courier New', Courier, monospace;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            height: 100vh;
+            margin: 0;
+            overflow: hidden;
+        }
+        hr {
+            border: 0;
+            border-top: 1px solid #FFD700;
+            width: 80%;
+        }
+        #DISPLAYNAME, #STATUS {
+            font-size: 1.5em;
+        }
+        select, textarea, input {
+            background-color: #000;
+            color: #FFD700;
+            border: 1px solid #FFD700;
+            margin: 5px;
+        }
+        #CONNECTION_STATUS {
+            border: 1px solid #FFD700;
+        }
+        .button {
+            background-color: #FFD700;
+            color: #000;
+            border: none;
+            padding: 5px 10px;
+            text-align: center;
+            text-decoration: none;
+            display: inline-block;
+            font-size: 16px;
+            margin: 4px 2px;
+            cursor: pointer;
+        }
+        .container {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+            align-items: center;
+        }
+    </style>
 </head>
 <body>
-	<div id="DISPLAYNAME" style="float: left;"></div>
-	<div style="float: right;"><img id="CONNECTION_STATUS" src="/static/chat/disconnect.png" width="15" height="15" /><p id=STATUS>Disconnect</p></div>
-	<div>&nbsp;</div>
-	<hr/>
-	<div style="display: flex;">
-	
-		<label>
-			<span>User list</span>
-				<select id="USERLIST" name="All user list" size="10"></select>
-		</label>
-		<label>
-			<span>Users connected</span>
-				<select id="CONNECTEDUSERLIST" name="Connected Users" size="10"></select>
-		</label>
-		<label>
-			<span>Block users</span>
-				<select id="BLOCKUSERS" name="Block Users" size="10"></select>
-			</label>
-		<label style="display: flex; align-items: flex-start;">
-			<span>Chat</span>
-			<div id="CONTAINER_CHAT_TEXT">
-				<textarea id="CHATTEXT" cols="50" rows="10" readonly></textarea>
-			</div>
-			</label>
-	</div>
-	&nbsp;
-	<div>
-		<input id="SEND_MSG" type="button" value="Send message">
-		<input id="CHAT_MSG_INPUT" type="text" size="50"><br>
-	</div>
-	&nbsp;
-	<div>
-		<input id="CHAT_ALL_USERS" type="button" value="Chat with all users">
-		<input id="CHAT_SELECTED_USER" type="button" value="Chat with selected user">
-		<input id="BLOCK_SELECTED_USER" type="button" value="Block selected user">
-		<input id="UNBLOCK_SELECTED_USER" type="button" value="Unblock selected user">
-	</div>
-	
-	<style>
-		span, input {        
-		vertical-align: top;
-		}
-	</style>
-	<script src="/static/chat/chat.js"></script>
+    <div id="DISPLAYNAME" style="float: left;"></div>
+    <div style="float: right;"><img id="CONNECTION_STATUS" src="/static/chat/disconnect.png" width="15" height="15" /><p id="STATUS">Disconnect</p></div>
+    <div>&nbsp;</div>
+    <hr/>
+    <div class="container">
+        <label>
+            <span>User list</span>
+            <select id="USERLIST" name="All user list" size="10"></select>
+        </label>
+        <label>
+            <span>Users connected</span>
+            <select id="CONNECTEDUSERLIST" name="Connected Users" size="10"></select>
+        </label>
+        <label>
+            <span>Block users</span>
+            <select id="BLOCKUSERS" name="Block Users" size="10"></select>
+        </label>
+        <label style="display: flex; align-items: flex-start;">
+            <span>Chat</span>
+            <div id="CONTAINER_CHAT_TEXT">
+                <textarea id="CHATTEXT" cols="50" rows="10" readonly></textarea>
+            </div>
+        </label>
+    </div>
+    <div>
+        <input id="SEND_MSG" type="button" value="Send message" class="button">
+        <input id="CHAT_MSG_INPUT" type="text" size="50"><br>
+    </div>
+    <div>
+        <input id="CHAT_ALL_USERS" type="button" value="Chat with all users" class="button">
+        <input id="CHAT_SELECTED_USER" type="button" value="Chat with selected user" class="button">
+        <input id="BLOCK_SELECTED_USER" type="button" value="Block selected user" class="button">
+        <input id="UNBLOCK_SELECTED_USER" type="button" value="Unblock selected user" class="button">
+    </div>
+    <script>
+        document.addEventListener('DOMContentLoaded', (event) => {
+            let selectElements = ['USERLIST', 'CONNECTEDUSERLIST', 'BLOCKUSERS'];
+            selectElements.forEach((selectId) => {
+                let selectElement = document.getElementById(selectId);
+                let optionsToBold = [0, 1, 2]; // Cambia los índices según las opciones que quieras poner en negrita
+
+                optionsToBold.forEach((optionIndex) => {
+                    let option = selectElement.options[optionIndex];
+                    if (option) {
+                        option.style.fontWeight = 'bold';
+                    }
+                });
+            });
+        });
+    </script>
+    <script src="/static/chat/chat.js"></script>
 </body>
 </html>
