@@ -6,11 +6,9 @@ from channels.generic.websocket import AsyncWebsocketConsumer
 from . import total_pong_no_drawing
 from .total_pong_no_drawing import *
 
+key_states = {}
+
 class GameConsumer(AsyncWebsocketConsumer):
-    def __init__(self, *args, **kwargs):
-        super().__init__(*args, **kwargs)
-        self.key_states = {}
-    
     async def connect(self):
         self.room_name = self.scope["url_route"]["kwargs"]["game_name"]
         self.room_group_name = f"game_{self.room_name}"
@@ -23,7 +21,8 @@ class GameConsumer(AsyncWebsocketConsumer):
         await self.channel_layer.group_discard(self.room_group_name, self.channel_name)
 
     async def receive(self, text_data):
-        self.key_states = json.loads(text_data)
+        global key_states
+        key_states = json.loads(text_data)
 
     async def send_gameboard(self, ball, l_paddle, r_paddle, score):
         gameboard = {
@@ -48,7 +47,7 @@ class GameConsumer(AsyncWebsocketConsumer):
         while run:                                              ### GAME LOOP ###
             frame_start_time = time.time()
             await self.send_gameboard(ball, left_paddle, right_paddle, score)
-            handle_paddle_movement(self.key_states, left_paddle, right_paddle, PLAYERS)
+            handle_paddle_movement(key_states, left_paddle, right_paddle, PLAYERS)
             if PLAYERS == 1:
                 current_time = time.time()
                 if current_time - last_peek_time >= AI_TIME_INTERVAL_BALL_POS:
@@ -62,8 +61,7 @@ class GameConsumer(AsyncWebsocketConsumer):
                 await self.send_gameboard(ball, left_paddle, right_paddle, score)
                 await asyncio.sleep(2)
                 print_winner_and_reset(left_paddle, right_paddle, ball, score)
-                run = False
             await asyncio.sleep((FRAME_TIME - (time.time() - frame_start_time)) * 0.35)
             while time.time() - frame_start_time < FRAME_TIME:
                await asyncio.sleep((FRAME_TIME - (time.time() - frame_start_time)) * 0.0005)
-            #print((time.time() - frame_start_time) * 1000, ball.x_vel, self.room_group_name)
+            #print((time.time() - frame_start_time) * 1000, ball.x_vel)

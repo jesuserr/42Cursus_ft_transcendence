@@ -35,7 +35,7 @@ class ChatConsumer(AsyncJsonWebsocketConsumer):
 				'message': message,
 			}
 		)
-    #Receive message from the group to refresh the user listgit status
+    #Receive message from the group to refresh the user list
     async def refresh_UserList(self, event):
             await self.sendConnectedUserList()
             await self.sendUserList()
