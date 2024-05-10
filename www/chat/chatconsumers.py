@@ -35,7 +35,7 @@ class ChatConsumer(AsyncJsonWebsocketConsumer):
 				'message': message,
 			}
 		)
-    #Receive message from the group
+    #Receive message from the group to refresh the user list
     async def refresh_UserList(self, event):
             await self.sendConnectedUserList()
             await self.sendUserList()
@@ -73,9 +73,10 @@ class ChatConsumer(AsyncJsonWebsocketConsumer):
         else:
             size = 100
         if (data['GET_CHAT_HISTORY'] == ''):
- 
             self.ChatRoom = ChatRooms.objects.get(room_name=self.room_group_name)
-            data = serializers.serialize('json', Messages.objects.filter(room_name=self.ChatRoom).order_by('-id')[:size][::-1], fields=('email', 'displayname', 'message'))
+            #Get the last x messages and filter the block users
+            blocked_users = Blocked_Users.objects.filter(user=self.user, room_name=self.ChatRoom).values_list('email', flat=True)
+            data = serializers.serialize('json', Messages.objects.filter(room_name=self.ChatRoom).exclude(email__in=blocked_users).order_by('-id')[:size][::-1], fields=('email', 'displayname', 'message'))
             data_obj = json.loads(data)
             new_obj = {'SET_CHAT_HISTORY': '', 'DATA': data_obj,}
             return new_obj
@@ -100,13 +101,12 @@ class ChatConsumer(AsyncJsonWebsocketConsumer):
 				'message': json.dumps(message_data),
 			}
 		)
-   
+        
+    #Check if the user is blocked in the database
     @database_sync_to_async
     def is_user_blocked(self, user_email):
-        print(user_email)
         try:
-            Blocked_Users.objects.filter(user=self.user, email=user_email).exists()
-            print(Blocked_Users.objects.filter(user=self.user, email=user_email).exists())
+            Blocked_Users.objects.get(user=self.user, room_name=self.ChatRoom, email=user_email)
             user_blocked = True
         except:
             user_blocked = False
@@ -121,8 +121,9 @@ class ChatConsumer(AsyncJsonWebsocketConsumer):
 	#Send message to the group
     async def chat_room_message(self, event):
         data_obj = json.loads(event['message'])
-        print(await self.is_user_blocked(data_obj['email']))
-        if (await self.is_user_blocked(data_obj['email']) == False):
+        #Check if the user is blocked
+        if not (await self.is_user_blocked(data_obj['email'])):
+            await self.is_user_blocked(data_obj['email'])
             new_obj = {'NEW_ROOM_MSG': data_obj,}
             await self.send_json(new_obj)
             
@@ -226,10 +227,4 @@ class ChatConsumer(AsyncJsonWebsocketConsumer):
             pass
 
         
-        
-        
-        
-        
-            
-
         
