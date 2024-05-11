@@ -34,7 +34,8 @@ class GameConsumer(AsyncWebsocketConsumer):
             "left_paddle_x": l_paddle.x, "left_paddle_y": l_paddle.y,
             "right_paddle_x": r_paddle.x, "right_paddle_y": r_paddle.y,
             "paddle_width": r_paddle.width, "paddle_height": r_paddle.height,
-            "score_left": score.left_score, "score_right": score.right_score
+            "score_left": score.left_score, "score_right": score.right_score,
+            "winner": score.won
             }
         await self.send(text_data=json.dumps(gameboard))
 
@@ -81,8 +82,6 @@ class GameConsumer(AsyncWebsocketConsumer):
             score.update(ball)
             if score.won:
                 await self.send_gameboard(ball, left_paddle, right_paddle, score)
-                await asyncio.sleep(2)
-                print_winner_and_reset(left_paddle, right_paddle, ball, score)
                 break
             await asyncio.sleep((FRAME_TIME - (time.time() - frame_start_time)) * 0.35)
             while time.time() - frame_start_time < FRAME_TIME:

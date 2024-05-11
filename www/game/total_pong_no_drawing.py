@@ -7,7 +7,7 @@ WIDTH, HEIGHT = 1440, 810           # 16:9
 
 FPS = 60
 FRAME_TIME = 1.0 / FPS
-WINNING_SCORE = 10
+WINNING_SCORE = 7
 
 PADDLE_WIDTH = WIDTH // 35
 PADDLE_HEIGHT = HEIGHT // 5
@@ -130,11 +130,4 @@ def handle_collision(ball, left_paddle, right_paddle):
             ball.x_vel *= -BALL_VEL_INC
             difference_in_y = ball.y - right_paddle.y - right_paddle.height / 2
             reduction_factor = (right_paddle.height / 2) / BALL_X_MAX_VEL
-            ball.y_vel = difference_in_y / reduction_factor   
-
-def print_winner_and_reset(left_paddle, right_paddle, ball, score):
-    ball.reset()
-    ball.x_vel = random.choice([-BALL_X_MAX_VEL, BALL_X_MAX_VEL])
-    left_paddle.reset()
-    right_paddle.reset()
-    score.reset()
+            ball.y_vel = difference_in_y / reduction_factor

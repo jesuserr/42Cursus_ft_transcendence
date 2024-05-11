@@ -93,6 +93,10 @@ socket.onmessage = function(event) {
         drawCountdown(position);
     else
         drawGameboard(position);
+    if (position.winner && position.score_left > position.score_right)
+        drawText(textSize, "Left player wins!!", 1, 0, 0);
+    else if (position.winner && position.score_left < position.score_right)
+        drawText(textSize, "Right player wins!!", 1, 0, 0);
 };
 
 // Listen for keydown events and mark the key pressed as pressed :)
