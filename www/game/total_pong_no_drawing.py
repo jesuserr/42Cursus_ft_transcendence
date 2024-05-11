@@ -1,7 +1,4 @@
-import copy                         # To copy classes without copy constructor
 import random
-import asyncio
-import json
 
 ############################### CONSTANTS & INITS ##############################
 

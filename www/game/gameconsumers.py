@@ -1,6 +1,7 @@
 import json
 import asyncio
 import time
+import copy                         # To copy classes without copy constructor
 from datetime import datetime
 from channels.generic.websocket import AsyncWebsocketConsumer
 from . import total_pong_no_drawing
@@ -48,6 +49,13 @@ class GameConsumer(AsyncWebsocketConsumer):
                     return copy.copy(ball)          # Just returning something
             await asyncio.sleep(0.1)
 
+    async def waiting_countdown(self):
+        while True:
+            if self.key_states:
+                if 'Digit0' in self.key_states:
+                    break
+            await asyncio.sleep(0.1)
+            
     async def playGame(self):
         left_paddle = Paddle(PADDLE_GAP, HEIGHT // 2 - PADDLE_HEIGHT // 2, PADDLE_WIDTH, PADDLE_HEIGHT)
         right_paddle = Paddle(WIDTH - PADDLE_GAP - PADDLE_WIDTH, HEIGHT // 2 - PADDLE_HEIGHT // 2, PADDLE_WIDTH, PADDLE_HEIGHT)
@@ -55,6 +63,8 @@ class GameConsumer(AsyncWebsocketConsumer):
         score = Score()
         await self.send_gameboard(ball, left_paddle, right_paddle, score)
         ball_image = await self.waiting_players(ball)
+        await self.send_gameboard(ball, left_paddle, right_paddle, score)
+        await self.waiting_countdown()
         last_peek_time = time.time()
         while True:                                              ### GAME LOOP ###
             frame_start_time = time.time()
