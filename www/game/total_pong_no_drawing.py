@@ -20,7 +20,6 @@ BALL_X_MAX_VEL = 0.9 * WIDTH // 90 + 1    # Speed never 0 no matter WIDTH
 BALL_RADIUS = WIDTH // 100
 BALL_VEL_INC = 1.015                # Speed increment after each paddle hit
 AI_TIME_INTERVAL_BALL_POS = 1       # AI interval time to check ball pos in secs
-PLAYERS = 1                         # 1 -> Player vs CPU // 2 -> PvP
 
 #################################### CLASSES ###################################
 

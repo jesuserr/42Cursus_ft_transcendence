@@ -1,6 +1,6 @@
 const canvas = document.getElementById('canvas');
 const ctx = canvas.getContext('2d');
-const scale = 0.75;
+const scale = 0.66;
 const onePlayer = document.getElementById('playBtn1');
 const twoPlayers = document.getElementById('playBtn2');
 let keys = {}, prevKeys = {};
@@ -11,51 +11,48 @@ const socket = new WebSocket(
 	'wss://' + window.location.host + '/ws/game/' + gameName + '/'
 );
 
-onePlayer.addEventListener("click", actionOnePlayer);
-twoPlayers.addEventListener("click", actionTwoPlayers);
-
-function actionOnePlayer() {
-    console.log ("One player")
+function drawGameboard(position) {
+    // Clear the canvas and draw central dotted line
+    ctx.clearRect(0, 0, canvas.width, canvas.height);
+    ctx.beginPath();
+    ctx.setLineDash([5, 15]);
+    ctx.moveTo(canvas.width / 2, 0);
+    ctx.lineTo(canvas.width / 2, canvas.height);
+    ctx.strokeStyle = 'white';
+    ctx.stroke();
+    // Draw the ball
+    ctx.beginPath();
+    ctx.arc(position.ball_x * scale, position.ball_y * scale, position.ball_radius * scale, 0, 2 * Math.PI, false);
+    ctx.fillStyle = 'red';
+    ctx.fill();
+    // Draw the paddles
+    ctx.beginPath();
+    ctx.fillStyle = 'blue';
+    ctx.fillRect(position.left_paddle_x * scale, position.left_paddle_y * scale, position.paddle_width * scale, position.paddle_height * scale);
+    ctx.fillRect(position.right_paddle_x * scale, position.right_paddle_y * scale, position.paddle_width * scale, position.paddle_height * scale);
+    // Print the scores
+    ctx.beginPath();
+    ctx.fillStyle = 'white';
+    ctx.font = `${40 * scale}px Arial`;
+    ctx.fillText(`${position.score_left}`, canvas.width * 0.25 - 20 * scale, canvas.height / 12);
+    ctx.fillText(`${position.score_right}`, canvas.width * 0.75 - 20 * scale, canvas.height / 12);
 }
 
-function actionTwoPlayers() {
-    console.log ("Two players")
-}
+// **************************** EVENT LISTENERS ********************************
 
+// Listen messages from server
 socket.onmessage = function(event) {
-    let position = JSON.parse(event.data);
-    //console.log(position);    
+    let position = JSON.parse(event.data);    
+    //console.log(position);
     if (first_message == 0) {
+        canvas.style.display = 'block';
+        onePlayer.style.display = 'inline';
+        twoPlayers.style.display = 'inline';
         canvas.width = position.width * scale;
-        canvas.height = position.height * scale;        
+        canvas.height = position.height * scale;
         first_message++;
     }
-    else {
-        // Clear the canvas and draw central dotted line
-        ctx.clearRect(0, 0, canvas.width, canvas.height);
-        ctx.beginPath();
-        ctx.setLineDash([5, 15]);
-        ctx.moveTo(canvas.width / 2, 0);
-        ctx.lineTo(canvas.width / 2, canvas.height);
-        ctx.strokeStyle = 'white';
-        ctx.stroke();
-        // Draw the ball
-        ctx.beginPath();
-        ctx.arc(position.ball_x * scale, position.ball_y * scale, position.ball_radius * scale, 0, 2 * Math.PI, false);
-        ctx.fillStyle = 'red';
-        ctx.fill();
-        // Draw the paddles
-        ctx.beginPath();
-        ctx.fillStyle = 'blue';
-        ctx.fillRect(position.left_paddle_x * scale, position.left_paddle_y * scale, position.paddle_width * scale, position.paddle_height * scale);
-        ctx.fillRect(position.right_paddle_x * scale, position.right_paddle_y * scale, position.paddle_width * scale, position.paddle_height * scale);
-        // Print the scores
-        ctx.beginPath();
-        ctx.fillStyle = 'white';
-        ctx.font = `${40 * scale}px Arial`;
-        ctx.fillText(`${position.score_left}`, canvas.width * 0.25 - 20 * scale, canvas.height / 12);
-        ctx.fillText(`${position.score_right}`, canvas.width * 0.75 - 20 * scale, canvas.height / 12);
-    }   
+    drawGameboard(position);
 };
 
 // Listen for keydown events and mark the key pressed as pressed :)
@@ -67,6 +64,16 @@ window.addEventListener('keydown', function(event) {
 window.addEventListener('keyup', function(event) {
     keys[event.code] = false;
 });
+
+onePlayer.addEventListener("click", function() {
+    keys['Digit1'] = true;
+});
+
+twoPlayers.addEventListener("click", function() {
+    keys['Digit2'] = true;
+});
+
+// ******************************* MAIN LOOP ***********************************
 
 // Function to send the state of all keys to the server only when there are changes
 function sendKeyStates() {

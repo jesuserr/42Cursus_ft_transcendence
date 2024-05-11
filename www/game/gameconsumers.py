@@ -10,6 +10,7 @@ class GameConsumer(AsyncWebsocketConsumer):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
         self.key_states = {}
+        self.players = 0
     
     async def connect(self):
         self.room_name = self.scope["url_route"]["kwargs"]["game_name"]
@@ -36,20 +37,30 @@ class GameConsumer(AsyncWebsocketConsumer):
             }
         await self.send(text_data=json.dumps(gameboard))
 
+    async def waiting_players(self, ball):
+        while True:
+            if self.key_states:
+                if 'Digit1' in self.key_states:
+                    self.players = 1                # 1 -> Player vs CPU
+                    return copy.copy(ball)
+                elif 'Digit2' in self.key_states:   # 2 -> PvP
+                    self.players = 2
+                    return copy.copy(ball)          # Just returning something
+            await asyncio.sleep(0.1)
+
     async def playGame(self):
         left_paddle = Paddle(PADDLE_GAP, HEIGHT // 2 - PADDLE_HEIGHT // 2, PADDLE_WIDTH, PADDLE_HEIGHT)
         right_paddle = Paddle(WIDTH - PADDLE_GAP - PADDLE_WIDTH, HEIGHT // 2 - PADDLE_HEIGHT // 2, PADDLE_WIDTH, PADDLE_HEIGHT)
         ball = Ball(WIDTH // 2, HEIGHT // 2, BALL_RADIUS)
-        if PLAYERS == 1:
-            ball_image = copy.copy(ball)
         score = Score()
+        await self.send_gameboard(ball, left_paddle, right_paddle, score)
+        ball_image = await self.waiting_players(ball)
         last_peek_time = time.time()
-        run = True
-        while run:                                              ### GAME LOOP ###
+        while True:                                              ### GAME LOOP ###
             frame_start_time = time.time()
             await self.send_gameboard(ball, left_paddle, right_paddle, score)
-            handle_paddle_movement(self.key_states, left_paddle, right_paddle, PLAYERS)
-            if PLAYERS == 1:
+            handle_paddle_movement(self.key_states, left_paddle, right_paddle, self.players)
+            if self.players == 1:
                 current_time = time.time()
                 if current_time - last_peek_time >= AI_TIME_INTERVAL_BALL_POS:
                     ball_image = copy.copy(ball)
@@ -62,8 +73,9 @@ class GameConsumer(AsyncWebsocketConsumer):
                 await self.send_gameboard(ball, left_paddle, right_paddle, score)
                 await asyncio.sleep(2)
                 print_winner_and_reset(left_paddle, right_paddle, ball, score)
-                run = False
+                break
             await asyncio.sleep((FRAME_TIME - (time.time() - frame_start_time)) * 0.35)
             while time.time() - frame_start_time < FRAME_TIME:
                await asyncio.sleep((FRAME_TIME - (time.time() - frame_start_time)) * 0.0005)
+            #print(ball.x, ball.y, ball_image.x, ball_image.y)
             #print((time.time() - frame_start_time) * 1000, ball.x_vel, self.room_group_name)
