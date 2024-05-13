@@ -4,12 +4,17 @@ const scale = 1.00;
 const onePlayer = document.getElementById('playBtn1');
 const twoPlayers = document.getElementById('playBtn2');
 const textSize = 50;
-let countdown = 5;
+let countdown = 3;
 let keys = {}, prevKeys = {};
 let messageNumber = 0;
 let players = 0;
+let prevBallXSpeed = 0;
 
-let countdownSound = new Audio(`/static/game/${countdown}_countdown.mp3`);
+let countdownSound = new Audio(`/static/game/sounds/${countdown}_countdown.mp3`);
+let pingSound = new Audio(`/static/game/sounds/ping.mp3`);
+let pongSound = new Audio(`/static/game/sounds/pong.mp3`);
+let pointSound = new Audio(`/static/game/sounds/point.mp3`);
+
 const gameName = JSON.parse(document.getElementById('game_name').textContent);
 const socket = new WebSocket(
 	'wss://' + window.location.host + '/ws/game/' + gameName + '/'
@@ -76,6 +81,22 @@ function drawText(size, text, center, x, y, height) {
         ctx.fillText(text, x, y);
 }
 
+function makeNoises(position) {
+    if (position.ball_x <= position.left_paddle_x || 
+        position.ball_x >= position.right_paddle_x + position.paddle_width) {
+            pointSound.pause();
+            pointSound.currentTime = 0;
+            pointSound.play();
+        }
+        if (prevBallXSpeed * position.ball_x_speed < 0) {
+            if (position.ball_x > position.width / 2)
+                pingSound.play();
+            else if (position.ball_x < position.width / 2)
+                pongSound.play();
+        }        
+        prevBallXSpeed = position.ball_x_speed;
+}
+
 // **************************** EVENT LISTENERS ********************************
 
 // Listen messages from server
@@ -95,8 +116,10 @@ socket.onmessage = function(event) {
     }
     else if (messageNumber == 1)
         drawCountdown(position);
-    else
+    else {        
+        makeNoises(position);
         drawGameboard(position);
+    }
     if (position.winner && position.score_left > position.score_right)
         drawText(textSize, "Left player wins!!", 1, 0, 0, 3.5);
     else if (position.winner && position.score_left < position.score_right)

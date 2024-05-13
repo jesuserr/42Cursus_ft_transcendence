@@ -18,8 +18,7 @@ class GameConsumer(AsyncWebsocketConsumer):
         self.room_group_name = f"game_{self.room_name}"
         await self.channel_layer.group_add(self.room_group_name, self.channel_name)
         await self.accept()
-        #iniciar el loop del juego
-        asyncio.ensure_future(self.playGame())
+        asyncio.ensure_future(self.playGame())      # Init game
 
     async def disconnect(self, close_code):
         await self.channel_layer.group_discard(self.room_group_name, self.channel_name)
@@ -29,7 +28,7 @@ class GameConsumer(AsyncWebsocketConsumer):
 
     async def send_gameboard(self, ball, l_paddle, r_paddle, score):
         gameboard = {
-            "width": WIDTH, "height": HEIGHT,
+            "width": WIDTH, "height": HEIGHT, "ball_x_speed": ball.x_vel,
             "ball_x": int(ball.x), "ball_y": int(ball.y), "ball_radius": ball.radius,
             "left_paddle_x": l_paddle.x, "left_paddle_y": l_paddle.y,
             "right_paddle_x": r_paddle.x, "right_paddle_y": r_paddle.y,
