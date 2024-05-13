@@ -23,9 +23,12 @@ class Messages(models.Model):
 	message = models.TextField()
 	timestamp = models.DateTimeField(auto_now_add=True)
 
+class PrivateRooms(models.Model):
+	room_name = models.CharField(max_length=200, primary_key=True)
+
 class PrivateMessages(models.Model):
 	room_name = models.ForeignKey(ChatRooms, on_delete=models.CASCADE)
-	private_room_name = models.CharField(max_length=500, unique=True)
+	private_room_name = models.ForeignKey(PrivateRooms, on_delete=models.CASCADE)
 	emailto = models.EmailField()
 	displaynameto = models.CharField(max_length=50)
 	emailfrom = models.EmailField()

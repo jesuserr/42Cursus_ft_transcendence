@@ -4,7 +4,7 @@ from channels.generic.websocket import AsyncJsonWebsocketConsumer
 from main.models import User
 from channels.db import database_sync_to_async
 from django.core import serializers
-from .models import Connected_Users, ChatRooms, Blocked_Users, Messages, PrivateMessages
+from .models import Connected_Users, ChatRooms, Blocked_Users, Messages, PrivateRooms, PrivateMessages
 
 class ChatConsumer(AsyncJsonWebsocketConsumer):
     #When the connection is established
@@ -84,7 +84,12 @@ class ChatConsumer(AsyncJsonWebsocketConsumer):
         else:
             #Get the last x messages and filter the block users
             blocked_users = Blocked_Users.objects.filter(user=self.user, room_name=self.ChatRoom).values_list('email', flat=True)
-            datadb = serializers.serialize('json', PrivateMessages.objects.filter(room_name=self.ChatRoom, private_room_name=sorted([self.user.email, data['GET_CHAT_HISTORY']])).exclude(emailfrom__in=blocked_users).order_by('-id')[:size][::-1], fields=('email', 'displaynameto', 'emailfromto', 'displaynamefrom', 'message'))
+            private_room_name = sorted([self.user.email, data['GET_CHAT_HISTORY']])
+            try:
+                tmpprivate = PrivateRooms.objects.get(room_name=private_room_name)
+            except:
+                tmpprivate = ''
+            datadb = serializers.serialize('json', PrivateMessages.objects.filter(room_name=self.ChatRoom, private_room_name=tmpprivate).exclude(emailfrom__in=blocked_users).order_by('-id')[:size][::-1], fields=('email', 'displaynameto', 'emailfromto', 'displaynamefrom', 'message'))
             data_obj = json.loads(datadb)
             new_obj = {'SET_CHAT_HISTORY': data['GET_CHAT_HISTORY'], 'DATA': data_obj,}
             return new_obj
@@ -101,9 +106,14 @@ class ChatConsumer(AsyncJsonWebsocketConsumer):
     #Send message to room model
     @database_sync_to_async
     def sendPrivateMessageModel(self, data):
+        private_room_name = sorted([self.user.email, data['SEND_PRIVATE_MSG']])
+        try:
+            tmpprivate = PrivateRooms.objects.get(room_name=private_room_name)
+        except:
+            tmpprivate = PrivateRooms(room_name=private_room_name).save()
         tmp = PrivateMessages()
         tmp.room_name = self.ChatRoom
-        tmp.private_room_name = str(sorted([self.user.email, data['SEND_PRIVATE_MSG']]))
+        tmp.private_room_name = tmpprivate
         tmp.emailto = data['SEND_PRIVATE_MSG']
         tmp.displaynameto = data['DISPLAYNAMETO']
         tmp.emailfrom = self.user.email
