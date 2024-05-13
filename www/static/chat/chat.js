@@ -54,7 +54,32 @@ socket.onmessage = function (e) {
 	//if the command is "chat_history", display the chat history
 	else if (data.hasOwnProperty("SET_CHAT_HISTORY"))
 		Set_Chat_History(data);
+	//if a private message is received, display the private message
+	else if (data.hasOwnProperty("NEW_PRIVATE_MSG"))
+		New_Private_msg(data['NEW_PRIVATE_MSG']);
 };
+
+//function to display the private message
+function New_Private_msg(data)
+{
+	console.log();
+	if (currentchat == data.emailto || currentchat == data.emailfrom)
+	{
+		
+		document.getElementById('CHATTEXT').value += data.displaynamefrom + ': ' + data.message + '\n';
+		document.getElementById('CHATTEXT').scrollTop = document.getElementById('CHATTEXT').scrollHeight;
+	}
+	else
+	{
+		let selectElement = document.getElementById('USERLIST');
+		for (let i = 0; i < selectElement.options.length; i++) {
+			let option = selectElement.options[i];
+			if (option.value == data.emailfrom)
+				option.style.fontWeight = 'bold';
+				option.style.color = 'green';
+		}
+	}
+}
 
 function Set_Chat_History(alldata)
 {

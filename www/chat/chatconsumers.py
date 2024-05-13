@@ -102,8 +102,32 @@ class ChatConsumer(AsyncJsonWebsocketConsumer):
 	#Send private message 
     async def sendPrivateMessage(self, data):
         await self.sendPrivateMessageModel(data)
-     
-    #Send message to room model
+        private_room_name = sorted([self.user.email, data['SEND_PRIVATE_MSG']])
+        message_data = {
+        	'private_room_name': private_room_name,
+        	'emailfrom': self.user.email,
+        	'displaynamefrom': self.user.displayname,
+            'emailto': data['SEND_PRIVATE_MSG'],
+        	'displayto': data['DISPLAYNAMETO'],
+        	'message': data['MESSAGE'],
+		}
+        await self.channel_layer.group_send(
+			self.room_group_name,
+			{
+				'type': 'private.room.message',
+				'message': json.dumps(message_data),
+			}
+		)
+	
+	#Send private message 
+    async def private_room_message(self, event):
+        data_obj = json.loads(event['message'])
+        #Cherck if the msg is for my private room
+        if ((data_obj['emailto'] == self.user.email) or data_obj['emailfrom'] == self.user.email) and not (await self.is_user_blocked(data_obj['emailfrom'])):
+            new_obj = {'NEW_PRIVATE_MSG': data_obj,}
+            await self.send_json(new_obj)
+		
+	#Send private message to room model
     @database_sync_to_async
     def sendPrivateMessageModel(self, data):
         private_room_name = sorted([self.user.email, data['SEND_PRIVATE_MSG']])
@@ -138,7 +162,8 @@ class ChatConsumer(AsyncJsonWebsocketConsumer):
 			}
 		)
         
-    #Check if the user is blocked in the database
+    
+	#Check if the user is blocked in the database
     @database_sync_to_async
     def is_user_blocked(self, user_email):
         try:
@@ -159,7 +184,6 @@ class ChatConsumer(AsyncJsonWebsocketConsumer):
         data_obj = json.loads(event['message'])
         #Check if the user is blocked
         if not (await self.is_user_blocked(data_obj['email'])):
-            await self.is_user_blocked(data_obj['email'])
             new_obj = {'NEW_ROOM_MSG': data_obj,}
             await self.send_json(new_obj)
             
