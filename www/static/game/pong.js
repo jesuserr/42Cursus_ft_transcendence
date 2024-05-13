@@ -9,8 +9,10 @@ let keys = {}, prevKeys = {};
 let messageNumber = 0;
 let players = 0;
 let prevBallXSpeed = 0;
+let muted = false;
 
-let countdownSound = new Audio(`/static/game/sounds/${countdown}_countdown.mp3`);
+let countdownBeep = new Audio(`/static/game/sounds/beep_countdown.mp3`);
+let countdownGo = new Audio(`/static/game/sounds/go_countdown.mp3`);
 let pingSound = new Audio(`/static/game/sounds/ping.mp3`);
 let pongSound = new Audio(`/static/game/sounds/pong.mp3`);
 let pointSound = new Audio(`/static/game/sounds/point.mp3`);
@@ -44,17 +46,24 @@ function drawGameboard(position) {
     // Print the scores
     drawText(textSize, `${position.score_left}`, 0, canvas.width * 0.25 - textSize / 2 * scale, canvas.height / 12, 0);
     drawText(textSize, `${position.score_right}`, 0, canvas.width * 0.75 - textSize / 2 * scale, canvas.height / 12, 0);
+    if (muted)
+        drawText(textSize / 3, "Muted", 0, canvas.width / 100, canvas.height * 0.02, 0);
 }
 
 function drawCountdown(position) {
     let countdownInterval = setInterval(() => {
         if (countdown >= 0) {
             drawGameboard(position);
-            countdownSound.play();
-            if (countdown > 0)
+            if (countdown > 0) {
                 drawText(textSize, `${countdown}`, 1, 0, 0, 3.5);
-            else
+                if (!muted)
+                    countdownBeep.play();
+            }
+            else {
                 drawText(textSize, "Go!!", 1, 0, 0, 3.5);
+                if (!muted)
+                    countdownGo.play();
+            }
             drawText(textSize / 3, "Key W: Up", 0, canvas.width / 100, canvas.height * 0.95, 0);
             drawText(textSize / 3, "Key S: Down", 0, canvas.width / 100, canvas.height * 0.98, 0);
             if (players == 2) {
@@ -80,6 +89,8 @@ function drawText(size, text, center, x, y, height) {
     else
         ctx.fillText(text, x, y);
 }
+
+// ***************************** SOUND EFFECTS* ********************************
 
 function makeNoises(position) {
     if (position.ball_x <= position.left_paddle_x || 
@@ -110,15 +121,17 @@ socket.onmessage = function(event) {
         canvas.height = position.height * scale;
         drawGameboard(position);
         drawText(textSize, "Select game mode", 1, 0, 0, 3.5);
-        drawText(textSize, "Press 1 for Player vs CPU", 1, 0, 0, 1.4);
+        drawText(textSize, "Press 1 for Player vs CPU", 1, 0, 0, 1.40);
         drawText(textSize, "Press 2 for Player vs Player", 1, 0, 0, 1.25);
+        drawText(textSize, "Press M to mute", 1, 0, 0, 1.13);
         messageNumber++;
     }
     else if (messageNumber == 1)
         drawCountdown(position);
-    else {        
-        makeNoises(position);
-        drawGameboard(position);
+    else {
+        if (!muted)
+            makeNoises(position);
+        drawGameboard(position);                // Where the play is drawn
     }
     if (position.winner && position.score_left > position.score_right)
         drawText(textSize, "Left player wins!!", 1, 0, 0, 3.5);
@@ -133,6 +146,8 @@ window.addEventListener('keydown', function(event) {
         players = 1;
     if ((event.code) == 'Digit2' && players == 0)
         players = 2;
+    if (event.code == 'KeyM')
+        muted = !muted;
 });
 
 // Listen for keyup events and mark the key released as released :)
