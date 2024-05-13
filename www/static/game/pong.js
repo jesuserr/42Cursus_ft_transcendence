@@ -3,12 +3,13 @@ const ctx = canvas.getContext('2d');
 const scale = 1.00;
 const onePlayer = document.getElementById('playBtn1');
 const twoPlayers = document.getElementById('playBtn2');
-const textSize = 60;
+const textSize = 50;
 let countdown = 5;
 let keys = {}, prevKeys = {};
 let messageNumber = 0;
 let players = 0;
 
+let countdownSound = new Audio(`/static/game/${countdown}_countdown.mp3`);
 const gameName = JSON.parse(document.getElementById('game_name').textContent);
 const socket = new WebSocket(
 	'wss://' + window.location.host + '/ws/game/' + gameName + '/'
@@ -36,23 +37,24 @@ function drawGameboard(position) {
     ctx.fillRect(position.left_paddle_x * scale, position.left_paddle_y * scale, position.paddle_width * scale, position.paddle_height * scale);
     ctx.fillRect(position.right_paddle_x * scale, position.right_paddle_y * scale, position.paddle_width * scale, position.paddle_height * scale);
     // Print the scores
-    drawText(textSize, `${position.score_left}`, 0, canvas.width * 0.25 - textSize / 2 * scale, canvas.height / 12);
-    drawText(textSize, `${position.score_right}`, 0, canvas.width * 0.75 - textSize / 2 * scale, canvas.height / 12);
+    drawText(textSize, `${position.score_left}`, 0, canvas.width * 0.25 - textSize / 2 * scale, canvas.height / 12, 0);
+    drawText(textSize, `${position.score_right}`, 0, canvas.width * 0.75 - textSize / 2 * scale, canvas.height / 12, 0);
 }
 
 function drawCountdown(position) {
     let countdownInterval = setInterval(() => {
         if (countdown >= 0) {
             drawGameboard(position);
+            countdownSound.play();
             if (countdown > 0)
-                drawText(textSize, `${countdown}`, 1, 0, 0);
+                drawText(textSize, `${countdown}`, 1, 0, 0, 3.5);
             else
-                drawText(textSize, "Go!!", 1, 0, 0);
-            drawText(textSize / 3, "Key W: Up", 0, canvas.width / 100, canvas.height * 0.95);
-            drawText(textSize / 3, "Key S: Down", 0, canvas.width / 100, canvas.height * 0.98);
+                drawText(textSize, "Go!!", 1, 0, 0, 3.5);
+            drawText(textSize / 3, "Key W: Up", 0, canvas.width / 100, canvas.height * 0.95, 0);
+            drawText(textSize / 3, "Key S: Down", 0, canvas.width / 100, canvas.height * 0.98, 0);
             if (players == 2) {
-                drawText(textSize / 3, "Key \u2191: Up", 0, canvas.width * 0.9, canvas.height * 0.95);
-                drawText(textSize / 3, "Key \u2193: Down", 0, canvas.width * 0.9, canvas.height * 0.98);
+                drawText(textSize / 3, "Key \u2191: Up", 0, canvas.width * 0.91, canvas.height * 0.95, 0);
+                drawText(textSize / 3, "Key \u2193: Down", 0, canvas.width * 0.91, canvas.height * 0.98, 0);
             }
             countdown--;
         } else {
@@ -63,13 +65,13 @@ function drawCountdown(position) {
     messageNumber++;
 }
 
-function drawText(size, text, center, x, y) {
+function drawText(size, text, center, x, y, height) {    
     ctx.beginPath();
     ctx.fillStyle = 'white';
     ctx.font = `${size * scale}px Courier`;
     let textWidth = ctx.measureText(text).width;
     if (center == 1)
-        ctx.fillText(text, (canvas.width - textWidth) / 2, canvas.height / 3.5);
+        ctx.fillText(text, (canvas.width - textWidth) / 2, canvas.height / height);
     else
         ctx.fillText(text, x, y);
 }
@@ -86,7 +88,9 @@ socket.onmessage = function(event) {
         canvas.width = position.width * scale;
         canvas.height = position.height * scale;
         drawGameboard(position);
-        drawText(textSize, "Select game mode", 1, 0, 0);
+        drawText(textSize, "Select game mode", 1, 0, 0, 3.5);
+        drawText(textSize, "Press 1 for Player vs CPU", 1, 0, 0, 1.4);
+        drawText(textSize, "Press 2 for Player vs Player", 1, 0, 0, 1.25);
         messageNumber++;
     }
     else if (messageNumber == 1)
@@ -94,9 +98,9 @@ socket.onmessage = function(event) {
     else
         drawGameboard(position);
     if (position.winner && position.score_left > position.score_right)
-        drawText(textSize, "Left player wins!!", 1, 0, 0);
+        drawText(textSize, "Left player wins!!", 1, 0, 0, 3.5);
     else if (position.winner && position.score_left < position.score_right)
-        drawText(textSize, "Right player wins!!", 1, 0, 0);
+        drawText(textSize, "Right player wins!!", 1, 0, 0, 3.5);
 };
 
 // Listen for keydown events and mark the key pressed as pressed :)
