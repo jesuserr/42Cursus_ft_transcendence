@@ -25,9 +25,9 @@ class Messages(models.Model):
 
 class PrivateMessages(models.Model):
 	room_name = models.ForeignKey(ChatRooms, on_delete=models.CASCADE)
-	user = models.ForeignKey(User, on_delete=models.CASCADE)
-	email = models.EmailField()
-	displayname = models.CharField(max_length=50)
+	private_room_name = models.CharField(max_length=500, unique=True)
+	emailto = models.EmailField()
+	displaynameto = models.CharField(max_length=50)
 	emailfrom = models.EmailField()
 	displaynamefrom = models.CharField(max_length=50)
 	message = models.TextField()

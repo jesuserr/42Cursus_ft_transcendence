@@ -110,7 +110,7 @@ sendButton.addEventListener('click', function() {
 		}
 		else
 		{
-			socket.send(JSON.stringify({ 'SEND_PRIVATE_MSG': currentchat, 'MESSAGE': message }));
+			socket.send(JSON.stringify({ 'SEND_PRIVATE_MSG': currentchat, 'DISPLAYNAMETO': currentchatdisplayname , 'MESSAGE': message }));
 			messageInput.value = '';
 		}
 	}
@@ -135,6 +135,7 @@ function Set_Connected_Users(data)
 //function to set the user's displayname
 function Set_Username(data) {
 	USERID = data.USER_ID;
+	USERDISPLAYNAME = data.SET_USERNAME;
 	document.getElementById("DISPLAYNAME").innerText = data.SET_USERNAME;
 };
 
@@ -214,6 +215,7 @@ document.querySelector('#CHAT_SELECTED_USER').onclick = function (e) {
 		var selectedUser = selectedOptionUserList ? selectedOptionUserList.value : selectedOptionConnectedUserList.value;
 		var selectedUserDisplayname = selectedOptionUserList ? selectedOptionUserList.text : selectedOptionConnectedUserList.text;
 		currentchat = selectedUser;
+		currentchatdisplayname = selectedUserDisplayname;
 		//put the selected user in normal
 		if (selectedOptionConnectedUserList)
 			selectedOptionConnectedUserList.style.fontWeight = 'normal';

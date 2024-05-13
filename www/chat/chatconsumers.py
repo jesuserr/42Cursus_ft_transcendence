@@ -58,6 +58,8 @@ class ChatConsumer(AsyncJsonWebsocketConsumer):
             await self.sendBlockUserList()
         elif 'SEND_MESSAGE_ROOM' in data:
             await self.sendMessageRoom(data['SEND_MESSAGE_ROOM'])
+        elif 'SEND_PRIVATE_MSG' in data:
+            await self.sendPrivateMessage(data)
         elif 'GET_CHAT_HISTORY' in data:
             await self.getChatHistory(data)
             
@@ -82,7 +84,7 @@ class ChatConsumer(AsyncJsonWebsocketConsumer):
         else:
             #Get the last x messages and filter the block users
             blocked_users = Blocked_Users.objects.filter(user=self.user, room_name=self.ChatRoom).values_list('email', flat=True)
-            datadb = serializers.serialize('json', PrivateMessages.objects.filter(room_name=self.ChatRoom, user=self.user, emailfrom=data['GET_CHAT_HISTORY']).exclude(emailfrom__in=blocked_users).order_by('-id')[:size][::-1], fields=('email', 'displayname', 'emailfrom', 'displaynamefrom', 'message'))
+            datadb = serializers.serialize('json', PrivateMessages.objects.filter(room_name=self.ChatRoom, private_room_name=sorted([self.user.email, data['GET_CHAT_HISTORY']])).exclude(emailfrom__in=blocked_users).order_by('-id')[:size][::-1], fields=('email', 'displaynameto', 'emailfromto', 'displaynamefrom', 'message'))
             data_obj = json.loads(datadb)
             new_obj = {'SET_CHAT_HISTORY': data['GET_CHAT_HISTORY'], 'DATA': data_obj,}
             return new_obj
@@ -91,6 +93,23 @@ class ChatConsumer(AsyncJsonWebsocketConsumer):
 	#Send chat history to the client
     async def sendChatHistory(self, data):
         await self.send_json(data)
+        
+	#Send private message 
+    async def sendPrivateMessage(self, data):
+        await self.sendPrivateMessageModel(data)
+     
+    #Send message to room model
+    @database_sync_to_async
+    def sendPrivateMessageModel(self, data):
+        tmp = PrivateMessages()
+        tmp.room_name = self.ChatRoom
+        tmp.private_room_name = str(sorted([self.user.email, data['SEND_PRIVATE_MSG']]))
+        tmp.emailto = data['SEND_PRIVATE_MSG']
+        tmp.displaynameto = data['DISPLAYNAMETO']
+        tmp.emailfrom = self.user.email
+        tmp.displaynamefrom = self.user.displayname
+        tmp.message = data['MESSAGE']
+        tmp.save()
 	
 	#Send message to room
     async def sendMessageRoom(self, data):
