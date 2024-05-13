@@ -4,7 +4,7 @@ from channels.generic.websocket import AsyncJsonWebsocketConsumer
 from main.models import User
 from channels.db import database_sync_to_async
 from django.core import serializers
-from .models import Connected_Users, ChatRooms, Blocked_Users, Messages
+from .models import Connected_Users, ChatRooms, Blocked_Users, Messages, PrivateMessages
 
 class ChatConsumer(AsyncJsonWebsocketConsumer):
     #When the connection is established
@@ -73,13 +73,20 @@ class ChatConsumer(AsyncJsonWebsocketConsumer):
         else:
             size = 100
         if (data['GET_CHAT_HISTORY'] == ''):
-            self.ChatRoom = ChatRooms.objects.get(room_name=self.room_group_name)
             #Get the last x messages and filter the block users
             blocked_users = Blocked_Users.objects.filter(user=self.user, room_name=self.ChatRoom).values_list('email', flat=True)
-            data = serializers.serialize('json', Messages.objects.filter(room_name=self.ChatRoom).exclude(email__in=blocked_users).order_by('-id')[:size][::-1], fields=('email', 'displayname', 'message'))
-            data_obj = json.loads(data)
+            datadb = serializers.serialize('json', Messages.objects.filter(room_name=self.ChatRoom).exclude(email__in=blocked_users).order_by('-id')[:size][::-1], fields=('email', 'displayname', 'message'))
+            data_obj = json.loads(datadb)
             new_obj = {'SET_CHAT_HISTORY': '', 'DATA': data_obj,}
             return new_obj
+        else:
+            #Get the last x messages and filter the block users
+            blocked_users = Blocked_Users.objects.filter(user=self.user, room_name=self.ChatRoom).values_list('email', flat=True)
+            datadb = serializers.serialize('json', PrivateMessages.objects.filter(room_name=self.ChatRoom, user=self.user, emailfrom=data['GET_CHAT_HISTORY']).exclude(emailfrom__in=blocked_users).order_by('-id')[:size][::-1], fields=('email', 'displayname', 'emailfrom', 'displaynamefrom', 'message'))
+            data_obj = json.loads(datadb)
+            new_obj = {'SET_CHAT_HISTORY': data['GET_CHAT_HISTORY'], 'DATA': data_obj,}
+            return new_obj
+        
 
 	#Send chat history to the client
     async def sendChatHistory(self, data):
@@ -217,6 +224,8 @@ class ChatConsumer(AsyncJsonWebsocketConsumer):
         tmp.email = self.user.email
         tmp.displayname = self.user.displayname
         tmp.save()
+        #get the chat room
+        self.ChatRoom = ChatRooms.objects.get(room_name=self.room_group_name)        
     
     #Unregister user
     @database_sync_to_async

@@ -5,6 +5,8 @@ const socket = new WebSocket(
 	+ '/ws/chat/'
 );
 
+currentchat = '';
+
 // When the socket is open, display the connection status
 socket.onopen = function(e) {
 	document.getElementById("STATUS").innerText = "Connected";
@@ -56,7 +58,6 @@ socket.onmessage = function (e) {
 
 function Set_Chat_History(alldata)
 {
-	console.log(alldata['SET_CHAT_HISTORY']);
 	let data = alldata['DATA']
 	if (alldata['SET_CHAT_HISTORY'] == '')
 	{
@@ -70,15 +71,11 @@ function Set_Chat_History(alldata)
 	}
 	else
 	{
-		let container = document.getElementById('CONTAINER_CHAT_TEXT');
-		let textarea = container.querySelector(alldata['SET_CHAT_HISTORY']);
-		if (textarea) 
+		document.getElementById('CHATTEXT').value = '';
+		for (let i = 0; i < data.length; i++) 
 		{
-			console.log('Existe un textarea dentro del contenedor CONTAINER_CHAT_TEXT');
-		} 
-		else 
-		{
-			console.log('No existe un textarea dentro del contenedor CONTAINER_CHAT_TEXT');
+			document.getElementById('CHATTEXT').value += data[i].fields.displaynamefrom + ': ' + data[i].fields.message + '\n';
+			document.getElementById('CHATTEXT').scrollTop = document.getElementById('CHATTEXT').scrollHeight;
 		}
 	}
 }
@@ -103,10 +100,19 @@ function New_Room_msg(data)
 const sendButton = document.getElementById('SEND_MSG');
 sendButton.addEventListener('click', function() {
 	const messageInput = document.getElementById('CHAT_MSG_INPUT');
-    if (messageInput.value != '') {
-		const message = messageInput.value;
-		socket.send(JSON.stringify({ 'SEND_MESSAGE_ROOM': message }));
-		messageInput.value = '';
+	const message = messageInput.value;
+	if (messageInput.value != '') 
+	{
+		if (currentchat == '')
+		{
+			socket.send(JSON.stringify({ 'SEND_MESSAGE_ROOM': message }));
+			messageInput.value = '';
+		}
+		else
+		{
+			socket.send(JSON.stringify({ 'SEND_PRIVATE_MSG': currentchat, 'MESSAGE': message }));
+			messageInput.value = '';
+		}
 	}
 });
 
@@ -187,12 +193,36 @@ document.querySelector('#UNBLOCK_SELECTED_USER').onclick = function (e) {
 
 
 // When the user clicks the send button, send the command to server
-document.querySelector('#CHAT_ALL_USERS').onclick = function (e) {
-		socket.send(JSON.stringify({'GET_USER_LIST': 'GET_USER_LIST'}));
-	};
+document.querySelector('#CHAT_ALL_USERS').onclick = function (e) 
+{
+	document.getElementById("CURRENTUSER").innerText = 'General';
+	currentchat = '';
+	socket.send(JSON.stringify({'GET_CHAT_HISTORY': '', 'LENGTH': 100}));
+};
+
+//when the user clicks chat with selected user, send the command to server
 document.querySelector('#CHAT_SELECTED_USER').onclick = function (e) {
-		socket.send(JSON.stringify({'CHAT_SELECTED_USER': ''}));
-	};
+	var userList = document.getElementById("USERLIST");
+	var connectedUserList = document.getElementById("CONNECTEDUSERLIST");
+	var selectedOptionUserList = userList.options[userList.selectedIndex];
+	var selectedOptionConnectedUserList = connectedUserList.options[connectedUserList.selectedIndex];
+
+	if ((selectedOptionUserList == null || selectedOptionUserList.value == '') &&
+		(selectedOptionConnectedUserList == null || selectedOptionConnectedUserList.value == '')) {
+		alert("Please select a user to chat with, form the list of users or connected users");
+	} else {
+		var selectedUser = selectedOptionUserList ? selectedOptionUserList.value : selectedOptionConnectedUserList.value;
+		var selectedUserDisplayname = selectedOptionUserList ? selectedOptionUserList.text : selectedOptionConnectedUserList.text;
+		currentchat = selectedUser;
+		//put the selected user in normal
+		if (selectedOptionConnectedUserList)
+			selectedOptionConnectedUserList.style.fontWeight = 'normal';
+		if (selectedOptionUserList)
+			selectedOptionUserList.style.fontWeight = 'normal';
+		document.getElementById("CURRENTUSER").innerText = selectedUserDisplayname;
+		socket.send(JSON.stringify({'GET_CHAT_HISTORY': selectedUser, 'LENGTH': 100}));
+	}
+};
 
 // Unselect the other select elements when one is selected
 var selects = document.querySelectorAll('select');
