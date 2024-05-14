@@ -53,10 +53,17 @@ function drawGameboard(position) {
     ctx.arc(position.ball_x * scale, position.ball_y * scale, position.ball_radius * scale, 0, 2 * Math.PI, false);
     ctx.fillStyle = 'red';
     ctx.fill();
-    // Draw the paddles
+    // Draw the paddles with gradient
     ctx.beginPath();
-    ctx.fillStyle = 'blue';
+    let gradientLeft = ctx.createLinearGradient(position.left_paddle_x * scale, 0, (position.left_paddle_x + position.paddle_width) * scale, 0);
+    gradientLeft.addColorStop(0, 'black');
+    gradientLeft.addColorStop(1, 'blue');
+    ctx.fillStyle = gradientLeft;
     ctx.fillRect(position.left_paddle_x * scale, position.left_paddle_y * scale, position.paddle_width * scale, position.paddle_height * scale);
+    let gradientRight = ctx.createLinearGradient(position.right_paddle_x * scale, 0, (position.right_paddle_x + position.paddle_width) * scale, 0);
+    gradientRight.addColorStop(0, 'blue');
+    gradientRight.addColorStop(1, 'black');
+    ctx.fillStyle = gradientRight;
     ctx.fillRect(position.right_paddle_x * scale, position.right_paddle_y * scale, position.paddle_width * scale, position.paddle_height * scale);
     // Print the scores
     drawText(textSize, `${position.score_left}`, 0, canvas.width * 0.25 - textSize / 2 * scale, canvas.height / 12, 0);
