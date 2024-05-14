@@ -65,7 +65,7 @@ socket.onmessage = function (e) {
 //function to display the typing message
 function Typing(data)
 {
-	if (currentchat == data['TYPING'] || currentchat == data['WHOEMAIL'])
+	if (currentchat == data['TYPING'] || (data['TYPING'] != '' && currentchat == data['WHOEMAIL']))
 	{
 		document.getElementById('MSG_STATUS_USERS').innerText = data['WHO'] + ' is typing...';
 		setTimeout(function() {

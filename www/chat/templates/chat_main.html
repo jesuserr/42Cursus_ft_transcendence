@@ -94,22 +94,6 @@
         <input id="BLOCK_SELECTED_USER" type="button" value="Block selected user" class="button">
         <input id="UNBLOCK_SELECTED_USER" type="button" value="Unblock selected user" class="button">
     </div>
-    <script>
-        document.addEventListener('DOMContentLoaded', (event) => {
-            let selectElements = ['USERLIST', 'CONNECTEDUSERLIST', 'BLOCKUSERS'];
-            selectElements.forEach((selectId) => {
-                let selectElement = document.getElementById(selectId);
-                let optionsToBold = [0, 1, 2]; // Cambia los índices según las opciones que quieras poner en negrita
-
-                optionsToBold.forEach((optionIndex) => {
-                    let option = selectElement.options[optionIndex];
-                    if (option) {
-                        option.style.fontWeight = 'bold';
-                    }
-                });
-            });
-        });
-    </script>
     <script src="/static/chat/chat.js"></script>
 </body>
 </html>
