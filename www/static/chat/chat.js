@@ -34,7 +34,7 @@ socket.onmessage = function (e) {
 	//parse the data
 	const data = JSON.parse(e.data);
 	//To deleted, show the data in the console
-	console.log(data);
+	//console.log(data);
 	//check the command and run the appropriate function
 	//if the command is "User", display the user's displayname
 	if (data.hasOwnProperty("SET_USERNAME")) 
@@ -57,7 +57,22 @@ socket.onmessage = function (e) {
 	//if a private message is received, display the private message
 	else if (data.hasOwnProperty("NEW_PRIVATE_MSG"))
 		New_Private_msg(data['NEW_PRIVATE_MSG']);
+	//if a user is typing, display the typing message
+	else if (data.hasOwnProperty("TYPING"))
+		Typing(data);
 };
+
+//function to display the typing message
+function Typing(data)
+{
+	if (currentchat == data['TYPING'] || currentchat == data['WHOEMAIL'])
+	{
+		document.getElementById('MSG_STATUS_USERS').innerText = data['WHO'] + ' is typing...';
+		setTimeout(function() {
+			document.getElementById('MSG_STATUS_USERS').innerText = '...';
+		}, 500);
+	}
+}
 
 //function to display the private message
 function New_Private_msg(data)
@@ -75,8 +90,10 @@ function New_Private_msg(data)
 		for (let i = 0; i < selectElement.options.length; i++) {
 			let option = selectElement.options[i];
 			if (option.value == data.emailfrom)
+			{
 				option.style.fontWeight = 'bold';
-				option.style.color = 'green';
+				option.style.color = 'white';
+			}
 		}
 	}
 }
@@ -117,8 +134,11 @@ messageInput.addEventListener('keypress', function(event) {
 //function to display the room chat message
 function New_Room_msg(data)
 {
-	document.getElementById('CHATTEXT').value += data.displayname + ': ' + data.message + '\n';
-	document.getElementById('CHATTEXT').scrollTop = document.getElementById('CHATTEXT').scrollHeight;
+	if (currentchat == '')
+	{
+		document.getElementById('CHATTEXT').value += data.displayname + ': ' + data.message + '\n';
+		document.getElementById('CHATTEXT').scrollTop = document.getElementById('CHATTEXT').scrollHeight;
+	}
 }
 
 //Send chat message to the server
@@ -142,20 +162,31 @@ sendButton.addEventListener('click', function() {
 });
 
 //function to fill connected user list
-function Set_Connected_Users(data)
-{
-	document.getElementById("CONNECTEDUSERLIST").length = 0;
-	for (let i = 0; i < data.SET_CONNECTED_USERS.length; i++) 
-	{
-		if (USERID != data.SET_CONNECTED_USERS[i].pk)
-		{
-			const opt = document.createElement("option");
-			opt.value = data.SET_CONNECTED_USERS[i].pk;
-			opt.text = data.SET_CONNECTED_USERS[i].fields.displayname;
-			document.getElementById("CONNECTEDUSERLIST").add(opt, null)
-		};
-	};
-};
+function Set_Connected_Users(data) {
+    let select = document.getElementById("CONNECTEDUSERLIST");
+    let options = new Map();
+    for (let i = 0; i < select.options.length; i++) {
+        let option = select.options[i];
+        options.set(option.value, option);
+    }
+    for (let i = 0; i < data.SET_CONNECTED_USERS.length; i++) {
+        let user = data.SET_CONNECTED_USERS[i];
+        if (USERID != user.pk) {
+            if (options.has(user.pk)) {
+                options.delete(user.pk);
+            }
+            else {
+                let option = document.createElement("option");
+                option.value = user.pk;
+                option.text = user.fields.displayname;
+                select.add(option, null);
+            }
+        }
+    }
+    for (let option of options.values()) {
+        select.removeChild(option);
+    }
+}
 
 //function to set the user's displayname
 function Set_Username(data) {
@@ -165,20 +196,31 @@ function Set_Username(data) {
 };
 
 //function to fill User list
-function Set_User_List(data)
-{
-	document.getElementById("USERLIST").length = 0;
-	for (let i = 0; i < data.SET_USER_LIST.length; i++) 
-	{
-		if (USERID != data.SET_USER_LIST[i].pk)
-		{
-			const opt = document.createElement("option");
-			opt.value = data.SET_USER_LIST[i].pk;
-			opt.text = data.SET_USER_LIST[i].fields.displayname;
-			document.getElementById("USERLIST").add(opt, null)
-		}
-	};
-};
+function Set_User_List(data) {
+    let select = document.getElementById("USERLIST");
+    let options = new Map();
+    for (let i = 0; i < select.options.length; i++) {
+        let option = select.options[i];
+        options.set(option.value, option);
+    }
+    for (let i = 0; i < data.SET_USER_LIST.length; i++) {
+        let user = data.SET_USER_LIST[i];
+        if (USERID != user.pk) {
+            if (options.has(user.pk)) {
+                options.delete(user.pk);
+            }
+            else {
+                let option = document.createElement("option");
+                option.value = user.pk;
+                option.text = user.fields.displayname;
+                select.add(option, null);
+            }
+        }
+    }
+    for (let option of options.values()) {
+        select.removeChild(option);
+    }
+}
 
 //function to fill blocked user list
 function Set_Blocked_Users(data)
@@ -243,9 +285,18 @@ document.querySelector('#CHAT_SELECTED_USER').onclick = function (e) {
 		currentchatdisplayname = selectedUserDisplayname;
 		//put the selected user in normal
 		if (selectedOptionConnectedUserList)
+		{
 			selectedOptionConnectedUserList.style.fontWeight = 'normal';
+			selectedOptionConnectedUserList.style.color = '#FFD700';
+		}
 		if (selectedOptionUserList)
+		{
 			selectedOptionUserList.style.fontWeight = 'normal';
+			selectedOptionUserList.style.color = '#FFD700';
+		}
+		userList.selectedIndex = -1;
+        connectedUserList.selectedIndex = -1;
+
 		document.getElementById("CURRENTUSER").innerText = selectedUserDisplayname;
 		socket.send(JSON.stringify({'GET_CHAT_HISTORY': selectedUser, 'LENGTH': 100}));
 	}
@@ -262,3 +313,11 @@ selects.forEach(function(select) {
         });
     });
 });
+
+// when user is typing, send the command to server
+var chatInput = document.getElementById('CHAT_MSG_INPUT');
+chatInput.addEventListener('input', function() 
+{
+	socket.send(JSON.stringify({'TYPING': currentchat}));
+});
+

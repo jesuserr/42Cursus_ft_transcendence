@@ -62,6 +62,26 @@ class ChatConsumer(AsyncJsonWebsocketConsumer):
             await self.sendPrivateMessage(data)
         elif 'GET_CHAT_HISTORY' in data:
             await self.getChatHistory(data)
+        elif 'TYPING' in data:
+            await self.typing(data)
+            
+	#Send typing status to the group
+    async def typing(self, data):
+        data['WHO'] = self.user.displayname
+        data['WHOEMAIL'] = self.user.email
+        await self.channel_layer.group_send(
+			self.room_group_name,
+			{
+				'type': 'typing.message',
+				'message': json.dumps(data),
+			}
+		)
+    
+	#Send typing status to the client
+    async def typing_message(self, event):
+        data_obj = json.loads(event['message'])
+        if (data_obj['WHOEMAIL'] != self.user.email):
+            await self.send_json(data_obj)
             
 	#Get chat history
     async def getChatHistory(self, data):
