@@ -16,6 +16,7 @@ let countdownGo = new Audio(`/static/game/sounds/go_countdown.mp3`);
 let pingSound = new Audio(`/static/game/sounds/ping.mp3`);
 let pongSound = new Audio(`/static/game/sounds/pong.mp3`);
 let pointSound = new Audio(`/static/game/sounds/point.mp3`);
+let winSound = new Audio(`/static/game/sounds/win.mp3`);
 
 const gameName = JSON.parse(document.getElementById('game_name').textContent);
 const socket = new WebSocket(
@@ -23,6 +24,20 @@ const socket = new WebSocket(
 );
 
 // ***************************** DRAW FUNCTIONS ********************************
+
+function initGameboard(position) {
+    canvas.style.display = 'block';
+    onePlayer.style.display = 'inline';
+    twoPlayers.style.display = 'inline';
+    canvas.width = position.width * scale;
+    canvas.height = position.height * scale;
+    drawGameboard(position);
+    drawText(textSize, "Select game mode", 1, 0, 0, 3.5);
+    drawText(textSize, "Press 1 for Player vs CPU", 1, 0, 0, 1.40);
+    drawText(textSize, "Press 2 for Player vs Player", 1, 0, 0, 1.25);
+    drawText(textSize, "Press M to mute", 1, 0, 0, 1.13);
+    messageNumber++;
+}
 
 function drawGameboard(position) {
     // Clear the canvas and draw central dotted line
@@ -90,22 +105,20 @@ function drawText(size, text, center, x, y, height) {
         ctx.fillText(text, x, y);
 }
 
-// ***************************** SOUND EFFECTS* ********************************
+// ***************************** SOUND EFFECTS *********************************
 
 function makeNoises(position) {
-    if (position.ball_x <= position.left_paddle_x || 
-        position.ball_x >= position.right_paddle_x + position.paddle_width) {
-            pointSound.pause();
-            pointSound.currentTime = 0;
-            pointSound.play();
-        }
-        if (prevBallXSpeed * position.ball_x_speed < 0) {
-            if (position.ball_x > position.width / 2)
-                pingSound.play();
-            else if (position.ball_x < position.width / 2)
-                pongSound.play();
-        }        
-        prevBallXSpeed = position.ball_x_speed;
+    if ((position.ball_x <= position.left_paddle_x || 
+    position.ball_x >= position.right_paddle_x + position.paddle_width) &&
+    pointSound.paused)
+        pointSound.play();
+    else if (prevBallXSpeed * position.ball_x_speed < 0) {
+        if (position.ball_x > position.width / 2)
+            pingSound.play();
+        else if (position.ball_x < position.width / 2)
+            pongSound.play();
+    }        
+    prevBallXSpeed = position.ball_x_speed;
 }
 
 // **************************** EVENT LISTENERS ********************************
@@ -113,19 +126,8 @@ function makeNoises(position) {
 // Listen messages from server
 socket.onmessage = function(event) {
     let position = JSON.parse(event.data);
-    if (messageNumber == 0) {
-        canvas.style.display = 'block';
-        onePlayer.style.display = 'inline';
-        twoPlayers.style.display = 'inline';
-        canvas.width = position.width * scale;
-        canvas.height = position.height * scale;
-        drawGameboard(position);
-        drawText(textSize, "Select game mode", 1, 0, 0, 3.5);
-        drawText(textSize, "Press 1 for Player vs CPU", 1, 0, 0, 1.40);
-        drawText(textSize, "Press 2 for Player vs Player", 1, 0, 0, 1.25);
-        drawText(textSize, "Press M to mute", 1, 0, 0, 1.13);
-        messageNumber++;
-    }
+    if (messageNumber == 0)
+        initGameboard(position);
     else if (messageNumber == 1)
         drawCountdown(position);
     else {
@@ -133,10 +135,16 @@ socket.onmessage = function(event) {
             makeNoises(position);
         drawGameboard(position);                // Where the play is drawn
     }
-    if (position.winner && position.score_left > position.score_right)
-        drawText(textSize, "Left player wins!!", 1, 0, 0, 3.5);
-    else if (position.winner && position.score_left < position.score_right)
-        drawText(textSize, "Right player wins!!", 1, 0, 0, 3.5);
+    if (position.winner) {
+        setTimeout(function() {
+            if (!muted)
+                winSound.play();
+            if (position.score_left > position.score_right)
+                drawText(textSize, "Left player wins!!", 1, 0, 0, 3.5);
+            else
+                drawText(textSize, "Right player wins!!", 1, 0, 0, 3.5);
+        }, 500);
+    }
 };
 
 // Listen for keydown events and mark the key pressed as pressed :)
