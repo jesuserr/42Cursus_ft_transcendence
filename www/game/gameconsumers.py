@@ -52,7 +52,7 @@ class GameConsumer(AsyncWebsocketConsumer):
     async def waiting_countdown(self):
         while True:
             if self.key_states:
-                if 'Digit0' in self.key_states:
+                if 'F15' in self.key_states:
                     break
             await asyncio.sleep(0.1)
             
@@ -85,5 +85,8 @@ class GameConsumer(AsyncWebsocketConsumer):
             await asyncio.sleep((FRAME_TIME - (time.time() - frame_start_time)) * 0.35)
             while time.time() - frame_start_time < FRAME_TIME:
                await asyncio.sleep((FRAME_TIME - (time.time() - frame_start_time)) * 0.0005)
+            while (self.key_states.get('F14')):
+                await self.send_gameboard(ball, left_paddle, right_paddle, score)
+                await asyncio.sleep(0.1)
             #print(ball.x, ball.y, ball_image.x, ball_image.y)
             #print((time.time() - frame_start_time) * 1000, ball.x_vel, self.room_group_name)

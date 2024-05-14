@@ -35,7 +35,7 @@ function initGameboard(position) {
     drawText(textSize, "Select game mode", 1, 0, 0, 3.5);
     drawText(textSize, "Press 1 for Player vs CPU", 1, 0, 0, 1.40);
     drawText(textSize, "Press 2 for Player vs Player", 1, 0, 0, 1.25);
-    drawText(textSize, "Press M to mute", 1, 0, 0, 1.13);
+    drawText(textSize, "M to mute / P to pause", 1, 0, 0, 1.13);
     messageNumber++;
 }
 
@@ -63,6 +63,8 @@ function drawGameboard(position) {
     drawText(textSize, `${position.score_right}`, 0, canvas.width * 0.75 - textSize / 2 * scale, canvas.height / 12, 0);
     if (muted)
         drawText(textSize / 3, "Muted", 0, canvas.width / 100, canvas.height * 0.02, 0);
+    if (keys['F14'])
+        drawText(textSize / 3, "Paused", 0, canvas.width * 0.95, canvas.height * 0.02, 0);
 }
 
 function drawCountdown(position) {
@@ -88,10 +90,11 @@ function drawCountdown(position) {
             countdown--;
         } else {
             clearInterval(countdownInterval);
-            keys['Digit0'] = true;
+            keys['F15'] = true;         // Informs server countdown is over
+            keys['F14'] = false;        // Set game state as unpaused
+            messageNumber++;            // Never come back here
         }
     }, 1000);
-    messageNumber++;
 }
 
 function drawText(size, text, center, x, y, height) {    
@@ -156,6 +159,8 @@ window.addEventListener('keydown', function(event) {
         players = 2;
     if (event.code == 'KeyM')
         muted = !muted;
+    if (event.code == 'KeyP')
+        keys['F14'] = !keys['F14'];
 });
 
 // Listen for keyup events and mark the key released as released :)
