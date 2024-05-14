@@ -5,7 +5,7 @@ const onePlayer = document.getElementById('playBtn1');
 const twoPlayers = document.getElementById('playBtn2');
 const textSize = 50;
 let countdown = 3;
-let keys = {}, prevKeys = {};
+let keys = {};
 let messageNumber = 0;
 let players = 0;
 let prevBallXSpeed = 0;
@@ -182,13 +182,10 @@ twoPlayers.addEventListener("click", function() {
 
 // ******************************* MAIN LOOP ***********************************
 
-// Function to send the state of all keys to the server only when there are changes
 function sendKeyStates() {
-    if (JSON.stringify(keys) !== JSON.stringify(prevKeys)) {
+    if (messageNumber > 0)
         socket.send(JSON.stringify(keys));
-        prevKeys = { ...keys };
-    }
-    requestAnimationFrame(sendKeyStates);   // v-sync fixed by monitor refresh
+    requestAnimationFrame(sendKeyStates);
 }
 
 // Start the animation loop
