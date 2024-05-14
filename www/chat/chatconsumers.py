@@ -42,7 +42,6 @@ class ChatConsumer(AsyncJsonWebsocketConsumer):
 
 	#When receive a message
     async def receive_json(self, data):
-        print(data)
         #check the command
         if 'GET_USER_LIST' in data:
             await self.sendUserList()
