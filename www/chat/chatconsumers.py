@@ -153,7 +153,8 @@ class ChatConsumer(AsyncJsonWebsocketConsumer):
         try:
             tmpprivate = PrivateRooms.objects.get(room_name=private_room_name)
         except:
-            tmpprivate = PrivateRooms(room_name=private_room_name).save()
+            tmpprivate = PrivateRooms(room_name=private_room_name)
+            tmpprivate.save()
         tmp = PrivateMessages()
         tmp.room_name = self.ChatRoom
         tmp.private_room_name = tmpprivate

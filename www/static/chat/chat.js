@@ -77,7 +77,6 @@ function Typing(data)
 //function to display the private message
 function New_Private_msg(data)
 {
-	console.log();
 	if (currentchat == data.emailto || currentchat == data.emailfrom)
 	{
 		
