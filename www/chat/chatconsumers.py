@@ -151,9 +151,9 @@ class ChatConsumer(AsyncJsonWebsocketConsumer):
     def sendPrivateMessageModel(self, data):
         private_room_name = sorted([self.user.email, data['SEND_PRIVATE_MSG']])
         try:
-            tmpprivate = PrivateRooms.objects.get(room_name=private_room_name)
+            tmpprivate = PrivateRooms.objects.get(room_name=self.ChatRoom, private_room_name=private_room_name)
         except:
-            tmpprivate = PrivateRooms(room_name=private_room_name)
+            tmpprivate = PrivateRooms(room_name=self.ChatRoom, private_room_name=private_room_name)
             tmpprivate.save()
         tmp = PrivateMessages()
         tmp.room_name = self.ChatRoom

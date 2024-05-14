@@ -24,7 +24,8 @@ class Messages(models.Model):
 	timestamp = models.DateTimeField(auto_now_add=True)
 
 class PrivateRooms(models.Model):
-	room_name = models.CharField(max_length=200, primary_key=True)
+	room_name = models.ForeignKey(ChatRooms, on_delete=models.CASCADE)
+	private_room_name = models.CharField(max_length=200, primary_key=True)
 
 class PrivateMessages(models.Model):
 	room_name = models.ForeignKey(ChatRooms, on_delete=models.CASCADE)
