@@ -1,8 +1,9 @@
+const roomName = JSON.parse(document.getElementById('room_name').textContent);
 //Connect the websocket to the server
 const socket = new WebSocket(
 	'wss://'
 	+ window.location.host
-	+ '/ws/chat/'
+	+ '/ws/chat/' + roomName + '/'
 );
 
 currentchat = '';

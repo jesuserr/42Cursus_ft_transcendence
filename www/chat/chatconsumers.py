@@ -9,8 +9,8 @@ from .models import Connected_Users, ChatRooms, Blocked_Users, Messages, Private
 class ChatConsumer(AsyncJsonWebsocketConsumer):
     #When the connection is established
     async def connect(self):
-        self.room_name = self.scope["url_route"]["kwargs"]
-        self.room_group_name = f"chat"
+        self.room_name = self.scope["url_route"]["kwargs"]["room_name"]
+        self.room_group_name = f"chat_{self.room_name}"
         await self.channel_layer.group_add(self.room_group_name, self.channel_name)
         #Check user is logged
         if 'sessionid' in self.scope['cookies'].keys():
@@ -251,7 +251,7 @@ class ChatConsumer(AsyncJsonWebsocketConsumer):
 	#Get list of connected users
     @database_sync_to_async
     def getConnectedUserList(self):
-        data = serializers.serialize('json', Connected_Users.objects.all(), fields=('displayname'))
+        data = serializers.serialize('json', Connected_Users.objects.filter(room_name=self.ChatRoom), fields=('displayname'))
         data_obj = json.loads(data)
         new_obj = {'SET_CONNECTED_USERS': data_obj,}
         return new_obj
@@ -287,8 +287,9 @@ class ChatConsumer(AsyncJsonWebsocketConsumer):
         try:
             self.ChatRoom = ChatRooms.objects.get(room_name=self.room_group_name)
         except:
-            self.ChatRoom = ChatRooms(room_name=self.room_group_name).save()
-           
+            self.ChatRoom = ChatRooms(room_name=self.room_group_name)
+            self.ChatRoom.save()
+                       
     #Resgister user
     @database_sync_to_async
     def registerUser(self):

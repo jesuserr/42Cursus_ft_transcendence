@@ -94,6 +94,7 @@
         <input id="BLOCK_SELECTED_USER" type="button" value="Block selected user" class="button">
         <input id="UNBLOCK_SELECTED_USER" type="button" value="Unblock selected user" class="button">
     </div>
+	{{ room_name|json_script:"room_name" }}
     <script src="/static/chat/chat.js"></script>
 </body>
 </html>
