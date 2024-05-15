@@ -1,15 +1,12 @@
 const canvas = document.getElementById('canvas');
 const ctx = canvas.getContext('2d');
 const scale = 1.00;
-const onePlayer = document.getElementById('playBtn1');
-const twoPlayers = document.getElementById('playBtn2');
 const textSize = 50;
 let countdown = 3;
 let keys = {};
 let messageNumber = 0;
-let players = 0;
 let prevBallXSpeed = 0;
-let muted = false;
+let muted = true;
 
 let countdownBeep = new Audio(`/static/game/sounds/beep_countdown.mp3`);
 let countdownGo = new Audio(`/static/game/sounds/go_countdown.mp3`);
@@ -27,16 +24,15 @@ const socket = new WebSocket(
 
 function initGameboard(position) {
     canvas.style.display = 'block';
-    onePlayer.style.display = 'inline';
-    twoPlayers.style.display = 'inline';
     canvas.width = position.width * scale;
     canvas.height = position.height * scale;
     drawGameboard(position);
-    drawText(textSize, "Select game mode", 1, 0, 0, 3.5);
-    drawText(textSize, "Press 1 for Player vs CPU", 1, 0, 0, 1.40);
-    drawText(textSize, "Press 2 for Player vs Player", 1, 0, 0, 1.25);
+    drawText(textSize, "Let's get ready", 1, 0, 0, 3.5);
+    drawText(textSize / 3, "Key W: Up", 0, canvas.width / 100, canvas.height * 0.95, 0);
+    drawText(textSize / 3, "Key S: Down", 0, canvas.width / 100, canvas.height * 0.98, 0);
+    drawText(textSize / 3, "Key \u2191: Up", 0, canvas.width * 0.91, canvas.height * 0.95, 0);
+    drawText(textSize / 3, "Key \u2193: Down", 0, canvas.width * 0.91, canvas.height * 0.98, 0);
     drawText(textSize, "M to mute / P to pause", 1, 0, 0, 1.13);
-    messageNumber++;
 }
 
 function drawGameboard(position) {
@@ -74,12 +70,18 @@ function drawGameboard(position) {
         drawText(textSize / 3, "Paused", 0, canvas.width * 0.95, canvas.height * 0.02, 0);
 }
 
-function drawCountdown(position) {
+function drawCountdown(position) {    
     let countdownInterval = setInterval(() => {
         if (countdown >= 0) {
             drawGameboard(position);
+            drawText(textSize / 3, "Key W: Up", 0, canvas.width / 100, canvas.height * 0.95, 0);
+            drawText(textSize / 3, "Key S: Down", 0, canvas.width / 100, canvas.height * 0.98, 0);
+            drawText(textSize / 3, "Key \u2191: Up", 0, canvas.width * 0.91, canvas.height * 0.95, 0);
+            drawText(textSize / 3, "Key \u2193: Down", 0, canvas.width * 0.91, canvas.height * 0.98, 0);
+            drawText(textSize, "M to mute / P to pause", 1, 0, 0, 1.13);
+            console.log(muted);            
             if (countdown > 0) {
-                drawText(textSize, `${countdown}`, 1, 0, 0, 3.5);
+                drawText(textSize, `${countdown}`, 1, 0, 0, 3.5);                
                 if (!muted)
                     countdownBeep.play();
             }
@@ -87,12 +89,6 @@ function drawCountdown(position) {
                 drawText(textSize, "Go!!", 1, 0, 0, 3.5);
                 if (!muted)
                     countdownGo.play();
-            }
-            drawText(textSize / 3, "Key W: Up", 0, canvas.width / 100, canvas.height * 0.95, 0);
-            drawText(textSize / 3, "Key S: Down", 0, canvas.width / 100, canvas.height * 0.98, 0);
-            if (players == 2) {
-                drawText(textSize / 3, "Key \u2191: Up", 0, canvas.width * 0.91, canvas.height * 0.95, 0);
-                drawText(textSize / 3, "Key \u2193: Down", 0, canvas.width * 0.91, canvas.height * 0.98, 0);
             }
             countdown--;
         } else {
@@ -136,10 +132,10 @@ function makeNoises(position) {
 // Listen messages from server
 socket.onmessage = function(event) {
     let position = JSON.parse(event.data);
-    if (messageNumber == 0)
+    if (messageNumber == 0) {
         initGameboard(position);
-    else if (messageNumber == 1)
         drawCountdown(position);
+    }
     else {
         if (!muted)
             makeNoises(position);
@@ -159,11 +155,7 @@ socket.onmessage = function(event) {
 
 // Listen for keydown events and mark the key pressed as pressed :)
 window.addEventListener('keydown', function(event) {
-    keys[event.code] = true;
-    if ((event.code) == 'Digit1' && players == 0)
-        players = 1;
-    if ((event.code) == 'Digit2' && players == 0)
-        players = 2;
+    keys[event.code] = true;    
     if (event.code == 'KeyM')
         muted = !muted;
     if (event.code == 'KeyP')
@@ -173,18 +165,6 @@ window.addEventListener('keydown', function(event) {
 // Listen for keyup events and mark the key released as released :)
 window.addEventListener('keyup', function(event) {
     keys[event.code] = false;
-});
-
-onePlayer.addEventListener("click", function() {
-    keys['Digit1'] = true;
-    if (players == 0)
-        players = 1;
-});
-
-twoPlayers.addEventListener("click", function() {
-    keys['Digit2'] = true;
-    if (players == 0)
-        players = 2;
 });
 
 // ******************************* MAIN LOOP ***********************************
