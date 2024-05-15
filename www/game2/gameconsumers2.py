@@ -28,11 +28,11 @@ class GameConsumer2(AsyncWebsocketConsumer):
         await self.channel_layer.group_discard(self.room_group_name, self.channel_name)
 
     async def receive(self, text_data):
-        players = self.rooms[self.room_group_name]['players']           # kind of alias
+        players = self.rooms[self.room_group_name]['players']           # alias
         if players['player1'] == self:
             self.rooms[self.room_group_name]['key_states_1'] = json.loads(text_data)
-        elif players.get('player2') == self:
-            self.rooms[self.room_group_name]['key_states_2'] = json.loads(text_data)        
+        elif players['player2'] == self:
+            self.rooms[self.room_group_name]['key_states_2'] = json.loads(text_data)
 
     async def send_gameboard(self, ball, l_paddle, r_paddle, score, player, paused):
         gameboard = {
@@ -47,37 +47,40 @@ class GameConsumer2(AsyncWebsocketConsumer):
         await self.send(text_data=json.dumps(gameboard))
 
     async def waiting_countdown(self):
+        room = self.rooms[self.room_group_name]                         # alias
         while True:
-            if self.rooms[self.room_group_name]['key_states_1'] and self.rooms[self.room_group_name]['key_states_2']:
-                if 'F15' in self.rooms[self.room_group_name]['key_states_1'] and 'F15' in self.rooms[self.room_group_name]['key_states_2']:
+            if room['key_states_1'] and room['key_states_2']:
+                if 'F15' in room['key_states_1'] and 'F15' in room['key_states_2']:
                     break
             await asyncio.sleep(0.1)
             
     async def playGame(self):
+        players = self.rooms[self.room_group_name]['players']           # alias
+        room = self.rooms[self.room_group_name]                         # alias
         left_paddle = Paddle(PADDLE_GAP, HEIGHT // 2 - PADDLE_HEIGHT // 2, PADDLE_WIDTH, PADDLE_HEIGHT)
         right_paddle = Paddle(WIDTH - PADDLE_GAP - PADDLE_WIDTH, HEIGHT // 2 - PADDLE_HEIGHT // 2, PADDLE_WIDTH, PADDLE_HEIGHT)
         ball = Ball(WIDTH // 2, HEIGHT // 2, BALL_RADIUS)
-        score = Score()        
-        await self.rooms[self.room_group_name]['players']['player1'].send_gameboard(ball, left_paddle, right_paddle, score, 1, False)
-        await self.rooms[self.room_group_name]['players']['player2'].send_gameboard(ball, left_paddle, right_paddle, score, 2, False)
+        score = Score()
+        await players['player1'].send_gameboard(ball, left_paddle, right_paddle, score, 1, False)
+        await players['player2'].send_gameboard(ball, left_paddle, right_paddle, score, 2, False)
         await self.waiting_countdown()
         while True:
             frame_start_time = time.time()
-            await self.rooms[self.room_group_name]['players']['player1'].send_gameboard(ball, left_paddle, right_paddle, score, 1, False)
-            await self.rooms[self.room_group_name]['players']['player2'].send_gameboard(ball, left_paddle, right_paddle, score, 2, False)
-            handle_left_paddle_movement(self.rooms[self.room_group_name]['key_states_1'], left_paddle)
-            handle_right_paddle_movement(self.rooms[self.room_group_name]['key_states_2'], right_paddle)
+            await players['player1'].send_gameboard(ball, left_paddle, right_paddle, score, 1, False)
+            await players['player2'].send_gameboard(ball, left_paddle, right_paddle, score, 2, False)
+            handle_left_paddle_movement(room['key_states_1'], left_paddle)
+            handle_right_paddle_movement(room['key_states_2'], right_paddle)
             ball.move()
             handle_collision(ball, left_paddle, right_paddle)
             score.update(ball)
             if score.won:
-                await self.rooms[self.room_group_name]['players']['player1'].send_gameboard(ball, left_paddle, right_paddle, score, 1, False)
-                await self.rooms[self.room_group_name]['players']['player2'].send_gameboard(ball, left_paddle, right_paddle, score, 2, False)
+                await players['player1'].send_gameboard(ball, left_paddle, right_paddle, score, 1, False)
+                await players['player2'].send_gameboard(ball, left_paddle, right_paddle, score, 2, False)
                 break
             await asyncio.sleep((FRAME_TIME - (time.time() - frame_start_time)) * 0.35)
             while time.time() - frame_start_time < FRAME_TIME:
                await asyncio.sleep((FRAME_TIME - (time.time() - frame_start_time)) * 0.0005)
-            while (self.rooms[self.room_group_name]['key_states_1'].get('F14') or self.rooms[self.room_group_name]['key_states_2'].get('F14')):
-                await self.rooms[self.room_group_name]['players']['player1'].send_gameboard(ball, left_paddle, right_paddle, score, 1, True)
-                await self.rooms[self.room_group_name]['players']['player2'].send_gameboard(ball, left_paddle, right_paddle, score, 2, True)                
+            while (room['key_states_1'].get('F14') or room['key_states_2'].get('F14')):
+                await players['player1'].send_gameboard(ball, left_paddle, right_paddle, score, 1, True)
+                await players['player2'].send_gameboard(ball, left_paddle, right_paddle, score, 2, True)
                 await asyncio.sleep(0.1)
