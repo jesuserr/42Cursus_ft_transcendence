@@ -40,6 +40,7 @@ INSTALLED_APPS = [
 	'deploy.apps.DeployConfig',
 	'chat.apps.ChatConfig',
 	'game.apps.GameConfig',
+	'game2.apps.Game2Config',
 ]
 
 MIDDLEWARE = [
