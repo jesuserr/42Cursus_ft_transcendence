@@ -9,40 +9,54 @@
     <link rel="stylesheet" href="/static/assets/fonts/fontawesome-all.min.css">
     <link rel="stylesheet" href="/static/assets/css/Navbar-Centered-Brand.css">
     <link rel="stylesheet" href="/static/assets/css/styles.css">
-	    <style>
-        .navbar-nav .nav-link,
-        .navbar-brand {
-            color: white !important; 
-        }
-    </style>
 </head>
 
 <body>
-    <nav class="navbar navbar-light navbar-expand-md py-3" style="">
-        <div class="container"><a class="navbar-brand d-flex align-items-center" href="/"><span class="bs-icon-sm bs-icon-rounded bs-icon-primary d-flex justify-content-center align-items-center me-2 bs-icon" style="background: var(--bs-purple);"><i class="fas fa-basketball-ball"></i></span><span>Pong 42</span></a><button data-bs-toggle="collapse" class="navbar-toggler" data-bs-target="#navcol-4"><span class="visually-hidden">Toggle navigation</span><span class="navbar-toggler-icon"></span></button>
-            <div class="collapse navbar-collapse flex-grow-0 order-md-first" id="navcol-4">
-                <ul class="navbar-nav me-auto">
-                    <li class="nav-item"></li>
-                    <li class="nav-item"></li>
-                    <li class="nav-item dropdown"><a class="dropdown-toggle nav-link" aria-expanded="false" data-bs-toggle="dropdown" href="">User Managemet</a>
-                        <div class="dropdown-menu"><a class="dropdown-item" href="/main/login">Login</a><a class="dropdown-item" href="/main/edituser">Edit profile</a>
-                            <div class="dropdown-divider"></div><a onclick="return confirm('Are you sure you want to close the session?')"class="dropdown-item" href="/main/logoff">Logoff</a>
+    <nav class="navbar navbar-light navbar-expand-md py-3">
+        <div class="container">
+            <a class="navbar-brand d-flex align-items-center" href="/">
+                <span class="bs-icon-sm bs-icon-rounded bs-icon-primary d-flex justify-content-center align-items-center me-2 bs-icon" style="background: var(--bs-purple);">
+                    <i class="fas fa-basketball-ball"></i>
+                </span>
+                <span>Pong 42</span>
+            </a>
+            <button data-bs-toggle="collapse" class="navbar-toggler" data-bs-target="#navcol-4">
+                <span class="visually-hidden">Toggle navigation</span>
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse justify-content-between" id="navcol-4">
+                <ul class="navbar-nav">
+                    <li class="nav-item dropdown">
+                        <a class="dropdown-toggle nav-link" aria-expanded="false" data-bs-toggle="dropdown" href="#">Deploy</a>
+                        <div class="dropdown-menu">
+                            <a class="dropdown-item" href="/deploy">Deploy</a>
+                            <a class="dropdown-item" href="/deploy/reboot">Reboot</a>
                         </div>
                     </li>
-                    <li class="nav-item dropdown"><a class="dropdown-toggle nav-link" aria-expanded="false" data-bs-toggle="dropdown" href="#">Deploy</a>
-                        <div class="dropdown-menu"><a class="dropdown-item" href="/deploy">Deploy</a><a class="dropdown-item" href="/deploy/reboot">Reboot</a></div>
+                    <li class="nav-item dropdown">
+                        <a class="dropdown-toggle nav-link" aria-expanded="false" data-bs-toggle="dropdown" href="#">Reboot</a>
+                        <div class="dropdown-menu">
+                            <a class="dropdown-item" href="/reboot">Reboot</a>
+                        </div>
                     </li>
-                    <li class="nav-item dropdown"><a class="dropdown-toggle nav-link" aria-expanded="false" data-bs-toggle="dropdown" href="#">Game&nbsp;</a>
-                        <div class="dropdown-menu"><a class="dropdown-item" href="#">First Item</a><a class="dropdown-item" href="#">Second Item</a><a class="dropdown-item" href="#">Third Item</a></div>
+                    <li class="nav-item dropdown">
+                        <a class="dropdown-toggle nav-link" aria-expanded="false" data-bs-toggle="dropdown" href="#">Game</a>
+                        <div class="dropdown-menu">
+                            <a class="dropdown-item" href="/game/GameTest/">Local game</a>
+                            <a class="dropdown-item" href="/game2/GameTest2/">Remote game</a>
+							<a class="dropdown-item" href="/chat">Chat</a>
+                        </div>
                     </li>
                 </ul>
-                <div class="d-md-none my-2"><button class="btn btn-light me-2" type="button">Button</button><button class="btn btn-primary" type="button">Button</button></div>
-			</div>
-			<div><p style="color:white">{{ User.displayname }}</p><img src="{{User.avatar}}" width="50" height="50" alt="" onerror="this.onerror=null; this.src='/static/avatars/default.jpg'"/></div>
-            <div class="d-none d-md-block"></div>
+                <div class="d-flex align-items-center">
+                    <p class="mb-0 me-3" style="color:white">{{ User.displayname }}</p>
+                    <img src="{{User.avatar}}" width="50" height="50" alt="" onerror="this.onerror=null; this.src='/static/avatars/default.jpg'"/>
+                </div>
+            </div>
         </div>
     </nav>
     <script src="/static/assets/bootstrap/js/bootstrap.min.js"></script>
 </body>
 
 </html>
+
