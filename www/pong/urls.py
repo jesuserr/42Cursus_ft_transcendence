@@ -25,4 +25,5 @@ urlpatterns = [
 	path("deploy/", include("deploy.urls")),
 	path("chat/", include("chat.urls")),
 	path("game/", include("game.urls")),
+	path("game2/", include("game2.urls")),
 ]
