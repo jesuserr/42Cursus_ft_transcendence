@@ -1,13 +1,11 @@
 <!DOCTYPE html>
 <html>
 <head>
-    <title>Pong Game</title>
+    <title>Player vs Player (Local game)</title>
     <link rel="stylesheet" href="/static/game4/pong.css">
 </head>
 <body id="gameContainer">
-    <canvas id="canvas"></canvas>
-    <button id="playBtn1" class="buttonStyle">1 Player</button>
-    <button id="playBtn2" class="buttonStyle">2 Players</button>
+    <canvas id="canvas"></canvas>    
 	{{ game_name|json_script:"game_name" }}
     <script src="/static/game4/pong.js"></script>
 </body>
