@@ -81,13 +81,11 @@ class Score:
 
 ################################### FUNCTIONS ##################################
 
-def handle_left_paddle_movement(key_states, left_paddle):
+def handle_paddle_movement(key_states, left_paddle, right_paddle):
     if key_states.get('KeyW') and left_paddle.y - PADDLE_VEL >= 0:
         left_paddle.move(up=True)
     if key_states.get('KeyS') and left_paddle.y + left_paddle.height + PADDLE_VEL <= HEIGHT:
         left_paddle.move(up=False)    
-
-def handle_right_paddle_movement(key_states, right_paddle):
     if key_states.get('ArrowUp') and right_paddle.y - PADDLE_VEL >= 0:
         right_paddle.move(up=True)
     if key_states.get('ArrowDown') and right_paddle.y + right_paddle.height + PADDLE_VEL <= HEIGHT:
