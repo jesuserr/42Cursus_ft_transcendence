@@ -26,4 +26,6 @@ urlpatterns = [
 	path("chat/", include("chat.urls")),
 	path("game/", include("game.urls")),
 	path("game2/", include("game2.urls")),
+    path("game3/", include("game3.urls")),
+    path("game4/", include("game4.urls")),
 ]
