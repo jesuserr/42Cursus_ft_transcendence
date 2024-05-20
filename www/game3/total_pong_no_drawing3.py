@@ -16,6 +16,7 @@ PADDLE_VEL = HEIGHT // 125 + 1      # Speed never 0 no matter HEIGHT
 BALL_X_MAX_VEL = 0.9 * WIDTH // 90 + 1    # Speed never 0 no matter WIDTH
 BALL_RADIUS = WIDTH // 100
 BALL_VEL_INC = 1.015                # Speed increment after each paddle hit
+AI_TIME_INTERVAL_BALL_POS = 1       # AI interval time to check ball pos in secs
 
 #################################### CLASSES ###################################
 
@@ -81,17 +82,28 @@ class Score:
 
 ################################### FUNCTIONS ##################################
 
-def handle_left_paddle_movement(key_states, left_paddle):
+def handle_paddle_movement(key_states, left_paddle, right_paddle):
     if key_states.get('KeyW') and left_paddle.y - PADDLE_VEL >= 0:
         left_paddle.move(up=True)
     if key_states.get('KeyS') and left_paddle.y + left_paddle.height + PADDLE_VEL <= HEIGHT:
-        left_paddle.move(up=False)    
+        left_paddle.move(up=False)
 
-def handle_right_paddle_movement(key_states, right_paddle):
-    if key_states.get('ArrowUp') and right_paddle.y - PADDLE_VEL >= 0:
-        right_paddle.move(up=True)
-    if key_states.get('ArrowDown') and right_paddle.y + right_paddle.height + PADDLE_VEL <= HEIGHT:
-        right_paddle.move(up=False)
+def computer_player(right_paddle, ball_image):
+    if ball_image.x_vel < 0:
+        if (right_paddle.y + right_paddle.height // 2 > HEIGHT // 2):
+            right_paddle.move(up=True)
+        if (right_paddle.y + right_paddle.height // 2 < HEIGHT // 2):
+            right_paddle.move(up=False)
+    else:
+        paddle_impact_point = ball_image.y + (((right_paddle.x - ball_image.x) / ball_image.x_vel) * ball_image.y_vel)
+        if paddle_impact_point < 0:
+            paddle_impact_point = -1 * paddle_impact_point
+        if paddle_impact_point > HEIGHT:
+            paddle_impact_point = (2 * HEIGHT) - paddle_impact_point
+        if paddle_impact_point < right_paddle.y + right_paddle.height * 0.15 and right_paddle.y - PADDLE_VEL >= 0:
+            right_paddle.move(up=True)
+        if paddle_impact_point > right_paddle.y + right_paddle.height * 0.85 and right_paddle.y + right_paddle.height + PADDLE_VEL <= HEIGHT:
+            right_paddle.move(up=False)
 
 def handle_collision(ball, left_paddle, right_paddle):
     if ball.y + ball.radius > HEIGHT:

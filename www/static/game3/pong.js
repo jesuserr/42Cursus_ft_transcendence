@@ -6,7 +6,7 @@ let countdown = 5;
 let keys = {};
 let messageNumber = 0;
 let prevBallXSpeed = 0;
-let muted = true;
+let muted = false;
 
 let countdownBeep = new Audio(`/static/game/sounds/beep_countdown.mp3`);
 let countdownGo = new Audio(`/static/game/sounds/go_countdown.mp3`);
@@ -27,43 +27,10 @@ function initGameboard(position) {
     canvas.width = position.width * scale;
     canvas.height = position.height * scale;
     drawGameboard(position);
-    if (position.player == 1) {
-        if (countdown % 2)
-            drawText(textSize, "Get ready!!", 0, canvas.width * 0.15, canvas.height / 3.5, 0);
-        drawText(textSize / 3, "Key W: Up", 0, canvas.width / 100, canvas.height * 0.95, 0);
-        drawText(textSize / 3, "Key S: Down", 0, canvas.width / 100, canvas.height * 0.98, 0);
-    }
-    else {
-        if (countdown % 2)
-            drawText(textSize, "Get ready!!", 0, canvas.width * 0.65, canvas.height / 3.5, 0);
-        drawText(textSize / 3, "Key \u2191: Up", 0, canvas.width * 0.91, canvas.height * 0.95, 0);
-        drawText(textSize / 3, "Key \u2193: Down", 0, canvas.width * 0.91, canvas.height * 0.98, 0);
-    }
-    drawText(textSize, "M to mute / P to pause", 1, 0, 0, 1.13);
-}
-
-function drawCountdown(position) {
-    let countdownInterval = setInterval(() => {
-        if (countdown >= 0) {
-            initGameboard(position);
-            if (countdown > 0) {
-                drawText(textSize, `${countdown}`, 1, 0, 0, 3.5);                
-                if (!muted)
-                    countdownBeep.play();
-            }
-            else {
-                drawText(textSize, "Go!!", 1, 0, 0, 3.5);
-                if (!muted)
-                    countdownGo.play();
-            }
-            countdown--;
-        } else {
-            clearInterval(countdownInterval);
-            keys['F15'] = true;         // Informs server countdown is over
-            keys['F14'] = false;        // Set game state as unpaused
-            messageNumber++;            // Never come back here
-        }
-    }, 1000);
+    drawText(textSize, "Get Ready!!", 1, 0, 0, 3.5);
+    drawText(textSize, "M to mute / P to pause", 1, 0, 0, 1.3);
+    drawText(textSize / 3, "Key W: Up", 0, canvas.width / 100, canvas.height * 0.95, 0);
+    drawText(textSize / 3, "Key S: Down", 0, canvas.width / 100, canvas.height * 0.98, 0);
 }
 
 function drawGameboard(position) {
@@ -97,8 +64,36 @@ function drawGameboard(position) {
     drawText(textSize, `${position.score_right}`, 0, canvas.width * 0.75 - textSize / 2 * scale, canvas.height / 12, 0);
     if (muted)
         drawText(textSize / 3, "Muted", 0, canvas.width / 100, canvas.height * 0.02, 0);
-    if ((keys['F14'] || position.paused) && messageNumber >= 1)
+    if (keys['F14'])
         drawText(textSize / 3, "Paused", 0, canvas.width * 0.95, canvas.height * 0.02, 0);
+}
+
+function drawCountdown(position) {
+    initGameboard(position);
+    let countdownInterval = setInterval(() => {
+        if (countdown >= 0) {
+            drawGameboard(position);            
+            drawText(textSize, "M to mute / P to pause", 1, 0, 0, 1.3);
+            drawText(textSize / 3, "Key W: Up", 0, canvas.width / 100, canvas.height * 0.95, 0);
+            drawText(textSize / 3, "Key S: Down", 0, canvas.width / 100, canvas.height * 0.98, 0);            
+            if (countdown > 0) {
+                drawText(textSize, `${countdown}`, 1, 0, 0, 3.5);
+                if (!muted)
+                    countdownBeep.play();
+            }
+            else {
+                drawText(textSize, "Go!!", 1, 0, 0, 3.5);
+                if (!muted)
+                    countdownGo.play();
+            }
+            countdown--;
+        } else {
+            clearInterval(countdownInterval);
+            keys['F15'] = true;         // Informs server countdown is over
+            keys['F14'] = false;        // Set game state as unpaused
+            messageNumber++;            // Never come back here
+        }
+    }, 1000);
 }
 
 function drawText(size, text, center, x, y, height) {    
@@ -133,10 +128,8 @@ function makeNoises(position) {
 // Listen messages from server
 socket.onmessage = function(event) {
     let position = JSON.parse(event.data);
-    if (messageNumber == 0) {
-        initGameboard(position);
+    if (messageNumber == 0)
         drawCountdown(position);
-    }
     else {
         if (!muted)
             makeNoises(position);
@@ -147,9 +140,9 @@ socket.onmessage = function(event) {
             if (!muted)
                 winSound.play();
             if (position.score_left > position.score_right)
-                drawText(textSize, "Left player wins!!", 1, 0, 0, 3.5);
+                drawText(textSize, "Player wins!!", 1, 0, 0, 3.5);
             else
-                drawText(textSize, "Right player wins!!", 1, 0, 0, 3.5);
+                drawText(textSize, "CPU wins!!", 1, 0, 0, 3.5);
         }, 500);
     }
 };
