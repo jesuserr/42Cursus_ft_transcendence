@@ -36,7 +36,8 @@ function initGameboard(position) {
     drawText(textSize, "Press 1 for Player vs CPU", 1, 0, 0, 1.40);
     drawText(textSize, "Press 2 for Player vs Player", 1, 0, 0, 1.25);
     drawText(textSize, "M to mute / P to pause", 1, 0, 0, 1.13);
-    messageNumber++;
+    if (messageNumber == 0)
+        messageNumber++;
 }
 
 function drawGameboard(position) {
@@ -70,7 +71,7 @@ function drawGameboard(position) {
     drawText(textSize, `${position.score_right}`, 0, canvas.width * 0.75 - textSize / 2 * scale, canvas.height / 12, 0);
     if (muted)
         drawText(textSize / 3, "Muted", 0, canvas.width / 100, canvas.height * 0.02, 0);
-    if (keys['F14'])
+    if (keys['F14'] && messageNumber > 1)
         drawText(textSize / 3, "Paused", 0, canvas.width * 0.95, canvas.height * 0.02, 0);
 }
 
