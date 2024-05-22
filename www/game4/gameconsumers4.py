@@ -60,9 +60,9 @@ class GameConsumer4(AsyncWebsocketConsumer):
             if score.won:
                 await self.send_gameboard(ball, left_paddle, right_paddle, score)
                 break
-            await asyncio.sleep((FRAME_TIME - (time.time() - frame_start_time)) * 0.35)
-            while time.time() - frame_start_time < FRAME_TIME:
-               await asyncio.sleep((FRAME_TIME - (time.time() - frame_start_time)) * 0.0005)
             while (self.key_states.get('F14')):
                 await self.send_gameboard(ball, left_paddle, right_paddle, score)
                 await asyncio.sleep(0.1)
+            await asyncio.sleep((FRAME_TIME - (time.time() - frame_start_time)) * 0.35)
+            while time.time() - frame_start_time < FRAME_TIME:
+                await asyncio.sleep((FRAME_TIME - (time.time() - frame_start_time)) * 0.0005)

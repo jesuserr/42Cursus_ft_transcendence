@@ -7,6 +7,7 @@ let keys = {};
 let messageNumber = 0;
 let prevBallXSpeed = 0;
 let muted = false;
+let position = 0;
 
 let countdownBeep = new Audio(`/static/game/sounds/beep_countdown.mp3`);
 let countdownGo = new Audio(`/static/game/sounds/go_countdown.mp3`);
@@ -16,17 +17,15 @@ let pointSound = new Audio(`/static/game/sounds/point.mp3`);
 let winSound = new Audio(`/static/game/sounds/win.mp3`);
 
 const gameName = JSON.parse(document.getElementById('game_name').textContent);
-const socket = new WebSocket(
-	'wss://' + window.location.host + '/ws/game4/' + gameName + '/'
-);
+const socket = new WebSocket('wss://' + window.location.host + '/ws/game4/' + gameName + '/');
 
 // ***************************** DRAW FUNCTIONS ********************************
 
-function initGameboard(position) {
+function initGameboard() {
     canvas.style.display = 'block';
     canvas.width = position.width * scale;
     canvas.height = position.height * scale;
-    drawGameboard(position);
+    drawGameboard();
     drawText(textSize, "Get Ready!!", 1, 0, 0, 3.5);
     drawText(textSize, "M to mute / P to pause", 1, 0, 0, 1.3);
     drawText(textSize / 3, "Key W: Up", 0, canvas.width / 100, canvas.height * 0.95, 0);
@@ -35,7 +34,7 @@ function initGameboard(position) {
     drawText(textSize / 3, "Key \u2193: Down", 0, canvas.width * 0.91, canvas.height * 0.98, 0);
 }
 
-function drawGameboard(position) {
+function drawGameboard() {
     // Clear the canvas and draw central dotted line
     ctx.clearRect(0, 0, canvas.width, canvas.height);
     ctx.beginPath();
@@ -70,11 +69,11 @@ function drawGameboard(position) {
         drawText(textSize / 3, "Paused", 0, canvas.width * 0.95, canvas.height * 0.02, 0);
 }
 
-function drawCountdown(position) {
-    initGameboard(position);
+function drawCountdown() {
+    initGameboard();
     let countdownInterval = setInterval(() => {
         if (countdown >= 0) {
-            drawGameboard(position);            
+            drawGameboard();            
             drawText(textSize, "M to mute / P to pause", 1, 0, 0, 1.3);
             drawText(textSize / 3, "Key W: Up", 0, canvas.width / 100, canvas.height * 0.95, 0);
             drawText(textSize / 3, "Key S: Down", 0, canvas.width / 100, canvas.height * 0.98, 0);
@@ -113,7 +112,7 @@ function drawText(size, text, center, x, y, height) {
 
 // ***************************** SOUND EFFECTS *********************************
 
-function makeNoises(position) {
+function makeNoises() {
     if ((position.ball_x <= position.left_paddle_x || 
     position.ball_x >= position.right_paddle_x + position.paddle_width) &&
     pointSound.paused)
@@ -131,25 +130,10 @@ function makeNoises(position) {
 
 // Listen messages from server
 socket.onmessage = function(event) {
-    let position = JSON.parse(event.data);
+    position = JSON.parse(event.data);
     if (messageNumber == 0)
-        drawCountdown(position);
-    else {
-        if (!muted)
-            makeNoises(position);
-        drawGameboard(position);                // Where the play is drawn
-    }
-    if (position.winner) {
-        setTimeout(function() {
-            if (!muted)
-                winSound.play();
-            if (position.score_left > position.score_right)
-                drawText(textSize, "Left player wins!!", 1, 0, 0, 3.5);
-            else
-                drawText(textSize, "Right player wins!!", 1, 0, 0, 3.5);
-        }, 500);
-    }
-};
+        drawCountdown();
+}
 
 // Listen for keydown events and mark the key pressed as pressed :)
 window.addEventListener('keydown', function(event) {
@@ -167,11 +151,27 @@ window.addEventListener('keyup', function(event) {
 
 // ******************************* MAIN LOOP ***********************************
 
-function sendKeyStates() {
-    if (messageNumber > 0)
+function animationLoop() {
+    if (messageNumber > 0) {
+        drawGameboard(position);
+        if (!muted)
+            makeNoises();
+        if (position.winner) {
+            pointSound.play();
+            setTimeout(function() {
+                if (!muted)
+                    winSound.play();
+                if (position.score_left > position.score_right)
+                    drawText(textSize, "Left Player wins!!", 1, 0, 0, 3.5);
+                else
+                    drawText(textSize, "Right Player wins!!", 1, 0, 0, 3.5);
+            }, 500);
+            return;
+        }
         socket.send(JSON.stringify(keys));
-    requestAnimationFrame(sendKeyStates);
+    }
+    requestAnimationFrame(animationLoop);
 }
 
 // Start the animation loop
-sendKeyStates();
+animationLoop();
