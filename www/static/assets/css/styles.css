@@ -4,4 +4,12 @@ html, body {
 	background-image: url('giphy.gif');
 	color: white;
 	font-family: 'Press Start 2P';
- }
+}
+
+.form-email {
+	display: flex;
+	justify-content: center;
+	align-items: center;
+	text-align: center;
+	
+}
