@@ -6,7 +6,8 @@ let countdown = 5;
 let keys = {};
 let messageNumber = 0;
 let prevBallXSpeed = 0;
-let muted = true;
+let muted = false;
+let position = 0;
 
 let countdownBeep = new Audio(`/static/game/sounds/beep_countdown.mp3`);
 let countdownGo = new Audio(`/static/game/sounds/go_countdown.mp3`);
@@ -16,19 +17,19 @@ let pointSound = new Audio(`/static/game/sounds/point.mp3`);
 let winSound = new Audio(`/static/game/sounds/win.mp3`);
 
 const gameName = JSON.parse(document.getElementById('game_name').textContent);
-const socket = new WebSocket(
-	'wss://' + window.location.host + '/ws/game2/' + gameName + '/'
-);
+const socket = new WebSocket('wss://' + window.location.host + '/ws/game2/' + gameName + '/');
 
 // ***************************** DRAW FUNCTIONS ********************************
 
-function initGameboard(position) {
+function initGameboard() {
     canvas.style.display = 'block';
     canvas.width = position.width * scale;
     canvas.height = position.height * scale;
-    drawGameboard(position);
+    drawGameboard();
     if (position.player == 1) {
-        if (countdown % 2)
+        if (messageNumber == 0)
+            drawText(textSize, "Waiting for Player 2...", 1, 0, 0, 3.5);
+        else if (countdown % 2)
             drawText(textSize, "Get ready!!", 0, canvas.width * 0.15, canvas.height / 3.5, 0);
         drawText(textSize / 3, "Key W: Up", 0, canvas.width / 100, canvas.height * 0.95, 0);
         drawText(textSize / 3, "Key S: Down", 0, canvas.width / 100, canvas.height * 0.98, 0);
@@ -39,13 +40,13 @@ function initGameboard(position) {
         drawText(textSize / 3, "Key \u2191: Up", 0, canvas.width * 0.91, canvas.height * 0.95, 0);
         drawText(textSize / 3, "Key \u2193: Down", 0, canvas.width * 0.91, canvas.height * 0.98, 0);
     }
-    drawText(textSize, "M to mute / P to pause", 1, 0, 0, 1.13);
+    drawText(textSize, "Press M to mute", 1, 0, 0, 1.3); 
 }
 
-function drawCountdown(position) {
+function drawCountdown() {
     let countdownInterval = setInterval(() => {
         if (countdown >= 0) {
-            initGameboard(position);
+            initGameboard();
             if (countdown > 0) {
                 drawText(textSize, `${countdown}`, 1, 0, 0, 3.5);                
                 if (!muted)
@@ -59,14 +60,13 @@ function drawCountdown(position) {
             countdown--;
         } else {
             clearInterval(countdownInterval);
-            keys['F15'] = true;         // Informs server countdown is over
-            keys['F14'] = false;        // Set game state as unpaused
+            keys['F15'] = true;         // Informs server countdown is over            
             messageNumber++;            // Never come back here
         }
     }, 1000);
 }
 
-function drawGameboard(position) {
+function drawGameboard() {
     // Clear the canvas and draw central dotted line
     ctx.clearRect(0, 0, canvas.width, canvas.height);
     ctx.beginPath();
@@ -97,8 +97,6 @@ function drawGameboard(position) {
     drawText(textSize, `${position.score_right}`, 0, canvas.width * 0.75 - textSize / 2 * scale, canvas.height / 12, 0);
     if (muted)
         drawText(textSize / 3, "Muted", 0, canvas.width / 100, canvas.height * 0.02, 0);
-    if ((keys['F14'] || position.paused) && messageNumber >= 1)
-        drawText(textSize / 3, "Paused", 0, canvas.width * 0.95, canvas.height * 0.02, 0);
 }
 
 function drawText(size, text, center, x, y, height) {    
@@ -114,7 +112,7 @@ function drawText(size, text, center, x, y, height) {
 
 // ***************************** SOUND EFFECTS *********************************
 
-function makeNoises(position) {
+function makeNoises() {
     if ((position.ball_x <= position.left_paddle_x || 
     position.ball_x >= position.right_paddle_x + position.paddle_width) &&
     pointSound.paused)
@@ -132,35 +130,20 @@ function makeNoises(position) {
 
 // Listen messages from server
 socket.onmessage = function(event) {
-    let position = JSON.parse(event.data);
+    position = JSON.parse(event.data);
     if (messageNumber == 0) {
-        initGameboard(position);
-        drawCountdown(position);
+        initGameboard();
+        messageNumber++;
     }
-    else {
-        if (!muted)
-            makeNoises(position);
-        drawGameboard(position);                // Where the play is drawn
-    }
-    if (position.winner) {
-        setTimeout(function() {
-            if (!muted)
-                winSound.play();
-            if (position.score_left > position.score_right)
-                drawText(textSize, "Left player wins!!", 1, 0, 0, 3.5);
-            else
-                drawText(textSize, "Right player wins!!", 1, 0, 0, 3.5);
-        }, 500);
-    }
-};
+    else if (messageNumber == 1)
+        drawCountdown();
+}
 
 // Listen for keydown events and mark the key pressed as pressed :)
 window.addEventListener('keydown', function(event) {
     keys[event.code] = true;    
     if (event.code == 'KeyM')
         muted = !muted;
-    if (event.code == 'KeyP')
-        keys['F14'] = !keys['F14'];
 });
 
 // Listen for keyup events and mark the key released as released :)
@@ -170,11 +153,27 @@ window.addEventListener('keyup', function(event) {
 
 // ******************************* MAIN LOOP ***********************************
 
-function sendKeyStates() {
-    if (messageNumber > 0)
+function animationLoop() {
+    if (messageNumber > 1) {
+        drawGameboard(position);
+        if (!muted)
+            makeNoises();
+        if (position.winner) {
+            pointSound.play();
+            setTimeout(function() {
+                if (!muted)
+                    winSound.play();
+                if (position.score_left > position.score_right)
+                    drawText(textSize, "Left player wins!!", 1, 0, 0, 3.5);
+                else
+                    drawText(textSize, "Right player wins!!", 1, 0, 0, 3.5);
+            }, 500);
+            return;
+        }
         socket.send(JSON.stringify(keys));
-    requestAnimationFrame(sendKeyStates);
+    }
+    requestAnimationFrame(animationLoop);
 }
 
 // Start the animation loop
-sendKeyStates();
+animationLoop();
