@@ -1,5 +1,33 @@
 {% include "main_menu.html" %}    
 
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, shrink-to-fit=no">
+    <title>Teletext Style Page</title>
+    <link rel="stylesheet" href="/static/assets/bootstrap/css/bootstrap.min.css">
+    <link rel="stylesheet" href="/static/assets/css/custom.css">
+</head>
+<body>
+    <div class="container d-flex align-items-center play-container">
+        <div class="row justify-content-center">
+            <div class="col-md-5 teletext-box m-2">
+                <h1 class="teletext-title">1 vs 1</h1>
+                <p class="teletext-description">play locally with a partner</p>
+                <button class="btn teletext-button" href="/game/GameTest/">Play</button>
+            </div>
+            <div class="col-md-5 teletext-box m-2">
+                <h1 class="teletext-title">1 vs IA</h1>
+                <p class="teletext-description">play with our amazing AI</p>
+                <button class="btn teletext-button" href="/game2/GameTest2/">Play</button>
+            </div>
+        </div>
+    </div>
+</body>
+</html>
+
+
 <body>
 	<center>
 		{{ Data.ErrorMsg }}

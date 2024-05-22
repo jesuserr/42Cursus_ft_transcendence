@@ -1,0 +1,49 @@
+@import "https://fonts.googleapis.com/css?family=Press%20Start%202P";
+
+body {
+    background-color: black;
+    font-family: 'Press Start 2P';
+}
+
+.play-container {
+	margin-top: 6rem;
+}
+
+.teletext-box {
+    background-color: #000000;
+    padding: 20px;
+    border-radius: 5px;
+	justify-content: center;
+	align-items: center;
+	text-align: center;
+	padding: 2.5em;
+}
+
+.teletext-title {
+    color: #FFFF00; 
+    font-size: 2rem;
+    text-shadow: 2px 2px #000000;
+}
+
+.teletext-description {
+    color: #FFFFFF;
+    font-size: 1.2rem;
+    margin: 10px 0;
+	padding: 2em;
+}
+
+.teletext-button {
+    background-color: #0000FF;
+    color: #FFFFFF;
+    border: none;
+    padding: 15px 20px;
+    font-size: 1rem;
+    cursor: pointer;
+    text-shadow: 1px 1px #000000;
+	width: 10rem;
+}
+
+.teletext-button:hover {
+    background-color: #000088;
+}
+
