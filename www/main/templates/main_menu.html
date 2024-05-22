@@ -27,8 +27,11 @@
             <div class="collapse navbar-collapse justify-content-between" id="navcol-4">
                 <ul class="navbar-nav">
                     <li class="nav-item dropdown">
-                        <a class="dropdown-toggle nav-link" aria-expanded="false" data-bs-toggle="dropdown" href="#">Deploy</a>
+                        <a class="dropdown-toggle nav-link" aria-expanded="false" data-bs-toggle="dropdown" href="#">User management</a>
                         <div class="dropdown-menu">
+                        	<a class="dropdown-item" href="/main/login">Login</a>
+							<a class="dropdown-item" href="/main/edituser">Edit profile</a>
+                            <a onclick="return confirm('Are you sure you want to close the session?')"class="dropdown-item" href="/main/logoff">Logoff</a>
                             <a class="dropdown-item" href="/deploy">Deploy</a>
                             <a class="dropdown-item" href="/deploy/reboot">Reboot</a>
                         </div>
@@ -44,9 +47,6 @@
                         <div class="dropdown-menu">
                             <a class="dropdown-item" href="/game/GameTest/">Local game</a>
                             <a class="dropdown-item" href="/game2/GameTest2/">Remote game</a>
-                            <a class="dropdown-item" href="/game3/GameTest/">Player vs CPU (Local game)</a>
-                            <a class="dropdown-item" href="/game4/GameTest/">Player vs Player (Local game)</a>
-                            <a class="dropdown-item" href="https://t.ly/OokXQ">Pong 3D</a>
 							<a class="dropdown-item" href="/chat">Chat</a>
                         </div>
                     </li>
