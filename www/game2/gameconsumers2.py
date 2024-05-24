@@ -7,7 +7,8 @@ from . import total_pong_no_drawing2
 from .total_pong_no_drawing2 import *
 
 class GameConsumer2(AsyncWebsocketConsumer):
-    rooms = {}
+    rooms = {}  # Class variable shared by all instances of this class
+                # aliases used in code below cannot be used when there is an assignment
 
     async def connect(self):
         self.room_name = self.scope["url_route"]["kwargs"]["game_name"]
@@ -21,15 +22,26 @@ class GameConsumer2(AsyncWebsocketConsumer):
         if self.room_group_name not in self.rooms.keys():
             self.rooms[self.room_group_name] = {"players": {"player1": self}}
             self.rooms[self.room_group_name]["key_states_1"] = {}
+            self.rooms[self.room_group_name]["player1_connected"] = True
+            self.rooms[self.room_group_name]["player2_connected"] = False
             await self.rooms[self.room_group_name]['players']['player1'].send_gameboard(self.ball, self.left_paddle, self.right_paddle, self.score, 1)
         else:
             self.rooms[self.room_group_name]['players']['player2'] = self
             self.rooms[self.room_group_name]["key_states_2"] = {}
+            self.rooms[self.room_group_name]["player2_connected"] = True
             await self.rooms[self.room_group_name]['players']['player2'].send_gameboard(self.ball, self.left_paddle, self.right_paddle, self.score, 2)
-            asyncio.ensure_future(self.playGame())                  # Init game
+            asyncio.ensure_future(self.playGame())                      # Init game on players2 instance
         #print("Players Info: " + str(self.rooms[self.room_group_name]))
 
     async def disconnect(self, close_code):
+        players = self.rooms[self.room_group_name]['players']           # alias
+        room = self.rooms[self.room_group_name]                         # alias
+        if players['player1'] == self:
+            self.rooms[self.room_group_name]["player1_connected"] = False
+        elif players['player2'] == self:
+            self.rooms[self.room_group_name]["player2_connected"] = False
+        if not room["player2_connected"] and not room["player1_connected"]:
+            del self.rooms[self.room_group_name]                        # delete room_group_name from dictionary when both players disconnect
         await self.channel_layer.group_discard(self.room_group_name, self.channel_name)
 
     async def receive(self, text_data):
@@ -53,11 +65,21 @@ class GameConsumer2(AsyncWebsocketConsumer):
 
     async def waiting_countdown(self):
         room = self.rooms[self.room_group_name]                         # alias
-        while True:
+        while room["player2_connected"] and room["player1_connected"]:
             if room['key_states_1'] and room['key_states_2']:
                 if 'F15' in room['key_states_1'] and 'F15' in room['key_states_2']:
                     break
             await asyncio.sleep(0.1)
+
+    async def managing_disconnection(self):
+        room = self.rooms[self.room_group_name]                         # alias
+        if not room["player2_connected"]:
+            self.score.left_score = WINNING_SCORE
+            self.score.right_score = 0
+        elif not room["player1_connected"]:
+            self.score.right_score = WINNING_SCORE
+            self.score.left_score = 0
+        self.score.won = True
             
     async def playGame(self):
         players = self.rooms[self.room_group_name]['players']           # alias
@@ -74,10 +96,15 @@ class GameConsumer2(AsyncWebsocketConsumer):
             self.ball.move()
             handle_collision(self.ball, self.left_paddle, self.right_paddle)
             self.score.update(self.ball)
+            if not room["player2_connected"] or not room["player1_connected"]:
+                await self.managing_disconnection()                     # check if any player disconnected
             if self.score.won:
                 await players['player1'].send_gameboard(self.ball, self.left_paddle, self.right_paddle, self.score, 1)
                 await players['player2'].send_gameboard(self.ball, self.left_paddle, self.right_paddle, self.score, 2)
-                break            
+                break
             await asyncio.sleep((FRAME_TIME - (time.time() - frame_start_time)) * 0.35)
             while time.time() - frame_start_time < FRAME_TIME:
                await asyncio.sleep((FRAME_TIME - (time.time() - frame_start_time)) * 0.0005)
+        #print("Players Info: " + str(self.rooms[self.room_group_name]))
+        await players['player1'].close()                                # close websocket connections
+        await players['player2'].close()
