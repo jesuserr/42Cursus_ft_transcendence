@@ -167,6 +167,8 @@ function animationLoop() {
                     drawText(textSize, "Left player wins!!", 1, 0, 0, 3.5);
                 else
                     drawText(textSize, "Right player wins!!", 1, 0, 0, 3.5);
+                if (position.player == 0)
+                    drawText(textSize, "Opponent disconnected!!", 1, 0, 0, 1.3);
             }, 500);
             return;
         }

@@ -24,12 +24,12 @@ class GameConsumer2(AsyncWebsocketConsumer):
             self.rooms[self.room_group_name]["key_states_1"] = {}
             self.rooms[self.room_group_name]["player1_connected"] = True
             self.rooms[self.room_group_name]["player2_connected"] = False
-            await self.rooms[self.room_group_name]['players']['player1'].send_gameboard(self.ball, self.left_paddle, self.right_paddle, self.score, 1)
+            await self.rooms[self.room_group_name]['players']['player1'].send_gameboard(self.ball, self.left_paddle, self.right_paddle, self.score, PLAYER_1)
         else:
             self.rooms[self.room_group_name]['players']['player2'] = self
             self.rooms[self.room_group_name]["key_states_2"] = {}
             self.rooms[self.room_group_name]["player2_connected"] = True
-            await self.rooms[self.room_group_name]['players']['player2'].send_gameboard(self.ball, self.left_paddle, self.right_paddle, self.score, 2)
+            await self.rooms[self.room_group_name]['players']['player2'].send_gameboard(self.ball, self.left_paddle, self.right_paddle, self.score, PLAYER_2)
             asyncio.ensure_future(self.playGame())                      # Init game on players2 instance
         #print("Players Info: " + str(self.rooms[self.room_group_name]))
 
@@ -84,23 +84,26 @@ class GameConsumer2(AsyncWebsocketConsumer):
     async def playGame(self):
         players = self.rooms[self.room_group_name]['players']           # alias
         room = self.rooms[self.room_group_name]                         # alias
-        await players['player1'].send_gameboard(self.ball, self.left_paddle, self.right_paddle, self.score, 1)
-        await players['player2'].send_gameboard(self.ball, self.left_paddle, self.right_paddle, self.score, 2)
+        await players['player1'].send_gameboard(self.ball, self.left_paddle, self.right_paddle, self.score, PLAYER_1)
+        await players['player2'].send_gameboard(self.ball, self.left_paddle, self.right_paddle, self.score, PLAYER_2)
         await self.waiting_countdown()
         while True:
             frame_start_time = time.time()
-            await players['player1'].send_gameboard(self.ball, self.left_paddle, self.right_paddle, self.score, 1)
-            await players['player2'].send_gameboard(self.ball, self.left_paddle, self.right_paddle, self.score, 2)
+            await players['player1'].send_gameboard(self.ball, self.left_paddle, self.right_paddle, self.score, PLAYER_1)
+            await players['player2'].send_gameboard(self.ball, self.left_paddle, self.right_paddle, self.score, PLAYER_2)
             handle_left_paddle_movement(room['key_states_1'], self.left_paddle)
             handle_right_paddle_movement(room['key_states_2'], self.right_paddle)
             self.ball.move()
             handle_collision(self.ball, self.left_paddle, self.right_paddle)
             self.score.update(self.ball)
-            if not room["player2_connected"] or not room["player1_connected"]:
-                await self.managing_disconnection()                     # check if any player disconnected
+            if not room["player2_connected"] or not room["player1_connected"]:      # check if any player got disconnected
+                await self.managing_disconnection()
+                await players['player1'].send_gameboard(self.ball, self.left_paddle, self.right_paddle, self.score, DISCONNECTED)
+                await players['player2'].send_gameboard(self.ball, self.left_paddle, self.right_paddle, self.score, DISCONNECTED)
+                break
             if self.score.won:
-                await players['player1'].send_gameboard(self.ball, self.left_paddle, self.right_paddle, self.score, 1)
-                await players['player2'].send_gameboard(self.ball, self.left_paddle, self.right_paddle, self.score, 2)
+                await players['player1'].send_gameboard(self.ball, self.left_paddle, self.right_paddle, self.score, PLAYER_1)
+                await players['player2'].send_gameboard(self.ball, self.left_paddle, self.right_paddle, self.score, PLAYER_2)
                 break
             await asyncio.sleep((FRAME_TIME - (time.time() - frame_start_time)) * 0.35)
             while time.time() - frame_start_time < FRAME_TIME:
