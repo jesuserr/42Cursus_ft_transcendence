@@ -171,7 +171,8 @@ function animationLoop() {
         if (!muted)
             makeNoises();
         if (position.winner) {
-            pointSound.play();
+            if (!muted)
+                pointSound.play();
             setTimeout(function() {
                 if (!muted)
                     winSound.play();
