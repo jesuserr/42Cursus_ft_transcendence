@@ -9,6 +9,7 @@ let countdown = 5;
 let keys = {};
 let messageNumber = 0;
 let prevBallXSpeed = 0;
+let prevBallXPos = 0;
 let muted = false;
 let position = 0;
 
@@ -57,7 +58,12 @@ function drawGameboard() {
     ctx.stroke();
     // Draw the ball
     ctx.beginPath();
-    ctx.arc(position.ball_x * scale, position.ball_y * scale, position.ball_radius * scale, 0, 2 * Math.PI, false);
+    if (position.ball_x == prevBallXPos && position.ball_x != position.width / 2 && position.ball_y != position.height / 2)
+        ctx.arc((position.ball_x + position.ball_x_speed) * scale, (position.ball_y + position.ball_y_speed) * scale, position.ball_radius * scale, 0, 2 * Math.PI, false);
+    else {
+        ctx.arc(position.ball_x * scale, position.ball_y * scale, position.ball_radius * scale, 0, 2 * Math.PI, false);
+        prevBallXPos = position.ball_x;
+    }
     ctx.fillStyle = 'red';
     ctx.fill();
     // Draw the paddles with gradient
