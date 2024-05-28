@@ -1,7 +1,10 @@
 const canvas = document.getElementById('canvas');
 const ctx = canvas.getContext('2d');
-const scale = 1.00;
 const textSize = 50;
+let scale = 1.00;
+let scaleFactor = 0.867;
+let browserHeight = 0;
+let browserWidth = 0;
 let countdown = 5;
 let keys = {};
 let messageNumber = 0;
@@ -21,10 +24,38 @@ const socket = new WebSocket('wss://' + window.location.host + '/ws/game4/' + ga
 
 // ***************************** DRAW FUNCTIONS ********************************
 
+function drawCountdown() {
+    initGameboard();
+    let countdownInterval = setInterval(() => {
+        if (countdown >= 0) {
+            drawGameboard();            
+            drawText(textSize, "M to mute / P to pause", 1, 0, 0, 1.3);
+            drawText(textSize / 3, "Key W: Up", 0, canvas.width / 100, canvas.height * 0.95, 0);
+            drawText(textSize / 3, "Key S: Down", 0, canvas.width / 100, canvas.height * 0.98, 0);
+            drawText(textSize / 3, "Key \u2191: Up", 0, canvas.width * 0.91, canvas.height * 0.95, 0);
+            drawText(textSize / 3, "Key \u2193: Down", 0, canvas.width * 0.91, canvas.height * 0.98, 0);      
+            if (countdown > 0) {
+                drawText(textSize, `${countdown}`, 1, 0, 0, 3.5);
+                if (!muted)
+                    countdownBeep.play();
+            }
+            else {
+                drawText(textSize, "Go!!", 1, 0, 0, 3.5);
+                if (!muted)
+                    countdownGo.play();
+            }
+            countdown--;
+        } else {
+            clearInterval(countdownInterval);
+            keys['F15'] = true;         // Informs server countdown is over
+            keys['F14'] = false;        // Set game state as unpaused
+            messageNumber++;            // Never come back here
+        }
+    }, 1000);
+}
+
 function initGameboard() {
     canvas.style.display = 'block';
-    canvas.width = position.width * scale;
-    canvas.height = position.height * scale;
     drawGameboard();
     drawText(textSize, "Get Ready!!", 1, 0, 0, 3.5);
     drawText(textSize, "M to mute / P to pause", 1, 0, 0, 1.3);
@@ -35,6 +66,8 @@ function initGameboard() {
 }
 
 function drawGameboard() {
+    if (window.innerHeight != browserHeight || window.innerWidth != browserWidth)
+        determineScale();
     // Clear the canvas and draw central dotted line
     ctx.clearRect(0, 0, canvas.width, canvas.height);
     ctx.beginPath();
@@ -69,34 +102,15 @@ function drawGameboard() {
         drawText(textSize / 3, "Paused", 0, canvas.width * 0.95, canvas.height * 0.02, 0);
 }
 
-function drawCountdown() {
-    initGameboard();
-    let countdownInterval = setInterval(() => {
-        if (countdown >= 0) {
-            drawGameboard();            
-            drawText(textSize, "M to mute / P to pause", 1, 0, 0, 1.3);
-            drawText(textSize / 3, "Key W: Up", 0, canvas.width / 100, canvas.height * 0.95, 0);
-            drawText(textSize / 3, "Key S: Down", 0, canvas.width / 100, canvas.height * 0.98, 0);
-            drawText(textSize / 3, "Key \u2191: Up", 0, canvas.width * 0.91, canvas.height * 0.95, 0);
-            drawText(textSize / 3, "Key \u2193: Down", 0, canvas.width * 0.91, canvas.height * 0.98, 0);      
-            if (countdown > 0) {
-                drawText(textSize, `${countdown}`, 1, 0, 0, 3.5);
-                if (!muted)
-                    countdownBeep.play();
-            }
-            else {
-                drawText(textSize, "Go!!", 1, 0, 0, 3.5);
-                if (!muted)
-                    countdownGo.play();
-            }
-            countdown--;
-        } else {
-            clearInterval(countdownInterval);
-            keys['F15'] = true;         // Informs server countdown is over
-            keys['F14'] = false;        // Set game state as unpaused
-            messageNumber++;            // Never come back here
-        }
-    }, 1000);
+function determineScale() {
+    browserWidth = window.innerWidth;
+    browserHeight = window.innerHeight;
+    let scaleX = scaleFactor * browserWidth / position.width;
+    let scaleY = scaleFactor * browserHeight / position.height;
+    scale = Math.min(scaleX, scaleY);
+    canvas.width = position.width * scale;
+    canvas.height = position.height * scale;
+    canvas.style.border = `${scale * 10}px solid white`;
 }
 
 function drawText(size, text, center, x, y, height) {    

@@ -1,6 +1,6 @@
 #canvas {
     background-color: black;
-    border: 10px solid green;
+    /* border: 10px solid green; */
     display: none;
     margin: 0 auto;
 }
