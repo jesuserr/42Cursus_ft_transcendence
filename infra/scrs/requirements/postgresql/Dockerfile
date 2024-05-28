@@ -1,5 +1,5 @@
 FROM	debian:bullseye
-
+RUN		apt-get update
 RUN		apt-get update
 RUN		apt-get install -y build-essential postgresql libpq5 libpq-dev sudo netcat
 RUN		apt-get -y upgrade

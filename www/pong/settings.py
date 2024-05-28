@@ -11,6 +11,8 @@ https://docs.djangoproject.com/en/4.2/ref/settings/
 """
 
 from pathlib import Path
+from datetime import timedelta
+from django.conf import settings
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
@@ -20,7 +22,9 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 # See https://docs.djangoproject.com/en/4.2/howto/deployment/checklist/
 
 # SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = 'django-insecure-1u9)&_4%4r9#2qskf0zxo5xjlortm)%*x1a4j@3-!5sb$k)rpc'
+SECRET_KEY = '7f0259de0ca106c0d22ac38d5f50a15d8b401015d1e72bf861404d0c3481bfbd61b5bc6dde0bcb7aa4bc9cf04ad84f6bc636'
+
+AUTH_USER_MODEL = 'main.User'
 
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
@@ -43,6 +47,9 @@ INSTALLED_APPS = [
 	'game2.apps.Game2Config',
     'game3.apps.Game3Config',
     'game4.apps.Game4Config',
+	'rest_framework',
+    'rest_framework_simplejwt',
+    'corsheaders',
 ]
 
 MIDDLEWARE = [
@@ -54,6 +61,12 @@ MIDDLEWARE = [
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
 ]
+
+SIMPLE_JWT = {
+    "SIGNING_KEY": settings.SECRET_KEY,
+    'ALGORITHM': 'HS256',
+    'ACCESS_TOKEN_LIFETIME': timedelta(minutes=1440),
+}
 
 ROOT_URLCONF = 'pong.urls'
 
