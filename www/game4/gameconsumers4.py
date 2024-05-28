@@ -3,8 +3,8 @@ import asyncio
 import time
 from datetime import datetime
 from channels.generic.websocket import AsyncWebsocketConsumer
-from . import total_pong_no_drawing4
-from .total_pong_no_drawing4 import *
+from . import gamecore4
+from .gamecore4 import *
 
 class GameConsumer4(AsyncWebsocketConsumer):
     def __init__(self, *args, **kwargs):

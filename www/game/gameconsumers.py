@@ -4,8 +4,8 @@ import time
 import copy                         # To copy classes without copy constructor
 from datetime import datetime
 from channels.generic.websocket import AsyncWebsocketConsumer
-from . import total_pong_no_drawing
-from .total_pong_no_drawing import *
+from . import gamecore
+from .gamecore import *
 
 class GameConsumer(AsyncWebsocketConsumer):
     def __init__(self, *args, **kwargs):

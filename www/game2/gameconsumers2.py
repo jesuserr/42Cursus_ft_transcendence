@@ -3,8 +3,8 @@ import asyncio
 import time
 from datetime import datetime
 from channels.generic.websocket import AsyncWebsocketConsumer
-from . import total_pong_no_drawing2
-from .total_pong_no_drawing2 import *
+from . import gamecore2
+from .gamecore2 import *
 
 class GameConsumer2(AsyncWebsocketConsumer):
     rooms = {}  # Class variable shared by all instances of this class
