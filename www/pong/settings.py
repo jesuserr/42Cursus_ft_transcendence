@@ -24,7 +24,8 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 # SECURITY WARNING: keep the secret key used in production secret!
 SECRET_KEY = '7f0259de0ca106c0d22ac38d5f50a15d8b401015d1e72bf861404d0c3481bfbd61b5bc6dde0bcb7aa4bc9cf04ad84f6bc636'
 
-AUTH_USER_MODEL = 'main.User'
+#tengo que hacer que funcione la BBDD 
+#AUTH_USER_MODEL = 'main.User'
 
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
