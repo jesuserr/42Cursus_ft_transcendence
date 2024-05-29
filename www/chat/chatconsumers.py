@@ -269,7 +269,7 @@ class ChatConsumer(AsyncJsonWebsocketConsumer):
     #Get the user list from model
     @database_sync_to_async
     def getUserList(self):
-        data = serializers.serialize('json', User.objects.all(), fields=('displayname'))
+        data = serializers.serialize('json', User.objects.filter(is_superuser=False), fields=('email', 'displayname'))
         data_obj = json.loads(data)
         new_obj = {'SET_USER_LIST': data_obj,}
         return new_obj

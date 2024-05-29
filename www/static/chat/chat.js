@@ -35,7 +35,7 @@ socket.onmessage = function (e) {
 	//parse the data
 	const data = JSON.parse(e.data);
 	//To deleted, show the data in the console
-	//console.log(data);
+	console.log(data);
 	//check the command and run the appropriate function
 	//if the command is "User", display the user's displayname
 	if (data.hasOwnProperty("SET_USERNAME")) 
@@ -205,13 +205,13 @@ function Set_User_List(data) {
     }
     for (let i = 0; i < data.SET_USER_LIST.length; i++) {
         let user = data.SET_USER_LIST[i];
-        if (USERID != user.pk) {
-            if (options.has(user.pk)) {
-                options.delete(user.pk);
+        if (USERID != user.fields.email) {
+            if (options.has(user.fields.email)) {
+                options.delete(user.fields.email);
             }
             else {
                 let option = document.createElement("option");
-                option.value = user.pk;
+                option.value = user.fields.email;
                 option.text = user.fields.displayname;
                 select.add(option, null);
             }
