@@ -8,16 +8,19 @@ from .models import User, SecurityCode
 import hashlib
 import time
 import os
+from  .token import *
+
 
 ## EditProfile ##
 
 def editProfile(request):
     FormData = {'Action': 'Save Changes', 'SecurityCode': '/"', 'TopMsg': '', 'ErrorMsg': ''}
     try:
-        tmpuser = User.objects.get(sessionid=request.COOKIES.get('sessionid'))
+        token = request.COOKIES.get('tokenid')
+        tmpuser = get_user_from_token(token)
         if (tmpuser.fourtytwo == True):
             FormData['ErrorMsg'] = 'You are using a 42 network user, to edit the profile you have to do it from the intranet.'
-            response = render(request, 'main_index.html', {'Data': FormData, 'User': tmpuser})
+            response = render(request, 'main_showmsg.html', {'Data': FormData, 'User': tmpuser})
             return response
     except:
         return HttpResponseRedirect("/")
@@ -49,7 +52,7 @@ def editProfile(request):
 
 def logoffPage(request):
        response = render(request, 'main_index.html')
-       response.set_cookie('sessionid', '')
+       response.set_cookie('tokenid', '')
        return response
 
 ## Login ##
@@ -58,7 +61,8 @@ FormDataLogin = {'ErrorMsg': '', 'URL42': os.environ["URL42"]}
 def loginPage(request):
     if not request.method == 'POST':
            try:
-                  tmpuser = User.objects.get(sessionid=request.COOKIES.get('sessionid'))
+                token = request.COOKIES.get('tokenid')
+                tmpuser = get_user_from_token(token)
            except:
                   tmpuser = ''
            form = LoginUserForm()
@@ -69,7 +73,11 @@ def loginPage(request):
                   tmpuser = User.objects.get(email=request.POST['email'])
                   if (tmpuser.password == hashlib.sha256(str(request.POST['password']).encode('utf-8')).hexdigest()):
                         response = render(request, 'main_index.html', {'User': tmpuser})
-                        response.set_cookie('sessionid', tmpuser.sessionid)
+                        refresh = get_tokens_for_user(tmpuser)
+                        tokenid = str(refresh)
+                        tmpuser.tokenid = tokenid
+                        tmpuser.save()
+                        response.set_cookie('tokenid', tokenid)
                         return response
                   else:
                     FormDataLogin['ErrorMsg'] = 'The password is wrong'
@@ -90,7 +98,8 @@ def loginPage(request):
 
 def maniPage(request):
     try:
-        tmp = User.objects.get(sessionid=request.COOKIES.get('sessionid'))
+        token = request.COOKIES.get('tokenid')
+        tmp = get_user_from_token(token)
         response = render(request, 'main_index.html', {'User': tmp})
         return response
     except:
@@ -103,7 +112,7 @@ FormData = {'Action': '', 'SecurityCode': 'input type=text name=securitycode max
 #New user form asking for your email address
 def newUserEmailform(request, error = ''):
         try:
-               tmpuser = User.objects.get(sessionid=request.COOKIES.get('sessionid'))
+               tmpuser = User.objects.get(tokenid=request.COOKIES.get('tokenid'))
         except:
             tmpuser = ''
         FormData['Action'] = 'Check Email'
@@ -176,10 +185,8 @@ def NewUserCodeOkFillData(request):
         try:
                 tmp = SecurityCode.objects.get(email=request.POST['email'])
                 if (request.POST['password'] != "" and tmp.code == request.POST['securitycode'] and form.is_valid()):
-                        sessionid = hashlib.sha256(str(time.time()).encode('utf-8')).hexdigest()
                         formtmp = form.save(commit=False)
                         formtmp.password = hashlib.sha256(str(request.POST['password']).encode('utf-8')).hexdigest()
-                        formtmp.sessionid = sessionid
                         formtmp.save()
                         ##add / to url of avatar
                         tmpuser =  User.objects.get(email=formtmp.email)
@@ -187,8 +194,12 @@ def NewUserCodeOkFillData(request):
                             tmpuser.avatar = '/' + str(tmpuser.avatar)
                             tmpuser.save()
                         ##end add / to url of avatar
+                        refresh = RefreshToken.for_user(tmpuser)
+                        tokenid = str(refresh.access_token)
+                        tmpuser.tokenid = tokenid
+                        tmpuser.save()
                         response = render(request, 'main_index.html', {'User': tmpuser})
-                        response.set_cookie('sessionid', sessionid)
+                        response.set_cookie('tokenid', tokenid)
                         return response
         except:
                 return HttpResponseRedirect("/")      

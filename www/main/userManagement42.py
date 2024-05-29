@@ -6,13 +6,14 @@ import requests
 import os
 import hashlib
 import time
+from  .token import *
 
 ## Fourty Two Login 
 
 FormData = {'ErrorMsg': ''}
 
 def fourtytwoLogin(request):
-	try:
+	#try:
 		## Get information for 42 network
 		accesscode = request.GET.get('code')
 		url = 'https://api.intra.42.fr/oauth/token'
@@ -29,28 +30,30 @@ def fourtytwoLogin(request):
 			## check if the user exist in teh database
 			tmpuser =  User.objects.get(email=UserProfile42['email'])
 			## if the user exist however is not from 42 network
-			if (tmpuser[fourtytwoLogin] == False):
+			if (tmpuser.fourtytwo == False):
 				FormData['ErrorMsg'] = 'This email is already registered in the database but not through 42 network.'
 				response = render(request, 'main_index.html', {'Data': FormData})
 				return response
 		except:
 			## if a new user
 			tmpuser = User()
+			
 		##common code for new and already in the database	
-		sessionid = hashlib.sha256(str(time.time()).encode('utf-8')).hexdigest()
-		tmpuser.email = UserProfile42['email']
+		refresh = RefreshToken.for_user(tmpuser)
+		tokenid = str(refresh.access_token)
 		tmpuser.password = hashlib.sha256(str(time.time()).encode('utf-8')).hexdigest()
+		tmpuser.email = UserProfile42['email']
 		tmpuser.displayname = UserProfile42['displayname']
 		tmpuser.avatar = UserProfile42['image']['link']
-		tmpuser.sessionid = sessionid
+		tmpuser.tokenid = tokenid
 		tmpuser.fourtytwo = True
 		tmpuser.save()
 		FormData['ErrorMsg'] = 'You have logged in with the user of 42'
 		response = render(request, 'main_index.html', {'Data': FormData, 'User': tmpuser})
-		response.set_cookie('sessionid', sessionid)
+		response.set_cookie('tokenid', tokenid)
 		return response
 
-	except:
+	#except:
 		FormData['ErrorMsg'] = 'Something was not working as expected, contact the administrator (probably the connectivity data to 42 is not correct).'
 		response = render(request, 'main_index.html', {'Data': FormData})
 		return response

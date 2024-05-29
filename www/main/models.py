@@ -35,7 +35,7 @@ class User(AbstractBaseUser, PermissionsMixin):
     password = models.CharField(max_length=500, verbose_name = "Password")
     displayname = models.CharField(max_length=50, verbose_name = "Display Name", unique=True)
     avatar = models.ImageField(verbose_name= "Avatar", blank=True, upload_to = 'static/avatars/',)
-    sessionid = models.CharField(max_length=500, blank=True)
+    tokenid = models.CharField(max_length=5000, blank=True)
     fourtytwo = models.BooleanField(default=False)
     is_staff = models.BooleanField(default=False)
     is_superuser = models.BooleanField(default=False)
@@ -49,4 +49,3 @@ class SecurityCode(models.Model):
 
     
   
-

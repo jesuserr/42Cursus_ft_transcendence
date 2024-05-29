@@ -5,6 +5,7 @@ from main.models import User
 from channels.db import database_sync_to_async
 from django.core import serializers
 from .models import Connected_Users, ChatRooms, Blocked_Users, Messages, PrivateRooms, PrivateMessages
+from  main.token import *
 
 class ChatConsumer(AsyncJsonWebsocketConsumer):
     #When the connection is established
@@ -13,7 +14,7 @@ class ChatConsumer(AsyncJsonWebsocketConsumer):
         self.room_group_name = f"chat_{self.room_name}"
         await self.channel_layer.group_add(self.room_group_name, self.channel_name)
         #Check user is logged
-        if 'sessionid' in self.scope['cookies'].keys():
+        if 'tokenid' in self.scope['cookies'].keys():
             await self.getUsernameModel()
             if bool(self.user):
                 await self.accept()
@@ -280,7 +281,8 @@ class ChatConsumer(AsyncJsonWebsocketConsumer):
     @database_sync_to_async
     def getUsernameModel(self):
         try:
-            self.user = User.objects.get(sessionid=self.scope['cookies']['sessionid'])
+            token = self.scope['cookies']['tokenid']
+            self.user = get_user_from_token(token)
         except:
             self.user = ""
         try:
