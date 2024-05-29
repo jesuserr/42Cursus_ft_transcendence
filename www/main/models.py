@@ -43,7 +43,7 @@ class User(AbstractBaseUser, PermissionsMixin):
         (2, 'SMS'),
         (3, 'App'),
     )
-    user_type = models.IntegerField(choices=USER_TYPE_CHOICES)
+    tfa_type = models.IntegerField(choices=USER_TYPE_CHOICES, default=1)
     is_staff = models.BooleanField(default=False)
     is_superuser = models.BooleanField(default=False)
     USERNAME_FIELD = 'email'
