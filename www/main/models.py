@@ -37,13 +37,14 @@ class User(AbstractBaseUser, PermissionsMixin):
     avatar = models.ImageField(verbose_name= "Avatar", blank=True, upload_to = 'static/avatars/',)
     tokenid = models.CharField(max_length=5000, blank=True)
     fourtytwo = models.BooleanField(default=False)
-    tfa = models.BooleanField(default=False)
+    tfa = models.BooleanField(default=False, verbose_name = "Two Factor Authentication")
     USER_TYPE_CHOICES = (
-        (1, 'Email'),
+        (1, 'EMAIL'),
         (2, 'SMS'),
-        (3, 'App'),
+        (3, 'APP'),
     )
     tfa_type = models.IntegerField(choices=USER_TYPE_CHOICES, default=1)
+    phone_number = models.CharField(max_length=15, blank=True)
     is_staff = models.BooleanField(default=False)
     is_superuser = models.BooleanField(default=False)
     USERNAME_FIELD = 'email'
