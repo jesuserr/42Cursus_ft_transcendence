@@ -143,6 +143,23 @@ socket.onmessage = function(event) {
     position = JSON.parse(event.data);
     if (messageNumber == 0)
         drawCountdown();
+    else {
+        drawGameboard(position);
+        if (!muted)
+            makeNoises();
+        if (position.winner) {
+            if (!muted)
+                pointSound.play();
+            setTimeout(function() {
+                if (!muted)
+                    winSound.play();
+                if (position.score_left > position.score_right)
+                    drawText(textSize, "Player wins!!", 1, 0, 0, 3.5);
+                else
+                    drawText(textSize, "CPU wins!!", 1, 0, 0, 3.5);
+            }, 500);
+        }
+    }
 }
 
 // Listen for keydown events and mark the key pressed as pressed :)
@@ -162,26 +179,11 @@ window.addEventListener('keyup', function(event) {
 // ******************************* MAIN LOOP ***********************************
 
 function animationLoop() {
-    if (messageNumber > 0) {
-        drawGameboard(position);
-        if (!muted)
-            makeNoises();
-        if (position.winner) {
-            if (!muted)
-                pointSound.play();
-            setTimeout(function() {
-                if (!muted)
-                    winSound.play();
-                if (position.score_left > position.score_right)
-                    drawText(textSize, "Player wins!!", 1, 0, 0, 3.5);
-                else
-                    drawText(textSize, "CPU wins!!", 1, 0, 0, 3.5);
-            }, 500);
-            return;
-        }
-        socket.send(JSON.stringify(keys));
+    if (!position.winner) {
+        if (messageNumber > 0)
+            socket.send(JSON.stringify(keys));
+        requestAnimationFrame(animationLoop);
     }
-    requestAnimationFrame(animationLoop);
 }
 
 // Start the animation loop
