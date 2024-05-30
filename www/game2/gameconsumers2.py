@@ -59,7 +59,7 @@ class GameConsumer2(AsyncWebsocketConsumer):
             "right_paddle_x": r_paddle.x, "right_paddle_y": r_paddle.y,
             "paddle_width": r_paddle.width, "paddle_height": r_paddle.height,
             "score_left": score.left_score, "score_right": score.right_score,
-            "winner": score.won, "player": player, "ball_y_speed": ball.y_vel
+            "winner": score.won, "player": player
             }
         await self.send(text_data=json.dumps(gameboard))
 
@@ -105,9 +105,9 @@ class GameConsumer2(AsyncWebsocketConsumer):
                 await players['player1'].send_gameboard(self.ball, self.left_paddle, self.right_paddle, self.score, PLAYER_1)
                 await players['player2'].send_gameboard(self.ball, self.left_paddle, self.right_paddle, self.score, PLAYER_2)
                 break
-            await asyncio.sleep((FRAME_TIME - (time.time() - frame_start_time)) * 0.2)
+            await asyncio.sleep((FRAME_TIME - (time.time() - frame_start_time)) * 0.35)
             while time.time() - frame_start_time < FRAME_TIME:
-                await asyncio.sleep((FRAME_TIME - (time.time() - frame_start_time)) * 0.0002)
+               await asyncio.sleep((FRAME_TIME - (time.time() - frame_start_time)) * 0.0005)
         #print("Players Info: " + str(self.rooms[self.room_group_name]))
         await players['player1'].close()                                # close websocket connections
         await players['player2'].close()
