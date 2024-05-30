@@ -89,25 +89,26 @@ class GameConsumer2(AsyncWebsocketConsumer):
         await self.waiting_countdown()
         while True:
             frame_start_time = time.time()
-            await players['player1'].send_gameboard(self.ball, self.left_paddle, self.right_paddle, self.score, PLAYER_1)
-            await players['player2'].send_gameboard(self.ball, self.left_paddle, self.right_paddle, self.score, PLAYER_2)
-            handle_left_paddle_movement(room['key_states_1'], self.left_paddle)
-            handle_right_paddle_movement(room['key_states_2'], self.right_paddle)
-            self.ball.move()
-            handle_collision(self.ball, self.left_paddle, self.right_paddle)
-            self.score.update(self.ball)
             if not room["player2_connected"] or not room["player1_connected"]:      # check if any player got disconnected
                 await self.managing_disconnection()
                 await players['player1'].send_gameboard(self.ball, self.left_paddle, self.right_paddle, self.score, DISCONNECTED)
                 await players['player2'].send_gameboard(self.ball, self.left_paddle, self.right_paddle, self.score, DISCONNECTED)
                 break
+            else:
+                await players['player1'].send_gameboard(self.ball, self.left_paddle, self.right_paddle, self.score, PLAYER_1)
+                await players['player2'].send_gameboard(self.ball, self.left_paddle, self.right_paddle, self.score, PLAYER_2)
+            handle_left_paddle_movement(room['key_states_1'], self.left_paddle)
+            handle_right_paddle_movement(room['key_states_2'], self.right_paddle)
+            self.ball.move()
+            handle_collision(self.ball, self.left_paddle, self.right_paddle)
+            self.score.update(self.ball)
             if self.score.won:
                 await players['player1'].send_gameboard(self.ball, self.left_paddle, self.right_paddle, self.score, PLAYER_1)
                 await players['player2'].send_gameboard(self.ball, self.left_paddle, self.right_paddle, self.score, PLAYER_2)
                 break
-            await asyncio.sleep((FRAME_TIME - (time.time() - frame_start_time)) * 0.35)
+            await asyncio.sleep((FRAME_TIME - (time.time() - frame_start_time)) * 0.2)
             while time.time() - frame_start_time < FRAME_TIME:
-               await asyncio.sleep((FRAME_TIME - (time.time() - frame_start_time)) * 0.0005)
+               await asyncio.sleep((FRAME_TIME - (time.time() - frame_start_time)) * 0.0002)
         #print("Players Info: " + str(self.rooms[self.room_group_name]))
         await players['player1'].close()                                # close websocket connections
         await players['player2'].close()

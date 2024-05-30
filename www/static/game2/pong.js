@@ -90,27 +90,33 @@ function determineScale() {
     canvas.style.border = `${scale * 10}px solid white`;
 }
 
-function drawCountdown() {
-    let countdownInterval = setInterval(() => {
-        if (countdown >= 0) {
-            initGameboard();
-            if (countdown > 0) {
-                drawText(textSize, `${countdown}`, 1, 0, 0, 3.5);                
-                if (!muted)
-                    countdownBeep.play();
+function drawCountdown() {    
+    if (position.player != 0) {
+        let countdownInterval = setInterval(() => {
+            if (countdown >= 0 && position.player !=0) {
+                initGameboard();
+                if (countdown > 0) {
+                    drawText(textSize, `${countdown}`, 1, 0, 0, 3.5);                
+                    if (!muted)
+                        countdownBeep.play();
+                }
+                else {
+                    drawText(textSize, "Go!!", 1, 0, 0, 3.5);
+                    if (!muted)
+                        countdownGo.play();
+                }
+                countdown--;
+            } else {
+                clearInterval(countdownInterval);
+                keys['F15'] = true;         // Informs server countdown is over            
+                messageNumber++;            // Never come back here
             }
-            else {
-                drawText(textSize, "Go!!", 1, 0, 0, 3.5);
-                if (!muted)
-                    countdownGo.play();
-            }
-            countdown--;
-        } else {
-            clearInterval(countdownInterval);
-            keys['F15'] = true;         // Informs server countdown is over            
-            messageNumber++;            // Never come back here
-        }
-    }, 1000);
+        }, 1000);
+    }
+    else {
+        drawGameboard(position);
+        setTimeout(function() {drawWinners()}, 500);
+    }
 }
 
 function drawText(size, text, center, x, y, height) {    
@@ -122,6 +128,17 @@ function drawText(size, text, center, x, y, height) {
         ctx.fillText(text, (canvas.width - textWidth) / 2, canvas.height / height);
     else
         ctx.fillText(text, x, y);
+}
+
+function drawWinners() {
+    if (!muted)
+        winSound.play();
+    if (position.score_left > position.score_right)
+        drawText(textSize, "Left player wins!!", 1, 0, 0, 3.5);
+    else
+        drawText(textSize, "Right player wins!!", 1, 0, 0, 3.5);
+    if (position.player == 0)
+        drawText(textSize, "Opponent disconnected!!", 1, 0, 0, 1.3);
 }
 
 // ***************************** SOUND EFFECTS *********************************
@@ -151,6 +168,16 @@ socket.onmessage = function(event) {
     }
     else if (messageNumber == 1)
         drawCountdown();
+    else {        
+        drawGameboard(position);
+        if (!muted)
+            makeNoises();
+        if (position.winner) {
+            if (!muted)
+                pointSound.play();            
+            setTimeout(function() {drawWinners()}, 500);
+        }
+    }
 }
 
 // Listen for keydown events and mark the key pressed as pressed :)
@@ -168,28 +195,11 @@ window.addEventListener('keyup', function(event) {
 // ******************************* MAIN LOOP ***********************************
 
 function animationLoop() {
-    if (messageNumber > 1) {
-        drawGameboard(position);
-        if (!muted)
-            makeNoises();
-        if (position.winner) {
-            if (!muted)
-                pointSound.play();
-            setTimeout(function() {
-                if (!muted)
-                    winSound.play();
-                if (position.score_left > position.score_right)
-                    drawText(textSize, "Left player wins!!", 1, 0, 0, 3.5);
-                else
-                    drawText(textSize, "Right player wins!!", 1, 0, 0, 3.5);
-                if (position.player == 0)
-                    drawText(textSize, "Opponent disconnected!!", 1, 0, 0, 1.3);
-            }, 500);
-            return;
-        }
-        socket.send(JSON.stringify(keys));
+    if (!position.winner) {
+        if (messageNumber > 1)
+            socket.send(JSON.stringify(keys));
+        requestAnimationFrame(animationLoop);
     }
-    requestAnimationFrame(animationLoop);
 }
 
 // Start the animation loop
