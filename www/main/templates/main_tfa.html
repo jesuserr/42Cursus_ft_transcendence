@@ -1,0 +1,39 @@
+{% include "main_menu.html" %}    
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, shrink-to-fit=no">
+    <title>Pong 42 New User</title>
+    <link rel="stylesheet" href="/static/assets/bootstrap/css/bootstrap.min.css">
+    <link rel="stylesheet" href="/static/assets/css/styles.css">
+    <link rel="stylesheet" href="/static/assets/css/custom.css">
+</head>
+<style>
+	.card {
+    	width: 70%;
+		color: black;
+	}
+</style>
+<body>
+    <div class="container d-flex justify-content-center align-items-center" style="margin-top: 10%;">
+        <div class="card p-4 bg-light mb-3 form-email">
+             <form method="POST" class="post-form" enctype="multipart/form-data">
+				 <div style="padding: 1em;">
+				{{ Data.TopMsg }}
+				</div>
+				{% csrf_token %}
+                <{{ Data.SecurityCode }}>
+				<div style="padding: 1em;">
+                {{ form.as_p }}
+				</div>
+                <button type="submit" class="btn btn-primary" style="background-color: black; border: black; padding: 0.8em;">{{ Data.Action }}</button>
+            </form>
+			<div style="padding: 1em; color: red;">
+            {{ Data.ErrorMsg }}
+			</div>
+        </div>
+    </div>
+</body>
+</html>
+

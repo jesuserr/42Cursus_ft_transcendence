@@ -1,5 +1,5 @@
 from django.http import HttpResponse, HttpResponseRedirect
-from .forms import NewUserForm, LoginUserForm
+from .forms import NewUserForm, LoginUserForm, EditProfileUserForm, EditProfile42UserForm
 from django.shortcuts import render
 from django import forms
 from django.core.mail import send_mail
@@ -9,6 +9,7 @@ import hashlib
 import time
 import os
 from  .token import *
+from .userManagementTFA import *
 
 
 ## EditProfile ##
@@ -18,35 +19,46 @@ def editProfile(request):
     try:
         token = request.COOKIES.get('tokenid')
         tmpuser = get_user_from_token(token)
-        if (tmpuser.fourtytwo == True):
-            FormData['ErrorMsg'] = 'You are using a 42 network user, to edit the profile you have to do it from the intranet.'
-            response = render(request, 'main_showmsg.html', {'Data': FormData, 'User': tmpuser})
-            return response
     except:
         return HttpResponseRedirect("/")
     if not request.method == 'POST':
-           form = NewUserForm(instance=tmpuser)
-           form.fields['email'].widget.attrs['readonly'] = True
-           form.initial["password"] = ''
-           response = render(request, 'main_newuser.html', {'form': form, 'User': tmpuser, 'Data': FormData})
-           return response
-    else:
-          form = NewUserForm(request.POST, request.FILES, instance=tmpuser)
-          if (form.is_valid):
-                formtmp = form.save(commit=False)
-                formtmp.password = hashlib.sha256(str(request.POST['password']).encode('utf-8')).hexdigest()
-                formtmp.save()
-                ##add / to url of avatar
-                tmpuser =  User.objects.get(email=formtmp.email)
-                if (str(tmpuser.avatar) != ''):
-                    tmpuser.avatar = '/' + str(tmpuser.avatar)
-                    tmpuser.save()
-                ##end add / to url of avatar
-                return HttpResponseRedirect("/")
-          else:
-                form = NewUserForm(request.POST)
+            if (tmpuser.fourtytwo == False):
+                form = EditProfileUserForm(instance=tmpuser)
+                form.fields['email'].widget.attrs['readonly'] = True
+                form.initial["password"] = ''
                 response = render(request, 'main_newuser.html', {'form': form, 'User': tmpuser, 'Data': FormData})
                 return response
+            else:
+                form = EditProfile42UserForm(instance=tmpuser)
+                response = render(request, 'main_newuser.html', {'form': form, 'User': tmpuser, 'Data': FormData})
+                return response
+    else:
+        if (tmpuser.fourtytwo == False):
+            form = EditProfileUserForm(request.POST, request.FILES, instance=tmpuser)
+        else:
+            form = EditProfile42UserForm(request.POST, request.FILES, instance=tmpuser)
+        if (form.is_valid()):
+                formtmp = form.save(commit=False)
+                if (tmpuser.fourtytwo == True):
+                      formtmp.save()
+                      return HttpResponseRedirect("/")
+                else:
+                    formtmp.password = hashlib.sha256(str(request.POST['password']).encode('utf-8')).hexdigest()
+                    formtmp.save()
+                    ##add / to url of avatar
+                    tmpuser =  User.objects.get(email=formtmp.email)
+                    if (str(tmpuser.avatar) != ''):
+                           tmpuser.avatar = '/' + str(tmpuser.avatar)
+                           tmpuser.save()
+                    ##end add / to url of avatar
+                return HttpResponseRedirect("/")
+        else:
+              if (tmpuser.fourtytwo == False):
+                    form = EditProfileUserForm(request.POST, request.FILES, instance=tmpuser)
+              else:
+                    form = EditProfile42UserForm(request.POST, request.FILES, instance=tmpuser)
+              response = render(request, 'main_newuser.html', {'form': form, 'User': tmpuser, 'Data': FormData})
+              return response
 
 ## Logoff ##
 
@@ -56,7 +68,6 @@ def logoffPage(request):
        return response
 
 ## Login ##
-
 FormDataLogin = {'ErrorMsg': '', 'URL42': os.environ["URL42"]}
 def loginPage(request):
     if not request.method == 'POST':
@@ -72,13 +83,16 @@ def loginPage(request):
            try:
                   tmpuser = User.objects.get(email=request.POST['email'])
                   if (tmpuser.password == hashlib.sha256(str(request.POST['password']).encode('utf-8')).hexdigest()):
-                        response = render(request, 'main_index.html', {'User': tmpuser})
-                        refresh = get_tokens_for_user(tmpuser)
-                        tokenid = str(refresh)
-                        tmpuser.tokenid = tokenid
-                        tmpuser.save()
-                        response.set_cookie('tokenid', tokenid)
-                        return response
+                        if (tmpuser.tfa == False):
+                            response = render(request, 'main_index.html', {'User': tmpuser})
+                            refresh = get_tokens_for_user(tmpuser)
+                            tokenid = str(refresh)
+                            tmpuser.tokenid = tokenid
+                            tmpuser.save()
+                            response.set_cookie('tokenid', tokenid)
+                            return response
+                        else:
+                            return tfa(request, tmpuser)
                   else:
                     FormDataLogin['ErrorMsg'] = 'The password is wrong'
                     form = LoginUserForm(request.POST)

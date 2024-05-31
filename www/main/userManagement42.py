@@ -7,13 +7,17 @@ import os
 import hashlib
 import time
 from  .token import *
+from .userManagementTFA import *
 
 ## Fourty Two Login 
 
 FormData = {'ErrorMsg': ''}
 
 def fourtytwoLogin(request):
-	#try:
+	#if tfa is enabled and need to check the security code
+	if request.method == 'POST':
+		return tfa(request, User.objects.get(email=request.POST['email']))
+	try:
 		## Get information for 42 network
 		accesscode = request.GET.get('code')
 		url = 'https://api.intra.42.fr/oauth/token'
@@ -37,7 +41,6 @@ def fourtytwoLogin(request):
 		except:
 			## if a new user
 			tmpuser = User()
-			
 		##common code for new and already in the database	
 		refresh = RefreshToken.for_user(tmpuser)
 		tokenid = str(refresh.access_token)
@@ -48,12 +51,13 @@ def fourtytwoLogin(request):
 		tmpuser.tokenid = tokenid
 		tmpuser.fourtytwo = True
 		tmpuser.save()
+		if (tmpuser.tfa == True):
+			return tfa(request, tmpuser)
 		FormData['ErrorMsg'] = 'You have logged in with the user of 42'
 		response = render(request, 'main_index.html', {'Data': FormData, 'User': tmpuser})
 		response.set_cookie('tokenid', tokenid)
 		return response
-
-	#except:
+	except:
 		FormData['ErrorMsg'] = 'Something was not working as expected, contact the administrator (probably the connectivity data to 42 is not correct).'
 		response = render(request, 'main_index.html', {'Data': FormData})
 		return response
