@@ -5,6 +5,10 @@ from datetime import datetime
 from channels.generic.websocket import AsyncWebsocketConsumer
 from . import gamecore2
 from .gamecore2 import *
+from .models import stats
+from channels.db import database_sync_to_async
+from main.models import User
+from main.token import *
 
 class GameConsumer2(AsyncWebsocketConsumer):
     rooms = {}  # Class variable shared by all instances of this class
@@ -14,24 +18,36 @@ class GameConsumer2(AsyncWebsocketConsumer):
         self.room_name = self.scope["url_route"]["kwargs"]["game_name"]
         self.room_group_name = f"game_{self.room_name}"
         await self.channel_layer.group_add(self.room_group_name, self.channel_name)
-        await self.accept()
-        self.left_paddle = Paddle(PADDLE_GAP, HEIGHT // 2 - PADDLE_HEIGHT // 2, PADDLE_WIDTH, PADDLE_HEIGHT)
-        self.right_paddle = Paddle(WIDTH - PADDLE_GAP - PADDLE_WIDTH, HEIGHT // 2 - PADDLE_HEIGHT // 2, PADDLE_WIDTH, PADDLE_HEIGHT)
-        self.ball = Ball(WIDTH // 2, HEIGHT // 2, BALL_RADIUS)
-        self.score = Score()
-        if self.room_group_name not in self.rooms.keys():
-            self.rooms[self.room_group_name] = {"players": {"player1": self}}
-            self.rooms[self.room_group_name]["key_states_1"] = {}
-            self.rooms[self.room_group_name]["player1_connected"] = True
-            self.rooms[self.room_group_name]["player2_connected"] = False
-            await self.rooms[self.room_group_name]['players']['player1'].send_gameboard(self.ball, self.left_paddle, self.right_paddle, self.score, PLAYER_1)
-        else:
-            self.rooms[self.room_group_name]['players']['player2'] = self
-            self.rooms[self.room_group_name]["key_states_2"] = {}
-            self.rooms[self.room_group_name]["player2_connected"] = True
-            await self.rooms[self.room_group_name]['players']['player2'].send_gameboard(self.ball, self.left_paddle, self.right_paddle, self.score, PLAYER_2)
-            asyncio.ensure_future(self.playGame())                      # Init game on players2 instance
-        #print("Players Info: " + str(self.rooms[self.room_group_name]))
+        if 'tokenid' in self.scope['cookies'].keys():
+            await self.getUsernameModel()
+            await self.accept()
+            self.left_paddle = Paddle(PADDLE_GAP, HEIGHT // 2 - PADDLE_HEIGHT // 2, PADDLE_WIDTH, PADDLE_HEIGHT)
+            self.right_paddle = Paddle(WIDTH - PADDLE_GAP - PADDLE_WIDTH, HEIGHT // 2 - PADDLE_HEIGHT // 2, PADDLE_WIDTH, PADDLE_HEIGHT)
+            self.ball = Ball(WIDTH // 2, HEIGHT // 2, BALL_RADIUS)
+            self.score = Score()
+            if self.room_group_name not in self.rooms.keys():
+                self.rooms[self.room_group_name] = {"players": {"player1": self}}
+                self.rooms[self.room_group_name]["key_states_1"] = {}
+                self.rooms[self.room_group_name]["player1_connected"] = True
+                self.rooms[self.room_group_name]["player2_connected"] = False
+                self.rooms[self.room_group_name]["player1_id"] = self.user
+                await self.rooms[self.room_group_name]['players']['player1'].send_gameboard(self.ball, self.left_paddle, self.right_paddle, self.score, PLAYER_1)
+            else:
+                self.rooms[self.room_group_name]['players']['player2'] = self
+                self.rooms[self.room_group_name]["key_states_2"] = {}
+                self.rooms[self.room_group_name]["player2_connected"] = True
+                self.rooms[self.room_group_name]["player2_id"] = self.user
+                await self.rooms[self.room_group_name]['players']['player2'].send_gameboard(self.ball, self.left_paddle, self.right_paddle, self.score, PLAYER_2)
+                asyncio.ensure_future(self.playGame())                      # Init game on players2 instance
+            #print("Players Info: " + str(self.rooms[self.room_group_name]))
+
+    @database_sync_to_async
+    def getUsernameModel(self):
+        try:
+            token = self.scope['cookies']['tokenid']
+            self.user = get_user_from_token(token)
+        except:
+            self.user = ""
 
     async def disconnect(self, close_code):
         players = self.rooms[self.room_group_name]['players']           # alias
@@ -87,6 +103,7 @@ class GameConsumer2(AsyncWebsocketConsumer):
         await players['player1'].send_gameboard(self.ball, self.left_paddle, self.right_paddle, self.score, PLAYER_1)
         await players['player2'].send_gameboard(self.ball, self.left_paddle, self.right_paddle, self.score, PLAYER_2)
         await self.waiting_countdown()
+        self.score.game_start_time = self.score.last_taken_time = time.time()
         while True:
             frame_start_time = time.time()
             if not room["player2_connected"] or not room["player1_connected"]:      # check if any player got disconnected
@@ -100,7 +117,7 @@ class GameConsumer2(AsyncWebsocketConsumer):
             handle_left_paddle_movement(room['key_states_1'], self.left_paddle)
             handle_right_paddle_movement(room['key_states_2'], self.right_paddle)
             self.ball.move()
-            handle_collision(self.ball, self.left_paddle, self.right_paddle)
+            handle_collision(self.ball, self.left_paddle, self.right_paddle, self.score)
             self.score.update(self.ball)
             if self.score.won:
                 await players['player1'].send_gameboard(self.ball, self.left_paddle, self.right_paddle, self.score, PLAYER_1)
@@ -109,6 +126,32 @@ class GameConsumer2(AsyncWebsocketConsumer):
             await asyncio.sleep((FRAME_TIME - (time.time() - frame_start_time)) * 0.2)
             while time.time() - frame_start_time < FRAME_TIME:
                await asyncio.sleep((FRAME_TIME - (time.time() - frame_start_time)) * 0.0002)
-        #print("Players Info: " + str(self.rooms[self.room_group_name]))
+        await self.pushStats(room, self.score)
         await players['player1'].close()                                # close websocket connections
         await players['player2'].close()
+
+    @database_sync_to_async
+    def pushStats(self, room, score):
+        match_length = time.time() - score.game_start_time
+        temp = stats(player_one = room["player1_id"])               # player 1 stats
+        temp.match_length = match_length
+        temp.player_one_score = score.left_score
+        temp.player_one_hits = score.left_hits
+        temp.player_one_aces = score.left_aces
+        temp.player_two = room["player2_id"]
+        temp.player_two_score = score.right_score
+        temp.player_two_hits = score.right_hits
+        temp.player_two_aces = score.right_aces
+        temp.point_length = score.point_length
+        temp.save()
+        temp = stats(player_one = room["player2_id"])               # player 2 stats
+        temp.match_length = match_length
+        temp.player_one_score = score.right_score
+        temp.player_one_hits = score.right_hits
+        temp.player_one_aces = score.right_aces
+        temp.player_two = room["player1_id"]
+        temp.player_two_score = score.left_score
+        temp.player_two_hits = score.left_hits
+        temp.player_two_aces = score.left_aces
+        temp.point_length = score.point_length
+        temp.save()

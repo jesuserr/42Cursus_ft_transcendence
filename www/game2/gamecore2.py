@@ -1,4 +1,5 @@
 import random
+import time
 
 ############################### CONSTANTS & INITS ##############################
 
@@ -35,10 +36,6 @@ class Paddle:
         else:
             self.y += PADDLE_VEL
 
-    def reset(self):
-        self.x = self.original_x
-        self.y = self.original_y
-
 class Ball:
     def __init__(self, x, y, radius):
         self.x = self.original_x = x
@@ -46,6 +43,7 @@ class Ball:
         self.radius = radius
         self.x_vel = random.choice([-BALL_X_MAX_VEL, BALL_X_MAX_VEL])
         self.y_vel = random.uniform(-BALL_X_MAX_VEL // 8, BALL_X_MAX_VEL // 8)
+        self.ace = True
 
     def move(self):
         self.x += self.x_vel
@@ -55,32 +53,45 @@ class Ball:
         self.x = self.original_x
         self.y = self.original_y
         self.x_vel *= -1
-        self.y_vel = random.uniform(-BALL_X_MAX_VEL // 8, BALL_X_MAX_VEL // 8)        
+        self.y_vel = random.uniform(-BALL_X_MAX_VEL // 8, BALL_X_MAX_VEL // 8)
+        self.ace = True
 
 class Score:
     def __init__(self):
         self.left_score = 0
         self.right_score = 0
-        self.won = False        
+        self.won = False
+        self.left_hits = 0
+        self.right_hits = 0
+        self.left_aces = 0
+        self.right_aces = 0
+        self.game_start_time = 0        
+        self.last_taken_time = 0
+        self.point_length = []
     
     def update(self, ball):
         if ball.x < 0:
             self.right_score += 1
             ball.x_vel = -1 * BALL_X_MAX_VEL
+            if ball.ace:
+                self.right_aces += 1
+            current_time = time.time()
+            self.point_length.append(current_time - self.last_taken_time)
+            self.last_taken_time = current_time
             ball.reset()
         elif ball.x > WIDTH:
             self.left_score += 1
             ball.x_vel = BALL_X_MAX_VEL
+            if ball.ace:
+                self.left_aces += 1
+            current_time = time.time()
+            self.point_length.append(current_time - self.last_taken_time)
+            self.last_taken_time = current_time
             ball.reset()
         if self.left_score >= WINNING_SCORE:
             self.won = True
         elif self.right_score >= WINNING_SCORE:
             self.won = True
-    
-    def reset(self):
-        self.left_score = 0
-        self.right_score = 0
-        self.won = False
 
 ################################### FUNCTIONS ##################################
 
@@ -96,12 +107,14 @@ def handle_right_paddle_movement(key_states, right_paddle):
     if key_states.get('ArrowDown') and right_paddle.y + right_paddle.height + PADDLE_VEL <= HEIGHT:
         right_paddle.move(up=False)
 
-def handle_collision(ball, left_paddle, right_paddle):
+def handle_collision(ball, left_paddle, right_paddle, score):
     if ball.y + ball.radius > HEIGHT:
         ball.y_vel *= -1
+        ball.ace = False
         return
     elif ball.y - ball.radius < 0:
         ball.y_vel *= -1
+        ball.ace = False
         return
     if ball.x_vel < 0:
         if ball.y + ball.radius >= left_paddle.y and ball.y - ball.radius <= left_paddle.y + left_paddle.height and \
@@ -109,7 +122,9 @@ def handle_collision(ball, left_paddle, right_paddle):
             ball.x_vel *= -BALL_VEL_INC
             difference_in_y = ball.y - left_paddle.y - left_paddle.height / 2
             reduction_factor = (left_paddle.height / 2) / BALL_X_MAX_VEL
-            ball.y_vel = difference_in_y / reduction_factor             
+            ball.y_vel = difference_in_y / reduction_factor
+            score.left_hits += 1
+            ball.ace = True
     else:
         if ball.y + ball.radius >= right_paddle.y and ball.y - ball.radius <= right_paddle.y + right_paddle.height and \
         ball.x + ball.radius >= right_paddle.x and ball.x + ball.radius <= right_paddle.x + right_paddle.width:
@@ -117,3 +132,5 @@ def handle_collision(ball, left_paddle, right_paddle):
             difference_in_y = ball.y - right_paddle.y - right_paddle.height / 2
             reduction_factor = (right_paddle.height / 2) / BALL_X_MAX_VEL
             ball.y_vel = difference_in_y / reduction_factor
+            score.right_hits += 1
+            ball.ace = True
