@@ -2,6 +2,7 @@ from django.http import HttpResponse, HttpResponseRedirect
 from .userManagement import *
 from .userManagement42 import *
 from django.core.mail import send_mail
+from .token import *
 
 def index(request):
 	return maniPage(request)
@@ -19,12 +20,14 @@ def newuser(request):
 			return newUserSendCodeform(request)
 	return HttpResponseRedirect("/")
 
+@token_required
 def edituser(request):
 	return editProfile(request)
     
 def login(request):
 	return loginPage(request)
  
+@token_required
 def logoff(request):
 	return logoffPage(request)
 

@@ -18,7 +18,8 @@ def tfa(request, tmpuser):
 
 def tfacheckcode(request, tmpuser):
 	try:
-		tmp = SecurityCode.objects.get(email=request.POST['email'])
+		tmpusertoken = get_user_from_token(request.COOKIES['tokenid'])
+		tmp = SecurityCode.objects.get(email=tmpusertoken.email)
 		if (tmp.code == request.POST['securitycode']):
 			response = render(request, 'main_index.html', {'User': tmpuser})
 			refresh = get_tokens_for_user(tmpuser)
@@ -65,4 +66,7 @@ def tfasendcode(request, tmpuser, error = ''):
 	form.errors['email'] = form.error_class()
 	form.errors['password'] = form.error_class()
 	response = render(request, 'main_tfa.html', {'form': form, 'Data': FormData})
+	refresh = get_one_minute_tokens_for_user(tmpuser)
+	tokenid = str(refresh)                          
+	response.set_cookie('tokenid', tokenid)
 	return response
