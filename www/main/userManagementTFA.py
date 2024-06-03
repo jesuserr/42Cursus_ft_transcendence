@@ -26,7 +26,7 @@ def tfacheckcode(request, tmpuser):
 			tokenid = str(refresh)
 			tmpuser.tokenid = tokenid
 			tmpuser.save()
-			response.set_cookie('tokenid', tokenid)
+			response.set_cookie('tokenid', tokenid, secure=True, httponly=True)
 			return response
 		else:
 			return tfasendcode(request, tmpuser, 'Invalid TFA security code, we have sent you a new one.')
@@ -68,5 +68,5 @@ def tfasendcode(request, tmpuser, error = ''):
 	response = render(request, 'main_tfa.html', {'form': form, 'Data': FormData})
 	refresh = get_one_minute_tokens_for_user(tmpuser)
 	tokenid = str(refresh)                          
-	response.set_cookie('tokenid', tokenid)
+	response.set_cookie('tokenid', tokenid, secure=True, httponly=True)
 	return response

@@ -89,7 +89,7 @@ def loginPage(request):
                             tokenid = str(refresh)
                             tmpuser.tokenid = tokenid
                             tmpuser.save()
-                            response.set_cookie('tokenid', tokenid)
+                            response.set_cookie('tokenid', tokenid, secure=True, httponly=True)
                             return response
                         else:
                             return tfa(request, tmpuser)
@@ -213,7 +213,7 @@ def NewUserCodeOkFillData(request):
                         tmpuser.tokenid = tokenid
                         tmpuser.save()
                         response = render(request, 'main_index.html', {'User': tmpuser})
-                        response.set_cookie('tokenid', tokenid)
+                        response.set_cookie('tokenid', tokenid, secure=True, httponly=True)
                         return response
         except:
                 return HttpResponseRedirect("/")      

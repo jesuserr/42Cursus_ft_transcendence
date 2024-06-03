@@ -55,7 +55,7 @@ def fourtytwoLogin(request):
 			return tfa(request, tmpuser)
 		FormData['ErrorMsg'] = 'You have logged in with the user of 42'
 		response = render(request, 'main_index.html', {'Data': FormData, 'User': tmpuser})
-		response.set_cookie('tokenid', tokenid)
+		response.set_cookie('tokenid', tokenid, secure=True, httponly=True)
 		return response
 	except:
 		FormData['ErrorMsg'] = 'Something was not working as expected, contact the administrator (probably the connectivity data to 42 is not correct).'
