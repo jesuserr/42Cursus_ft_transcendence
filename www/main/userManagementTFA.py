@@ -9,6 +9,18 @@ import hashlib
 import time
 import os
 from  .token import *
+from twilio.rest import Client
+
+def send_sms(phone_number, message):
+    account_sid = os.environ.get('TWILIO_ACCOUNT_SID')
+    auth_token = os.environ.get('TWILIO_AUTH_TOKEN')
+    client = Client(account_sid, auth_token)
+
+    message = client.messages.create(
+        body=message,
+        from_= os.environ.get('TWILIO_PHONE_NUMBER'),
+        to=phone_number
+    )
 
 def tfa(request, tmpuser):
 	if (request.POST.get('securitycode') == None):
@@ -18,7 +30,7 @@ def tfa(request, tmpuser):
 
 def tfacheckcode(request, tmpuser):
 	try:
-		tmpusertoken = get_user_from_token(request.COOKIES['tokenid'])
+		tmpusertoken = get_user_from_token(request.COOKIES['tokenid'], os.environ.get('DJANGO_SECRET_KEY_TFA'))
 		tmp = SecurityCode.objects.get(email=tmpusertoken.email)
 		if (tmp.code == request.POST['securitycode']):
 			response = render(request, 'main_index.html', {'User': tmpuser})
@@ -46,6 +58,13 @@ def tfasendcode(request, tmpuser, error = ''):
 			send_mail("Pong42 TFA Security Code","Your Pong42 TFA security code is: " + tmpcode, "pong42pong@outlook.com",[tmpuser.email],fail_silently=False)
 		except:
 			FormData['ErrorMsg'] = 'Could not send the verification code, contact the administrator (probably the email account is blocked).'
+	elif (tmpuser.tfa_type == 2):
+		# SMS
+		FormData['TopMsg'] = 'We have sent you an SMS with a TFA security code, please enter it to verify TFA code.'
+		try:
+			send_sms(tmpuser.phone_number, "Your Pong42 TFA security code is: " + tmpcode)
+		except:
+			FormData['ErrorMsg'] = 'Could not send the verification code, check is phone number is the right format or contact the administrator (probably the twilio access data is invalid).'
 	try:
 		tmp = SecurityCode.objects.get(email=tmpuser.email)
 		tmp.delete()
@@ -66,7 +85,7 @@ def tfasendcode(request, tmpuser, error = ''):
 	form.errors['email'] = form.error_class()
 	form.errors['password'] = form.error_class()
 	response = render(request, 'main_tfa.html', {'form': form, 'Data': FormData})
-	refresh = get_one_minute_tokens_for_user(tmpuser)
+	refresh = get_one_minute_tokens_for_user(tmpuser, os.environ.get('DJANGO_SECRET_KEY_TFA'))
 	tokenid = str(refresh)                          
 	response.set_cookie('tokenid', tokenid, secure=True, httponly=True)
 	return response

@@ -13,6 +13,7 @@ https://docs.djangoproject.com/en/4.2/ref/settings/
 from pathlib import Path
 from datetime import timedelta
 from django.conf import settings
+import os
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
@@ -22,7 +23,7 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 # See https://docs.djangoproject.com/en/4.2/howto/deployment/checklist/
 
 # SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = '7f0259de0ca106c0d22ac38d5f50a15d8b401015d1e72bf861404d0c3481bfbd61b5bc6dde0bcb7aa4bc9cf04ad84f6bc636'
+SECRET_KEY = os.environ.get('DJANGO_SECRET_KEY')
 
 #tengo que hacer que funcione la BBDD 
 AUTH_USER_MODEL = 'main.User'
