@@ -6,6 +6,10 @@ from datetime import datetime
 from channels.generic.websocket import AsyncWebsocketConsumer
 from . import gamecore3
 from .gamecore3 import *
+from .models import stats
+from channels.db import database_sync_to_async
+from main.models import User
+from main.token import *
 
 class GameConsumer3(AsyncWebsocketConsumer):
     def __init__(self, *args, **kwargs):
@@ -16,8 +20,18 @@ class GameConsumer3(AsyncWebsocketConsumer):
         self.room_name = self.scope["url_route"]["kwargs"]["game_name"]
         self.room_group_name = f"game_{self.room_name}"
         await self.channel_layer.group_add(self.room_group_name, self.channel_name)
-        await self.accept()
-        asyncio.ensure_future(self.playGame())      # Init game
+        if 'tokenid' in self.scope['cookies'].keys():
+            await self.getUsernameModel()
+            await self.accept()
+            asyncio.ensure_future(self.playGame())      # Init game
+    
+    @database_sync_to_async
+    def getUsernameModel(self):
+        try:
+            token = self.scope['cookies']['tokenid']
+            self.user = get_user_from_token(token)
+        except:
+            self.user = ""
 
     async def disconnect(self, close_code):
         await self.channel_layer.group_discard(self.room_group_name, self.channel_name)
@@ -52,7 +66,7 @@ class GameConsumer3(AsyncWebsocketConsumer):
         await self.send_gameboard(ball, left_paddle, right_paddle, score)
         await self.waiting_countdown()
         ball_image = copy.copy(ball)
-        last_peek_time = time.time()
+        last_peek_time = score.game_start_time = score.last_taken_time = time.time()
         while True:                                              ### GAME LOOP ###
             frame_start_time = time.time()
             await self.send_gameboard(ball, left_paddle, right_paddle, score)
@@ -63,7 +77,7 @@ class GameConsumer3(AsyncWebsocketConsumer):
                 last_peek_time = current_time
             computer_player(right_paddle, ball_image)
             ball.move()
-            handle_collision(ball, left_paddle, right_paddle)
+            handle_collision(ball, left_paddle, right_paddle, score)
             score.update(ball)
             if score.won:
                 await self.send_gameboard(ball, left_paddle, right_paddle, score)
@@ -75,3 +89,18 @@ class GameConsumer3(AsyncWebsocketConsumer):
             while time.time() - frame_start_time < FRAME_TIME:
                 await asyncio.sleep((FRAME_TIME - (time.time() - frame_start_time)) * 0.0002)
         await self.close()
+        await self.pushStats(score)
+    
+    @database_sync_to_async
+    def pushStats(self, score):
+        temp = stats(left_player = self.user)
+        temp.match_length = time.time() - score.game_start_time
+        temp.left_player_score = score.left_score
+        temp.left_player_hits = score.left_hits
+        temp.left_player_aces = score.left_aces
+        temp.right_player = "CPU@dumb.is"
+        temp.right_player_score = score.right_score
+        temp.right_player_hits = score.right_hits
+        temp.right_player_aces = score.right_aces
+        temp.point_length = score.point_length        
+        temp.save()
