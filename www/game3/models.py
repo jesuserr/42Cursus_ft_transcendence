@@ -1,6 +1,7 @@
 from django.contrib.postgres.fields import ArrayField
 from django.db import models
 from main.models import User
+from django.utils import timezone
 
 class stats(models.Model):
 	left_player = models.ForeignKey(User, on_delete=models.CASCADE, related_name='game3_stats')
@@ -13,3 +14,4 @@ class stats(models.Model):
 	right_player_aces = models.IntegerField()	
 	match_length = models.DecimalField(max_digits = 5, decimal_places = 2)
 	point_length = ArrayField(models.DecimalField(max_digits = 5, decimal_places = 2), default=list)
+	created_at = models.DateTimeField(default=timezone.now)
