@@ -108,7 +108,8 @@ function drawCountdown() {
                 countdown--;
             } else {
                 clearInterval(countdownInterval);
-                keys['F15'] = true;         // Informs server countdown is over            
+                keys['F15'] = true;         // Informs server countdown is over
+                socket.send(JSON.stringify(keys));
                 messageNumber++;            // Never come back here
             }
         }, 1000);

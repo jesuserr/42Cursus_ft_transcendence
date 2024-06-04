@@ -1,7 +1,6 @@
 import json
 import asyncio
 import time
-from datetime import datetime
 from channels.generic.websocket import AsyncWebsocketConsumer
 from . import gamecore4
 from .gamecore4 import *

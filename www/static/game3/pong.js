@@ -47,6 +47,7 @@ function drawCountdown() {
             clearInterval(countdownInterval);
             keys['F15'] = true;         // Informs server countdown is over
             keys['F14'] = false;        // Set game state as unpaused
+            socket.send(JSON.stringify(keys));
             messageNumber++;            // Never come back here
         }
     }, 1000);

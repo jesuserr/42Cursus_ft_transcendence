@@ -2,14 +2,14 @@ import json
 import asyncio
 import time
 import copy
-from datetime import datetime
 from channels.generic.websocket import AsyncWebsocketConsumer
 from . import gamecore3
 from .gamecore3 import *
 from .models import stats
 from channels.db import database_sync_to_async
 from main.models import User
-from main.token import *
+#from main.token import *                   -> makes time.time() crash
+from main.token import get_user_from_token  # solution
 
 class GameConsumer3(AsyncWebsocketConsumer):
     def __init__(self, *args, **kwargs):

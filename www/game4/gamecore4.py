@@ -32,10 +32,6 @@ class Paddle:
         else:
             self.y += PADDLE_VEL
 
-    def reset(self):
-        self.x = self.original_x
-        self.y = self.original_y
-
 class Ball:
     def __init__(self, x, y, radius):
         self.x = self.original_x = x
@@ -73,11 +69,6 @@ class Score:
             self.won = True
         elif self.right_score >= WINNING_SCORE:
             self.won = True
-    
-    def reset(self):
-        self.left_score = 0
-        self.right_score = 0
-        self.won = False
 
 ################################### FUNCTIONS ##################################
 

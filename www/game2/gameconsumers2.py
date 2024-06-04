@@ -1,14 +1,14 @@
 import json
 import asyncio
 import time
-from datetime import datetime
 from channels.generic.websocket import AsyncWebsocketConsumer
 from . import gamecore2
 from .gamecore2 import *
 from .models import stats
 from channels.db import database_sync_to_async
 from main.models import User
-from main.token import *
+#from main.token import *                   -> makes time.time() crash
+from main.token import get_user_from_token  # solution
 
 class GameConsumer2(AsyncWebsocketConsumer):
     rooms = {}  # Class variable shared by all instances of this class
