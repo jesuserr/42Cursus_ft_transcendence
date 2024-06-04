@@ -1,14 +1,15 @@
 <!DOCTYPE html>
-<html>
+<html lang="es">
 <head>
-    <meta charset="utf-8" />
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Pong 42 Chat - Star Wars Edition</title>
     <style>
         @keyframes stars {
             from { background-position: 0 0; }
             to { background-position: 10000px 5000px; }
         }
-		
+
         body {
             background: #000 url('https://www.transparenttextures.com/patterns/stardust.png');
             animation: stars 50s linear infinite;
@@ -17,7 +18,7 @@
             display: flex;
             flex-direction: column;
             align-items: center;
-            justify-content: center;
+            justify-content: flex-start;
             height: 100vh;
             margin: 0;
             overflow: hidden;
@@ -29,72 +30,140 @@
         }
         #DISPLAYNAME, #STATUS {
             font-size: 1.5em;
+            margin: 0 10px;
+        }
+        #DISPLAYNAME {
+            text-align: left;
+            flex: 1;
+        }
+        #STATUS {
+            text-align: right;
+            flex: 1;
         }
         select, textarea, input {
             background-color: #000;
             color: #FFD700;
             border: 1px solid #FFD700;
-            margin: 5px;
+            width: 100%;
         }
+	
+	textarea {
+		padding: 1rem;
+	}
+	input {
+		padding: 0.5rem;
+	}
+
         #CONNECTION_STATUS {
             border: 1px solid #FFD700;
+            margin-left: 10px;
         }
         .button {
             background-color: #FFD700;
             color: #000;
             border: none;
-            padding: 5px 10px;
+            padding: 10px 20px;
             text-align: center;
             text-decoration: none;
             display: inline-block;
             font-size: 16px;
             margin: 4px 2px;
             cursor: pointer;
+            width: 50%;
         }
         .container {
+		background-color: black;
             display: flex;
-            flex-wrap: wrap;
-            justify-content: center;
+            width: 90%;
+            max-width: 1200px;
+            margin: auto;
+        }
+        .side-container {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            margin-right: 10px;
+        }
+        .main-container {
+            flex: 2;
+            display: flex;
+            flex-direction: column;
             align-items: center;
+        }
+        .container label {
+            margin: 10px;
+        }
+        #CONTAINER_CHAT_TEXT {
+            width: 100%;
+        }
+        #CHATTEXT {
+            width: 100%;
+            height: 400px;
+        }
+        #CHAT_MSG_INPUT {
+            width: calc(100% - 130px);
+            margin-right: 10px;
+        }
+        @media (min-width: 768px) {
+            .side-container {
+                flex: 1;
+            }
+            .main-container {
+                flex: 2;
+            }
+            #CHAT_MSG_INPUT {
+                width: calc(100% - 150px);
+            }
         }
     </style>
 </head>
 <body>
-    <div id="DISPLAYNAME" style="float: left;"></div>
-    <div style="float: right;"><img id="CONNECTION_STATUS" src="/static/chat/disconnect.png" width="15" height="15" /><p id="STATUS">Disconnect</p></div>
-    <div>&nbsp;</div>
-    <hr/>
+    <div style="display: flex; justify-content: space-between; width: 90%; max-width: 1200px; margin-top: 10px;">
+        <div id="DISPLAYNAME"></div>
+        <div style="display: flex; align-items: center;">
+            <img id="CONNECTION_STATUS" src="/static/chat/disconnect.png" width="15" height="15">
+            <p id="STATUS">Disconnect</p>
+        </div>
+    </div>
+    <hr>
     <div class="container">
-        <label>
-            <span>User list</span>
-            <select id="USERLIST" name="All user list" size="10"></select>
-        </label>
-        <label>
-            <span>Users connected</span>
-            <select id="CONNECTEDUSERLIST" name="Connected Users" size="10"></select>
-        </label>
-        <label>
-            <span>Block users</span>
-            <select id="BLOCKUSERS" name="Block Users" size="10"></select>
-        </label>
-        <label style="display: flex; align-items: flex-start;">
-            <span><div id=CURRENTUSER>General</div></span>
-            <div id="CONTAINER_CHAT_TEXT">
-                <textarea id="CHATTEXT" cols="50" rows="10" readonly></textarea>
+        <div class="side-container">
+            <label>
+                <span>User list</span>
+                <select id="USERLIST" name="All user list" size="10"></select>
+            </label>
+            <label>
+                <span>Users connected</span>
+                <select id="CONNECTEDUSERLIST" name="Connected Users" size="10"></select>
+            </label>
+            <label>
+                <span>Block users</span>
+                <select id="BLOCKUSERS" name="Block Users" size="10"></select>
+            </label>
+        </div>
+        <div class="main-container">
+            <label>
+                <span>Current chat</span>
+                <div id="CONTAINER_CHAT_TEXT">
+                    <textarea id="CHATTEXT" cols="50" rows="10" readonly></textarea>
+               
+            </label>
+            <div style="display: flex; flex-wrap: wrap; justify-content: center; align-items: center; width: 100%; margin: 20px 0;">
+                <input id="CHAT_MSG_INPUT" type="text" size="50">
+                <input id="SEND_MSG" type="button" value="Send message" class="button">
+		</div>
+                <div id="MSG_STATUS_USERS" style="color: white; width: 100%; text-align: center; margin-top: 10px;"></div>
+
             </div>
-        </label>
+            <div style="display: flex; flex-wrap: wrap; justify-content: center; align-items: center; width: 100%; margin: 20px 0;">
+                <input id="CHAT_ALL_USERS" type="button" value="Chat with all users" class="button">
+                <input id="CHAT_SELECTED_USER" type="button" value="Chat with selected user" class="button">
+                <input id="BLOCK_SELECTED_USER" type="button" value="Block selected user" class="button">
+                <input id="UNBLOCK_SELECTED_USER" type="button" value="Unblock selected user" class="button">
+            </div>
+        </div>
     </div>
-    <div>
-        <input id="SEND_MSG" type="button" value="Send message" class="button">
-        <input id="CHAT_MSG_INPUT" type="text" size="50"><br> <div id="MSG_STATUS_USERS" style="color: white;">...</div>
-    </div>
-    <div>
-        <input id="CHAT_ALL_USERS" type="button" value="Chat with all users" class="button">
-        <input id="CHAT_SELECTED_USER" type="button" value="Chat with selected user" class="button">
-        <input id="BLOCK_SELECTED_USER" type="button" value="Block selected user" class="button">
-        <input id="UNBLOCK_SELECTED_USER" type="button" value="Unblock selected user" class="button">
-    </div>
-	{{ room_name|json_script:"room_name" }}
+    {{ room_name|json_script:"room_name" }}
     <script src="/static/chat/chat.js"></script>
 </body>
 </html>

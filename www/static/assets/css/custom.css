@@ -33,7 +33,7 @@ body {
 }
 
 .teletext-button {
-    background-color: #0000FF;
+    background-color: #333;
     color: #FFFFFF;
     border: none;
     padding: 15px 20px;
@@ -44,6 +44,7 @@ body {
 }
 
 .teletext-button:hover {
-    background-color: #000088;
+	background-color: #4CAF50;
+
 }
 

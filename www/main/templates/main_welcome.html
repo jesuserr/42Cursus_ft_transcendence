@@ -1,0 +1,63 @@
+{% include "main_menu.html" %}
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Bienvenido</title>
+<style>
+  .welcome {
+	  display: flex;
+	align-items: center;
+	justify-content: center;
+	text-align: center;
+    width: 80%;
+    height: 20rem;
+    margin: 50px auto;
+    padding: 20px;
+    background-color: #333;
+    color: white;
+    text-align: center;
+    border-radius: 10px;
+  }
+
+  .button-container {
+	  display: flex;
+	  justify-content: center;
+    margin-top: 20px;
+  }
+
+  .button {
+    display: inline-block;
+    width: calc(65% / 3 - 10px); /* Ajuste para tener espacio entre los botones */
+    padding: 10px;
+    background-color: #333;
+    color: white;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    transition: background-color 0.3s;
+    margin-right: 10px; /* Espacio entre botones */
+  }
+
+  .button:last-child {
+    margin-right: 0; /* Elimina el margen derecho del último botón */
+  }
+
+  .button:hover {
+    background-color: #4CAF50;
+  }
+</style>
+</head>
+<body>
+<div class="welcome">
+	<h1>Welcome</h1>
+</div>
+<div class="button-container">
+  <button class="button" id="boton1">Login or register</button>
+  <button class="button" id="boton2">Login with 42</button>
+  <button class="button" id="boton3">Play annonimous</button>
+</div>
+</body>
+</html>
+
