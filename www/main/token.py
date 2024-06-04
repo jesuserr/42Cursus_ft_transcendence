@@ -2,7 +2,7 @@ from rest_framework_simplejwt.tokens import RefreshToken
 import jwt
 from django.conf import settings
 from django.contrib.auth import get_user_model
-from datetime import timedelta
+from datetime import *
 from django.http import HttpResponseRedirect
 from jwt.exceptions import ExpiredSignatureError
 import os
@@ -10,7 +10,6 @@ import os
 
 def get_user_from_token(token, secret_key = settings.SECRET_KEY):
     decoded_token = jwt.decode(token, secret_key, algorithms=["HS256"])
-    print(decoded_token)
     user_id = decoded_token['user_id']
     User = get_user_model()
     user = User.objects.get(id=user_id)
@@ -20,12 +19,17 @@ def get_tokens_for_user(user):
     refresh = RefreshToken.for_user(user)
     return str(refresh.access_token)
     
-class OneMinuteToken(RefreshToken):
-    lifetime = timedelta(seconds=5)
+class FiveMinuteToken(RefreshToken):
+    lifetime = timedelta(seconds=300)
 
-def get_one_minute_tokens_for_user(user, secret_key = settings.SECRET_KEY):
-    refresh = OneMinuteToken.for_user(user)
-    token = {'token_type': 'access', 'exp': refresh.access_token.payload['exp'], 'jti': refresh.access_token.payload['jti'], 'user_id': user.id}
+def get_five_minute_tokens_for_user(user, secret_key = settings.SECRET_KEY):
+    refresh = FiveMinuteToken.for_user(user)
+    token = {
+        'token_type': 'access', 
+        'exp': datetime.now(timezone.utc) + timedelta(seconds=300),  
+        'jti': refresh.access_token.payload['jti'], 
+        'user_id': user.id
+    }
     encoded_jwt = jwt.encode(token, secret_key, algorithm='HS256')
     return encoded_jwt
 

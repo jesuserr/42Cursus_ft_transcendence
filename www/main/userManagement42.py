@@ -36,7 +36,7 @@ def fourtytwoLogin(request):
 			## if the user exist however is not from 42 network
 			if (tmpuser.fourtytwo == False):
 				FormData['ErrorMsg'] = 'This email is already registered in the database but not through 42 network.'
-				response = render(request, 'main_index.html', {'Data': FormData})
+				response = render(request, 'main_showmsg.html', {'Data': FormData})
 				return response
 		except:
 			## if a new user
@@ -44,12 +44,16 @@ def fourtytwoLogin(request):
 		##common code for new and already in the database	
 		refresh = RefreshToken.for_user(tmpuser)
 		tokenid = str(refresh.access_token)
-		tmpuser.password = hashlib.sha256(str(time.time()).encode('utf-8')).hexdigest()
+		tmpuser.password = hashlib.sha256(str(datetime.now(timezone.utc)).encode('utf-8')).hexdigest()
 		tmpuser.email = UserProfile42['email']
 		tmpuser.displayname = UserProfile42['displayname']
 		tmpuser.avatar = UserProfile42['image']['link']
 		tmpuser.tokenid = tokenid
 		tmpuser.fourtytwo = True
+		tmpuser.save()
+		refresh = RefreshToken.for_user(tmpuser)
+		tokenid = str(refresh.access_token)
+		tmpuser.tokenid = tokenid
 		tmpuser.save()
 		if (tmpuser.tfa == True):
 			return tfa(request, tmpuser)
@@ -59,6 +63,6 @@ def fourtytwoLogin(request):
 		return response
 	except:
 		FormData['ErrorMsg'] = 'Something was not working as expected, contact the administrator (probably the connectivity data to 42 is not correct).'
-		response = render(request, 'main_index.html', {'Data': FormData})
+		response = render(request, 'main_showmsg.html', {'Data': FormData})
 		return response
 		
