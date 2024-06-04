@@ -107,9 +107,9 @@ CHANNEL_LAYERS = {
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.postgresql_psycopg2',
-        'NAME': 'djangodb',
-        'USER': 'django',
-        'PASSWORD': 'p4ssw0rd',
+        'NAME': os.environ.get('DB_DB'),
+        'USER': os.environ.get('DB_USER'),
+        'PASSWORD': os.environ.get('DB_PASS'),
         'HOST': 'postgresql',
         'PORT': '5432',
     }
@@ -162,8 +162,8 @@ CSRF_TRUSTED_ORIGINS = ['https://www.pong42.com', 'https://www.pongpi.com','http
 
 # Email configuration 
 EMAIL_USE_TLS = True
-EMAIL_HOST = 'smtp-mail.outlook.com'
-EMAIL_HOST_USER = 'pong42pong@outlook.com'
-EMAIL_HOST_PASSWORD = '01Pong01!'
+EMAIL_HOST = os.environ.get('EMAIL_HOST')
+EMAIL_HOST_USER = os.environ.get('EMAIL_HOST_USER')
+EMAIL_HOST_PASSWORD = os.environ.get('EMAIL_HOST_PASSWORD')
 EMAIL_PORT = 25
 
