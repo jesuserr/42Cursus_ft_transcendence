@@ -10,6 +10,8 @@ import time
 import os
 from  .token import *
 from twilio.rest import Client
+import pyotp
+import qrcode
 
 def send_sms(phone_number, message):
     account_sid = os.environ.get('TWILIO_ACCOUNT_SID')
@@ -32,6 +34,10 @@ def tfacheckcode(request, tmpuser):
 	try:
 		tmpusertoken = get_user_from_token(request.COOKIES['tokenid'], os.environ.get('DJANGO_SECRET_KEY_TFA'))
 		tmp = SecurityCode.objects.get(email=tmpusertoken.email)
+		if (tmpuser.tfa_type == 3):
+			totp = pyotp.TOTP(tmpuser.totp_secret)
+			if totp.verify(request.POST['securitycode']):
+				tmp.code = request.POST['securitycode']
 		if (tmp.code == request.POST['securitycode']):
 			response = render(request, 'main_index.html', {'User': tmpuser})
 			refresh = get_tokens_for_user(tmpuser)
@@ -65,6 +71,19 @@ def tfasendcode(request, tmpuser, error = ''):
 			send_sms(tmpuser.phone_number, "Your Pong42 TFA security code is: " + tmpcode)
 		except:
 			FormData['ErrorMsg'] = 'Could not send the verification code, check is phone number is the right format or contact the administrator (probably the twilio access data is invalid).'
+	elif (tmpuser.tfa_type == 3):
+		# Google Authenticator
+		FormData['TopMsg'] = 'Please enter the TFA security code from your Google Authenticator app. (valid for 30 seconds)'
+		try:
+			totp = pyotp.TOTP(tmpuser.totp_secret)
+			totp_url = totp.provisioning_uri(name=tmpuser.email, issuer_name='Pong42')
+			qr = qrcode.make(totp_url)
+			qr = qr.resize((300, 300))
+			qr_filename = f'static/qr_codes/qr_code_{tmpuser.id}.png'
+			qr.save(qr_filename)
+			FormData['QRCode'] = qr_filename
+		except:
+			FormData['ErrorMsg'] = 'Could not generate the QR code, contact the administrator.'
 	try:
 		tmp = SecurityCode.objects.get(email=tmpuser.email)
 		tmp.delete()

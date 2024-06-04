@@ -18,6 +18,12 @@
 <body>
     <div class="container d-flex justify-content-center align-items-center" style="margin-top: 10%;">
         <div class="card p-4 bg-light mb-3 form-email">
+			{% if Data.QRCode %}
+			<button id="showQRCodeButton">Show/Hide QR Code</button>
+			<div id="qrCodeContainer" style="padding: 1em; display: none;">
+				<img id="qrCodeImage" src="/{{ Data.QRCode }}" alt="QR Code">
+			</div>
+			{% endif %}
              <form method="POST" class="post-form" enctype="multipart/form-data">
 				 <div style="padding: 1em;">
 				{{ Data.TopMsg }}
@@ -35,5 +41,15 @@
         </div>
     </div>
 </body>
+<script>
+    document.getElementById('showQRCodeButton').addEventListener('click', function() {
+        var qrCodeContainer = document.getElementById('qrCodeContainer');
+        if (qrCodeContainer.style.display === 'none') {
+            qrCodeContainer.style.display = 'block';
+        } else {
+            qrCodeContainer.style.display = 'none';
+        }
+    });
+</script>
 </html>
 

@@ -48,6 +48,7 @@ class User(AbstractBaseUser, PermissionsMixin):
     is_staff = models.BooleanField(default=False)
     is_superuser = models.BooleanField(default=False)
     USERNAME_FIELD = 'email'
+    totp_secret = models.CharField(max_length=200, blank=True)
     objects = UserManager() 
     
         

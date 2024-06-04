@@ -10,6 +10,7 @@ import time
 import os
 from  .token import *
 from .userManagementTFA import *
+import pyotp
 
 
 ## EditProfile ##
@@ -211,6 +212,7 @@ def NewUserCodeOkFillData(request):
                         refresh = RefreshToken.for_user(tmpuser)
                         tokenid = str(refresh.access_token)
                         tmpuser.tokenid = tokenid
+                        tmpuser.totp_secret = pyotp.random_base32()
                         tmpuser.save()
                         response = render(request, 'main_index.html', {'User': tmpuser})
                         response.set_cookie('tokenid', tokenid, secure=True, httponly=True)

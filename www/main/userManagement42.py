@@ -8,6 +8,7 @@ import hashlib
 import time
 from  .token import *
 from .userManagementTFA import *
+import pyotp
 
 ## Fourty Two Login 
 
@@ -41,6 +42,7 @@ def fourtytwoLogin(request):
 		except:
 			## if a new user
 			tmpuser = User()
+			tmpuser.totp_secret = pyotp.random_base32()
 		##common code for new and already in the database	
 		refresh = RefreshToken.for_user(tmpuser)
 		tokenid = str(refresh.access_token)

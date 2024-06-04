@@ -9,6 +9,8 @@ asyncio~=3.4.3
 djangorestframework_simplejwt==5.3.1
 django-cors-headers==4.3.0
 twilio
+pyotp
+qrcode
 
 #redis~=5.0
 #django-cors-headers~=4.3
