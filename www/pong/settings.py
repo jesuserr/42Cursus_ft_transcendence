@@ -52,7 +52,8 @@ INSTALLED_APPS = [
 	'rest_framework',
     'rest_framework_simplejwt',
     'corsheaders',
-    'stats.apps.StatsConfig'
+    'stats.apps.StatsConfig',
+	'friends.apps.FriendsConfig',
 ]
 
 MIDDLEWARE = [
