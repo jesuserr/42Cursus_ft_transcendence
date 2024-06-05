@@ -4,4 +4,4 @@ from main.token import *
 
 @token_required
 def index(request):
-    return HttpResponseRedirect("stats")
+    return HttpResponse("Hello, Stats!")
