@@ -58,7 +58,7 @@ services:
     env_file:
       - .env
     ports:
-      - '443:4443'
+      - '4443:443'
     depends_on:
       - django
     stdin_open: true 
