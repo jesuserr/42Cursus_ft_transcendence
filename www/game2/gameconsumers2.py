@@ -32,7 +32,7 @@ class GameConsumer2(AsyncWebsocketConsumer):
                 self.rooms[self.room_group_name]["player2_connected"] = False
                 self.rooms[self.room_group_name]["player1_id"] = self.user
                 await self.rooms[self.room_group_name]['players']['player1'].send_gameboard(self.ball, self.left_paddle, self.right_paddle, self.score, PLAYER_1)
-            else:
+            elif self.rooms[self.room_group_name]["player2_connected"] == False and self.rooms[self.room_group_name]["player1_id"] != self.user:
                 self.rooms[self.room_group_name]['players']['player2'] = self
                 self.rooms[self.room_group_name]["key_states_2"] = {}
                 self.rooms[self.room_group_name]["player2_connected"] = True
