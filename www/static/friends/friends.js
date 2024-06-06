@@ -13,29 +13,58 @@ socket.onmessage = function (e) {
 	console.log(data);
 	//check the command and run the appropriate function
 	//if the command is "User", display the user's displayname
-	if (data.hasOwnProperty("SET_USERNAME")) 
-		Set_Username(data);
-	//if the command is "list_users", display the list of users
-	else if (data.hasOwnProperty("SET_USER_LIST"))
+	if (data.hasOwnProperty("SET_USER_LIST"))
 		Set_User_List(data);
 	//if the command is "list_connected_users", display the list of connected users
 	else if (data.hasOwnProperty("SET_CONNECTED_USERS"))
 		Set_Connected_Users(data);
 	//if the command is "list_blocked_users", display the list of blocked users
-	else if (data.hasOwnProperty("SET_BLOCKED_USERS"))
-		Set_Blocked_Users(data);
-	//if the command is "chat_message", display the chat message
-	else if (data.hasOwnProperty("NEW_ROOM_MSG"))
-		New_Room_msg(data['NEW_ROOM_MSG']);
-	//if the command is "chat_history", display the chat history
-	else if (data.hasOwnProperty("SET_CHAT_HISTORY"))
-		Set_Chat_History(data);
-	//if a private message is received, display the private message
-	else if (data.hasOwnProperty("NEW_PRIVATE_MSG"))
-		New_Private_msg(data['NEW_PRIVATE_MSG']);
-	//if a user is typing, display the typing message
-	else if (data.hasOwnProperty("TYPING"))
-		Typing(data);
+	else if (data.hasOwnProperty("SET_FRIENDS_USERS"))
+		Set_Friends_Users(data);
+	
+};
+
+socket.onopen = function(e) {
+	//send a message to the server to get the list of blocked users
+	socket.send(JSON.stringify({'GET_FRIENDS_USERS': 'GET_FRIENDS_USERS'}));
+
+};
+
+//function to fill blocked user list
+function Set_Friends_Users(data)
+{
+	document.getElementById("friendsList").length = 0;
+	for (let i = 0; i < data.SET_FRIENDS_USERS.length; i++) 
+	{
+		const opt = document.createElement("option");
+		opt.value = data.SET_FRIENDS_USERS[i].pk;
+		opt.text = data.SET_FRIENDS_USERS[i].fields.displayname;
+		document.getElementById("friendsList").add(opt, null)
+	};
+};
+
+// When the user clicks the block button, send the command to server
+document.querySelector('#addFriend').onclick = function (e) {
+    var userList = document.getElementById("userList");
+    var selectedOption = userList.options[userList.selectedIndex];
+
+    if (selectedOption == null || selectedOption.value == '') {
+        alert("Please select a user to block, form the list of users");
+    } else {
+        socket.send(JSON.stringify({'FRIEND_USER': selectedOption.value}));
+    }
+};
+
+// When the user clicks the unblock button, send the command to server
+document.querySelector('#removeFriend').onclick = function (e) {
+    var userList = document.getElementById("friendsList");
+    var selectedOption = userList.options[userList.selectedIndex];
+
+    if (selectedOption == null || selectedOption.value == '') {
+        alert("Please select a user to unblock, form the list of blocked users");
+    } else {
+        socket.send(JSON.stringify({'UNFRIENDS_USER': selectedOption.value}));
+    }
 };
 
 //function to fill User list

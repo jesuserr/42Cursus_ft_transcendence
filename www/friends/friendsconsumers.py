@@ -29,27 +29,19 @@ class FriendsConsumer(AsyncJsonWebsocketConsumer):
         
 	#When receive a message
     async def receive_json(self, data):
+        print(data)
         #check the command
         if 'GET_USER_LIST' in data:
             await self.sendUserList()
-        elif 'GET_USERNAME' in data:
-            await self.SendUsername()
         elif 'GET_CONNECTED_USERS' in data:
             await self.sendConnectedUserList()
-        elif 'BLOCK_USER' in data:
-            await self.blockUser(data['BLOCK_USER'])
-        elif 'UNBLOCK_USER' in data:
-            await self.unblockUser(data['UNBLOCK_USER'])
-        elif 'GET_BLOCKED_USERS' in data:
-            await self.sendBlockUserList()
-        elif 'SEND_MESSAGE_ROOM' in data:
-            await self.sendMessageRoom(data['SEND_MESSAGE_ROOM'])
-        elif 'SEND_PRIVATE_MSG' in data:
-            await self.sendPrivateMessage(data)
-        elif 'GET_CHAT_HISTORY' in data:
-            await self.getChatHistory(data)
-        elif 'TYPING' in data:
-            await self.typing(data)
+        elif 'FRIEND_USER' in data:
+            await self.FriendsUser(data['FRIEND_USER'])
+        elif 'UNFRIENDS_USER' in data:
+            await self.unFriendsUser(data['UNFRIENDS_USER'])
+        elif 'GET_FRIENDS_USERS' in data:
+            await self.sendFriendsUserList()
+        
             
 	#Send the connected user list to the client
     async def sendConnectedUserList(self):
@@ -119,3 +111,44 @@ class FriendsConsumer(AsyncJsonWebsocketConsumer):
             Friends_Connected_Users.objects.get(email=str(self.user.email)).delete()
         except:
             pass
+
+	#Send the block user list to the client
+    async def sendFriendsUserList(self):
+        data = await self.getFriendsUserList()
+        await self.send_json(data)
+    
+	#Get the block user list from model
+    @database_sync_to_async
+    def getFriendsUserList(self):
+        data = serializers.serialize('json', Friends_List.objects.filter(user=self.user), fields=('displayname'))
+        data_obj = json.loads(data)
+        new_obj = {'SET_FRIENDS_USERS': data_obj,}
+        return new_obj
+    
+	#Unblock user
+    async def unFriendsUser(self, data):
+        await self.unFriendsUserModel(data)
+        await self.sendFriendsUserList()
+    
+	#Unblock user from model
+    @database_sync_to_async
+    def unFriendsUserModel(self, data):
+        try:
+            Friends_List.objects.get(user=self.user, email=data).delete()
+        except:
+            pass
+
+    #Block user
+    async def FriendsUser(self, data):
+        await self.FriendsUserModel(data)
+        await self.sendFriendsUserList()
+    
+	#Block user from model
+    @database_sync_to_async
+    def FriendsUserModel(self, data):
+        try:
+            tmp = Friends_List.objects.get(user=self.user, email=data['email'])
+        except:
+            btmp = User.objects.get(email=data)
+            tmp = Friends_List(user=self.user, email=btmp.email, displayname=btmp.displayname)
+            tmp.save()
