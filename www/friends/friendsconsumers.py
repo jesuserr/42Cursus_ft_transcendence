@@ -20,16 +20,14 @@ class FriendsConsumer(AsyncJsonWebsocketConsumer):
                 await self.registerUser()
                 await self.request_group_refresh_user_list('REFRESH_USER_LIST')
 
-
     #When the connection is closed              
     async def disconnect(self, close_code):
-        await self.channel_layer.group_discard(self.room_group_name, self.channel_name)
         await self.unregisterUser()
         await self.request_group_refresh_user_list('REFRESH_USER_LIST')
+        await self.channel_layer.group_discard(self.room_group_name, self.channel_name)
         
 	#When receive a message
     async def receive_json(self, data):
-        print(data)
         #check the command
         if 'GET_USER_LIST' in data:
             await self.sendUserList()
@@ -41,8 +39,7 @@ class FriendsConsumer(AsyncJsonWebsocketConsumer):
             await self.unFriendsUser(data['UNFRIENDS_USER'])
         elif 'GET_FRIENDS_USERS' in data:
             await self.sendFriendsUserList()
-        
-            
+           
 	#Send the connected user list to the client
     async def sendConnectedUserList(self):
         data = await self.getConnectedUserList()
@@ -51,7 +48,7 @@ class FriendsConsumer(AsyncJsonWebsocketConsumer):
 	#Get list of connected users
     @database_sync_to_async
     def getConnectedUserList(self):
-        friend_emails = Friends_List.objects.values_list('email', flat=True)
+        friend_emails = Friends_List.objects.filter(user=self.user).values_list('email', flat=True)
         data = serializers.serialize('json', Friends_Connected_Users.objects.filter(email__in=friend_emails), fields=('displayname'))
         data_obj = json.loads(data)
         new_obj = {'SET_CONNECTED_USERS': data_obj,}
@@ -68,9 +65,10 @@ class FriendsConsumer(AsyncJsonWebsocketConsumer):
 		)
     
 	#Receive message from the group to refresh the user list
-    async def refresh_UserList(self, event):
+    async def refresh_UserList(self, event = None):
         await self.sendUserList()
         await self.sendConnectedUserList()
+        await self.sendFriendsUserList()
   
   	#Send the user list to the client
     async def sendUserList(self):
@@ -128,7 +126,7 @@ class FriendsConsumer(AsyncJsonWebsocketConsumer):
 	#Unblock user
     async def unFriendsUser(self, data):
         await self.unFriendsUserModel(data)
-        await self.sendFriendsUserList()
+        await self.refresh_UserList()
     
 	#Unblock user from model
     @database_sync_to_async
@@ -141,7 +139,7 @@ class FriendsConsumer(AsyncJsonWebsocketConsumer):
     #Block user
     async def FriendsUser(self, data):
         await self.FriendsUserModel(data)
-        await self.sendFriendsUserList()
+        await self.refresh_UserList()
     
 	#Block user from model
     @database_sync_to_async
