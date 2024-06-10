@@ -54,13 +54,35 @@
                     </li>
                 </ul>
                 <div class="d-flex align-items-center">
-                    <p class="mb-0 me-3" style="color:white">{{ User.displayname }}</p>
+                    <p id=displayname class="mb-0 me-3" style="color:white">{{ User.displayname }}</p>
                     <img src="{{User.avatar}}" width="50" height="50" alt="" onerror="this.onerror=null; this.src='/static/avatars/default.jpg'"/>
                 </div>
             </div>
         </div>
     </nav>
+	<div id="iframeContainer" style="position: fixed; top: 0; right: 0; height: 100%; width: 14%; display: none;">
+        <iframe src="/friends" style="height: 100%; width: 100%;"></iframe>
+    </div>
+	<button id="toggleButton" style="position: fixed; top: 0; right: 0; display: none;">Friends Show/Hide</button>
+
     <script src="/static/assets/bootstrap/js/bootstrap.min.js"></script>
+    <script>
+		var displayName = document.getElementById('displayname').innerText;
+        if (displayName !== '') {
+            document.getElementById('toggleButton').style.display = 'block';
+        }
+        document.getElementById('toggleButton').addEventListener('click', function() {
+            var displayName = document.getElementById('displayname').innerText;
+            if (displayName !== '') {
+                var iframeContainer = document.getElementById('iframeContainer');
+                if (iframeContainer.style.display === 'none') {
+                    iframeContainer.style.display = 'block';
+                } else {
+                    iframeContainer.style.display = 'none';
+                }
+            }
+        });
+    </script>
 </body>
 
 </html>
