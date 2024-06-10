@@ -1,0 +1,84 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>User and Game Stats Dashboards</title>
+    <style>
+        table, th, td {
+            border: 1px solid black;
+            border-collapse: collapse;
+        }
+        table {
+            width: 66%;
+        }
+    </style>
+</head>
+<body id="statsContainer">
+    <h1>User and Game Stats Dashboards</h1>
+    <div class="d-flex align-items-center">
+        <img src="{{user_stats.avatar}}" width="150" height="150" alt="" onerror="this.onerror=null; this.src='/static/avatars/default.jpg'"/>
+        <p class="mb-0 me-3" style="color:black">{{ user_stats.displayname }}</p>
+    </div>
+    <table>
+        <tr>
+            <th></th>
+            <th>vs CPU</th>
+            <th>vs Human</th>
+            <th>Overall</th>
+        </tr>
+        <tr>
+            <td>Played matches</td>
+            <td>{{ user_stats.matches_played_pvc }}</td>
+            <td>{{ user_stats.matches_played_pvp }}</td>
+            <td>{{ user_stats.matches_played }}</td>
+        </tr>
+        <tr>
+            <td>Won matches</td>
+            <td>{{ user_stats.matches_won_pvc }} ({{ user_stats.matches_won_pvc_ratio }}%)</td>
+            <td>{{ user_stats.matches_won_pvp }} ({{ user_stats.matches_won_pvp_ratio }}%)</td>
+            <td>{{ user_stats.matches_won }} ({{ user_stats.matches_won_ratio }}%)</td>
+        </tr>
+        <tr>
+            <td>Lost matches</td>
+            <td>{{ user_stats.matches_lost_pvc }} ({{ user_stats.matches_lost_pvc_ratio }}%)</td>
+            <td>{{ user_stats.matches_lost_pvp }} ({{ user_stats.matches_lost_pvp_ratio }}%)</td>
+            <td>{{ user_stats.matches_lost }} ({{ user_stats.matches_lost_ratio }}%)</td>
+        </tr>
+        <tr>
+            <td>Goals scored per match</td>
+            <td>{{ user_stats.scored_goals_per_match_pvc }}</td>
+            <td>{{ user_stats.scored_goals_per_match_pvp }}</td>
+            <td>{{ user_stats.scored_goals_per_match }}</td>
+        </tr>
+        <tr>
+            <td>Goals received per match</td>
+            <td>{{ user_stats.received_goals_per_match_pvc }}</td>
+            <td>{{ user_stats.received_goals_per_match_pvp }}</td>
+            <td>{{ user_stats.received_goals_per_match }}</td>
+        </tr>
+        <tr>
+            <td>Direct goals scored per match</td>
+            <td>{{ user_stats.scored_aces_per_match_pvc }}</td>
+            <td>{{ user_stats.scored_aces_per_match_pvp }}</td>
+            <td>{{ user_stats.scored_aces_per_match }}</td>
+        </tr>
+        <tr>
+            <td>Direct goals received per match</td>
+            <td>{{ user_stats.received_aces_per_match_pvc }}</td>
+            <td>{{ user_stats.received_aces_per_match_pvp }}</td>
+            <td>{{ user_stats.received_aces_per_match }}</td>
+        </tr>
+        <tr>
+            <td>Shortest match</td>
+            <td>{{ user_stats.shortest_match_pvc }} secs</td>
+            <td>{{ user_stats.shortest_match_pvp }} secs</td>
+            <td>{{ user_stats.shortest_match }} secs</td>
+        </tr>
+        <tr>
+            <td>Longest match</td>
+            <td>{{ user_stats.longest_match_pvc }} secs</td>
+            <td>{{ user_stats.longest_match_pvp }} secs</td>
+            <td>{{ user_stats.longest_match }} secs</td>
+        </tr>
+    </table>    
+</body>
+</html>

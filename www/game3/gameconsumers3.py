@@ -102,5 +102,9 @@ class GameConsumer3(AsyncWebsocketConsumer):
         temp.right_player_score = score.right_score
         temp.right_player_hits = score.right_hits
         temp.right_player_aces = score.right_aces
-        temp.point_length = score.point_length        
+        temp.point_length = score.point_length
+        if score.left_score > score.right_score:
+            temp.left_player_win = True
+        else:
+            temp.right_player_win = True
         temp.save()
