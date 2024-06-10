@@ -23,7 +23,6 @@ class FriendsConsumer(AsyncJsonWebsocketConsumer):
     #When the connection is closed              
     async def disconnect(self, close_code):
         await self.unregisterUser()
-        time.sleep(1)	
         await self.request_group_refresh_user_list('REFRESH_USER_LIST')
         await self.channel_layer.group_discard(self.room_group_name, self.channel_name)
         
