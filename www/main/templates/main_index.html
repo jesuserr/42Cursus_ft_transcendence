@@ -9,25 +9,79 @@
     <link rel="stylesheet" href="/static/assets/bootstrap/css/bootstrap.min.css">
     <link rel="stylesheet" href="/static/assets/css/custom.css">
 </head>
+<style>
+body {
+    background-color: black;
+    font-family: 'Press Start 2P';
+}
+
+.teletext-box {
+	background-color: #000000;
+	padding: 20px;
+	border-radius: 5px;
+	justify-content: center;
+	align-items: center;
+	text-align: center;
+}
+
+.teletext-title {
+	color: #FFFF00;
+	font-size: 20px;
+	text-shadow: 2px 2px #000000;
+}
+
+.teletext-description {
+	color: #FFFFFF;
+	font-size: 15px;
+	margin: 10px 0;
+	padding: 2em;
+}
+
+.teletext-button {
+	background-color: #333;
+	color: #FFFFFF;
+	border: none;
+	padding: 15px 20px;
+	cursor: pointer;
+	text-shadow: 1px 1px #000000;
+	width: 10rem;
+	font-size: 10px;
+}
+
+.teletext-button:hover {
+	background-color: #4CAF50;
+
+}
+
+</style>
 <body>
     <div class="container d-flex align-items-center play-container">
         <div class="row justify-content-center">
             <div class="col-md-5 teletext-box m-2">
-                <h1 class="teletext-title">1 vs 1</h1>
-                <p class="teletext-description">play locally with a partner</p>
+                <h3 class="teletext-title">Player vs Player</h3>
+		<p class="teletext-description">Play locally</p>
                 <button class="btn teletext-button" href="/game/GameTest/">Play</button>
             </div>
             <div class="col-md-5 teletext-box m-2">
-                <h1 class="teletext-title">1 vs IA</h1>
+                <h3 class="teletext-title">Player vs Player</h3>
+		<p class="teletext-description">Play remote</p>
+                <button class="btn teletext-button" href="/game2/GameTest2/">Play</button>
+            </div>
+	    <div class="col-md-5 teletext-box m-2">
+                <h3 class="teletext-title">1 vs AI</h3>
                 <p class="teletext-description">play with our amazing AI</p>
                 <button class="btn teletext-button" href="/game2/GameTest2/">Play</button>
             </div>
+		<div class="col-md-5 teletext-box m-2">
+			<h3 class="teletext-title">TOURNAMENT</h3>
+		<p class="teletext-description">3 min game</p>
+                <button class="btn teletext-button" href="/game2/GameTest2/">Play</button>
+            </div>
+
         </div>
     </div>
 </body>
 </html>
-
-
 <body>
 	<center style="color: white;">
 		{{ Data.ErrorMsg }}

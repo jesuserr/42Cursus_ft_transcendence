@@ -4,6 +4,10 @@ from .userManagement42 import *
 from django.core.mail import send_mail
 from .token import *
 
+def welcome(request):
+    response = render(request, "main_welcome.html")
+    return response;
+
 def index(request):
 	return maniPage(request)
 
