@@ -1,6 +1,6 @@
 const canvas = document.getElementById('canvas');
 const ctx = canvas.getContext('2d');
-const textSize = 50;
+const textSize = 35;
 let scale = 1.00;
 let scaleFactor = 0.867;
 let browserHeight = 0;
@@ -19,6 +19,8 @@ let pongSound = new Audio(`/static/game/sounds/pong.mp3`);
 let pointSound = new Audio(`/static/game/sounds/point.mp3`);
 let winSound = new Audio(`/static/game/sounds/win.mp3`);
 
+var font = new FontFaceObserver('Press Start 2P');
+
 const gameName = JSON.parse(document.getElementById('game_name').textContent);
 const socket = new WebSocket('wss://' + window.location.host + '/ws/game4/' + gameName + '/');
 
@@ -32,8 +34,8 @@ function drawCountdown() {
             drawText(textSize, "M to mute / P to pause", 1, 0, 0, 1.3);
             drawText(textSize / 3, "Key W: Up", 0, canvas.width / 100, canvas.height * 0.95, 0);
             drawText(textSize / 3, "Key S: Down", 0, canvas.width / 100, canvas.height * 0.98, 0);
-            drawText(textSize / 3, "Key \u2191: Up", 0, canvas.width * 0.91, canvas.height * 0.95, 0);
-            drawText(textSize / 3, "Key \u2193: Down", 0, canvas.width * 0.91, canvas.height * 0.98, 0);      
+            drawText(textSize / 3, "Key \u2191: Up", 0, canvas.width * 0.9, canvas.height * 0.95, 0);
+            drawText(textSize / 3, "Key \u2193: Down", 0, canvas.width * 0.9, canvas.height * 0.98, 0);      
             if (countdown > 0) {
                 drawText(textSize, `${countdown}`, 1, 0, 0, 3.5);
                 if (!muted)
@@ -62,8 +64,8 @@ function initGameboard() {
     drawText(textSize, "M to mute / P to pause", 1, 0, 0, 1.3);
     drawText(textSize / 3, "Key W: Up", 0, canvas.width / 100, canvas.height * 0.95, 0);
     drawText(textSize / 3, "Key S: Down", 0, canvas.width / 100, canvas.height * 0.98, 0);
-    drawText(textSize / 3, "Key \u2191: Up", 0, canvas.width * 0.91, canvas.height * 0.95, 0);
-    drawText(textSize / 3, "Key \u2193: Down", 0, canvas.width * 0.91, canvas.height * 0.98, 0);
+    drawText(textSize / 3, "Key \u2191: Up", 0, canvas.width * 0.9, canvas.height * 0.95, 0);
+    drawText(textSize / 3, "Key \u2193: Down", 0, canvas.width * 0.9, canvas.height * 0.98, 0);
 }
 
 function drawGameboard() {
@@ -117,7 +119,7 @@ function determineScale() {
 function drawText(size, text, center, x, y, height) {    
     ctx.beginPath();
     ctx.fillStyle = 'white';
-    ctx.font = `${size * scale}px Courier`;
+    ctx.font = `${size * scale}px 'Press Start 2P'`;
     let textWidth = ctx.measureText(text).width;
     if (center == 1)
         ctx.fillText(text, (canvas.width - textWidth) / 2, canvas.height / height);
@@ -191,5 +193,10 @@ function animationLoop() {
     }
 }
 
-// Start the animation loop
-animationLoop();
+// Start the animation loop when the font is loaded
+font.load().then(function () {    
+    animationLoop();
+  }).catch(function () {    
+    console.log('Font is not available');
+    animationLoop();
+  });

@@ -1,6 +1,6 @@
 const canvas = document.getElementById('canvas');
 const ctx = canvas.getContext('2d');
-const textSize = 50;
+const textSize = 35;
 let scale = 1.00;
 let scaleFactor = 0.867;
 let browserHeight = 0;
@@ -18,6 +18,8 @@ let pingSound = new Audio(`/static/game/sounds/ping.mp3`);
 let pongSound = new Audio(`/static/game/sounds/pong.mp3`);
 let pointSound = new Audio(`/static/game/sounds/point.mp3`);
 let winSound = new Audio(`/static/game/sounds/win.mp3`);
+
+var font = new FontFaceObserver('Press Start 2P');
 
 const gameName = JSON.parse(document.getElementById('game_name').textContent);
 const socket = new WebSocket('wss://' + window.location.host + '/ws/game3/' + gameName + '/');
@@ -113,7 +115,7 @@ function determineScale() {
 function drawText(size, text, center, x, y, height) {    
     ctx.beginPath();
     ctx.fillStyle = 'white';
-    ctx.font = `${size * scale}px Courier`;
+    ctx.font = `${size * scale}px 'Press Start 2P'`;
     let textWidth = ctx.measureText(text).width;
     if (center == 1)
         ctx.fillText(text, (canvas.width - textWidth) / 2, canvas.height / height);
@@ -187,5 +189,10 @@ function animationLoop() {
     }
 }
 
-// Start the animation loop
-animationLoop();
+// Start the animation loop when the font is loaded
+font.load().then(function () {    
+    animationLoop();
+  }).catch(function () {    
+    console.log('Font is not available');
+    animationLoop();
+  });
