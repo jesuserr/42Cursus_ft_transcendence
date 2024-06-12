@@ -11,6 +11,7 @@ class stats(models.Model):
 	player_one_win = models.BooleanField(default=False)
 	player_two = models.EmailField()
 	player_two_displayname = models.CharField(max_length=50, default='')
+	player_two_avatar = models.ImageField(blank=True, upload_to='static/avatars/', default='static/avatars/default.jpg')
 	player_two_score = models.IntegerField()
 	player_two_hits = models.IntegerField()
 	player_two_aces = models.IntegerField()

@@ -8,7 +8,7 @@
             border-collapse: collapse;
         }
         table {
-            width: 66%;
+            width: 90%;
         }
     </style>
 </head>
@@ -89,16 +89,17 @@
             <th>Opponent</th>
             <th>Player Score</th>
             <th>Opponent Score</th>
+            <th>Match Length</th>
         </tr>
         {% for match in game_sessions %}
         <tr>
             <td>{{ match.date }}</td>
             <!-- {{ match.date|date:"Y-m-d" }} -->
-            <!-- <td><img src="{{user_stats.avatar}}" width="30" height="30" alt="" onerror="this.onerror=null; this.src='/static/avatars/default.jpg'"/> {{ match.player }}</td> -->            
-            <td>{{ match.player }}</td>
-            <td>{{ match.opponent }}</td>
+            <td><img src="{{user_stats.avatar}}" width="50" height="50" alt="" onerror="this.onerror=null; this.src='/static/avatars/default.jpg'"/> {{ match.player }}</td>
+            <td><img src="{{match.opponent_avatar}}" width="50" height="50" alt="" onerror="this.onerror=null; this.src='/static/avatars/default.jpg'"/> {{ match.opponent }}</td>
             <td>{{ match.player_score }}</td>
             <td>{{ match.opponent_score }}</td>
+            <td>{{ match.match_length }}</td>
         </tr>
         {% endfor %}
     </table>    

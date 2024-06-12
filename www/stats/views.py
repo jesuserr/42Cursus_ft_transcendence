@@ -102,6 +102,8 @@ def generate_game_sessions(player_vs_cpu, player_vs_player, user_stats):
             'opponent': 'CPU',
             'player_score': match.left_player_score,
             'opponent_score': match.right_player_score,            
+            'opponent_avatar': '/static/avatars/CPU.jpg',
+            'match_length': match.match_length
         }
         game_sessions.append(match_entry)
     for match in player_vs_player:
@@ -111,7 +113,9 @@ def generate_game_sessions(player_vs_cpu, player_vs_player, user_stats):
             'player': user_stats['display_name'],
             'opponent': match.player_two_displayname,
             'player_score': match.player_one_score,
-            'opponent_score': match.player_two_score,            
+            'opponent_score': match.player_two_score,
+            'opponent_avatar': match.player_two_avatar,
+            'match_length': match.match_length
         }
         game_sessions.append(match_entry)
     game_sessions = sorted(game_sessions, key=lambda x: x['date'], reverse=True)
