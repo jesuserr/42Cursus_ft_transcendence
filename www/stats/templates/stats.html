@@ -16,8 +16,9 @@
     <h1>User and Game Stats Dashboards</h1>
     <div class="d-flex align-items-center">
         <img src="{{user_stats.avatar}}" width="150" height="150" alt="" onerror="this.onerror=null; this.src='/static/avatars/default.jpg'"/>
-        <p class="mb-0 me-3" style="color:black">{{ user_stats.displayname }}</p>
+        <p class="mb-0 me-3" style="color:black">{{ user_stats.display_name }}</p>
     </div>
+    <h2>User statistics</h2>
     <table>
         <tr>
             <th></th>
@@ -79,6 +80,27 @@
             <td>{{ user_stats.longest_match_pvp }} secs</td>
             <td>{{ user_stats.longest_match }} secs</td>
         </tr>
+    </table><br>
+    <h2>Match history</h2>
+    <table>
+        <tr>
+            <th>Game Date</th>
+            <th>Player</th>
+            <th>Opponent</th>
+            <th>Player Score</th>
+            <th>Opponent Score</th>
+        </tr>
+        {% for match in game_sessions %}
+        <tr>
+            <td>{{ match.date }}</td>
+            <!-- {{ match.date|date:"Y-m-d" }} -->
+            <!-- <td><img src="{{user_stats.avatar}}" width="30" height="30" alt="" onerror="this.onerror=null; this.src='/static/avatars/default.jpg'"/> {{ match.player }}</td> -->            
+            <td>{{ match.player }}</td>
+            <td>{{ match.opponent }}</td>
+            <td>{{ match.player_score }}</td>
+            <td>{{ match.opponent_score }}</td>
+        </tr>
+        {% endfor %}
     </table>    
 </body>
 </html>

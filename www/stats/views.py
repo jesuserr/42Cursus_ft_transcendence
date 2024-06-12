@@ -14,7 +14,7 @@ def index(request):
     user_stats = {}
     # Avatar and displayname
     user_stats['avatar'] = tmp_user.avatar
-    user_stats['displayname'] = tmp_user.displayname
+    user_stats['display_name'] = tmp_user.displayname
     # Games played, won and lost
     user_stats = calculate_games_stats(player_vs_cpu, player_vs_player, user_stats)
     # Points per game
@@ -23,9 +23,10 @@ def index(request):
     user_stats = calculate_aces_per_game(player_vs_cpu, player_vs_player, user_stats)
     # Games duration
     user_stats = calculate_match_duration(player_vs_cpu, player_vs_player, user_stats)
+    # Game sessions (Match history)
+    game_sessions = generate_game_sessions(player_vs_cpu, player_vs_player, user_stats)
 
-    print(user_stats)
-    return HttpResponse(render(request, "stats.html", {'user_stats': user_stats}))
+    return HttpResponse(render(request, "stats.html", {'user_stats': user_stats, 'game_sessions': game_sessions}))
 
 def calculate_games_stats(player_vs_cpu, player_vs_player, user_stats):
     user_stats['matches_played_pvc'] = player_vs_cpu.count()
@@ -90,3 +91,28 @@ def calculate_match_duration(player_vs_cpu, player_vs_player, user_stats):
         user_stats['shortest_match'] = 0
     user_stats['longest_match'] = max(user_stats['longest_match_pvc'], user_stats['longest_match_pvp'])
     return user_stats
+
+def generate_game_sessions(player_vs_cpu, player_vs_player, user_stats):
+    game_sessions = []
+    for match in player_vs_cpu:
+        #print(match.__dict__)
+        match_entry = {
+            'date': match.created_at + timedelta(hours = 2),
+            'player': user_stats['display_name'],
+            'opponent': 'CPU',
+            'player_score': match.left_player_score,
+            'opponent_score': match.right_player_score,            
+        }
+        game_sessions.append(match_entry)
+    for match in player_vs_player:
+        #print(match.__dict__)
+        match_entry = {
+            'date': match.created_at + timedelta(hours = 2),
+            'player': user_stats['display_name'],
+            'opponent': match.player_two_displayname,
+            'player_score': match.player_one_score,
+            'opponent_score': match.player_two_score,            
+        }
+        game_sessions.append(match_entry)
+    game_sessions = sorted(game_sessions, key=lambda x: x['date'], reverse=True)
+    return game_sessions

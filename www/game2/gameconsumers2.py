@@ -46,6 +46,7 @@ class GameConsumer2(AsyncWebsocketConsumer):
         try:
             token = self.scope['cookies']['tokenid']
             self.user = get_user_from_token(token)
+            #print(self.user.__dict__)
         except:
             self.user = ""
 
@@ -139,6 +140,7 @@ class GameConsumer2(AsyncWebsocketConsumer):
         temp.player_one_hits = score.left_hits
         temp.player_one_aces = score.left_aces
         temp.player_two = room["player2_id"]
+        temp.player_two_displayname = room["player2_id"].displayname
         temp.player_two_score = score.right_score
         temp.player_two_hits = score.right_hits
         temp.player_two_aces = score.right_aces
@@ -154,6 +156,7 @@ class GameConsumer2(AsyncWebsocketConsumer):
         temp.player_one_hits = score.right_hits
         temp.player_one_aces = score.right_aces
         temp.player_two = room["player1_id"]
+        temp.player_two_displayname = room["player1_id"].displayname
         temp.player_two_score = score.left_score
         temp.player_two_hits = score.left_hits
         temp.player_two_aces = score.left_aces
