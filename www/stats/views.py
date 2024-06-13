@@ -3,6 +3,7 @@ from django.http import HttpResponse, HttpResponseRedirect
 from main.token import *
 from game3.models import stats as stats_pvc         # pvc -> player vs cpu
 from game2.models import stats as stats_pvp         # pvp -> player vs player
+from main.models import User
 import json
 
 @token_required
@@ -99,7 +100,6 @@ def calculate_match_duration(player_vs_cpu, player_vs_player, user_stats):
 def generate_game_sessions(player_vs_cpu, player_vs_player, user_stats):
     game_sessions = []
     for match in player_vs_cpu:
-        #print(match.__dict__)
         match_entry = {
             'date': (match.created_at + timedelta(hours = 2)).strftime('%B %d, %Y - %H:%M:%S'),
             'player': user_stats['display_name'],
@@ -111,12 +111,12 @@ def generate_game_sessions(player_vs_cpu, player_vs_player, user_stats):
         }
         game_sessions.append(match_entry)
     for match in player_vs_player:
-        #print(match.__dict__)
+        opponent_info = get_user_info(match.player_two)
         match_entry = {
             'date': (match.created_at + timedelta(hours = 2)).strftime('%B %d, %Y - %H:%M:%S'),
             'player': user_stats['display_name'],
-            'opponent_avatar': str(match.player_two_avatar),
-            'opponent': match.player_two_displayname,
+            'opponent_avatar': str(opponent_info.avatar),
+            'opponent': opponent_info.displayname,
             'player_score': match.player_one_score,
             'opponent_score': match.player_two_score,
             'match_length': float(match.match_length)
@@ -124,3 +124,10 @@ def generate_game_sessions(player_vs_cpu, player_vs_player, user_stats):
         game_sessions.append(match_entry)
     game_sessions = sorted(game_sessions, key=lambda x: x['date'], reverse=True)
     return game_sessions
+
+def get_user_info(email):
+    try:
+        user = User.objects.get(email=email)
+        return user
+    except User.DoesNotExist:
+        return None
