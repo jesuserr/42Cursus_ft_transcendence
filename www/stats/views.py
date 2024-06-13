@@ -27,8 +27,12 @@ def index(request):
     user_stats = calculate_match_duration(player_vs_cpu, player_vs_player, user_stats)
     # Generates player gaming history
     player_game_history = generate_game_history(player_vs_cpu, player_vs_player)
-    # Generates server gaming history
+    # Generates server gaming history and removes duplicates
     all_game_history = generate_game_history(stats_pvc.objects.all(), stats_pvp.objects.all())
+    unique_game_history = {}
+    for game in all_game_history:
+        unique_game_history[game['date']] = game
+    all_game_history = list(unique_game_history.values())
 
     #user_stats_json = json.dumps(user_stats)
     #player_game_history_json = json.dumps(player_game_history)
