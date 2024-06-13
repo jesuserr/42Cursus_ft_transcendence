@@ -25,13 +25,15 @@ def index(request):
     user_stats = calculate_aces_per_game(player_vs_cpu, player_vs_player, user_stats)
     # Games duration
     user_stats = calculate_match_duration(player_vs_cpu, player_vs_player, user_stats)
-    # Game sessions (Match history)
-    game_sessions = generate_game_sessions(player_vs_cpu, player_vs_player, user_stats)
+    # Generates player gaming history
+    player_game_history = generate_game_history(player_vs_cpu, player_vs_player)
+    # Generates server gaming history
+    all_game_history = generate_game_history(stats_pvc.objects.all(), stats_pvp.objects.all())
 
     #user_stats_json = json.dumps(user_stats)
-    #game_sessions_json = json.dumps(game_sessions)
-    #return HttpResponse(render(request, "stats.html", {'user_stats': user_stats_json, 'game_sessions': game_sessions_json}))
-    return HttpResponse(render(request, "stats.html", {'user_stats': user_stats, 'game_sessions': game_sessions}))
+    #player_game_history_json = json.dumps(player_game_history)
+    #all_game_history_json = json.dumps(all_game_history)
+    return HttpResponse(render(request, "stats.html", {'user_stats': user_stats, 'player_game_history': player_game_history, 'all_game_history': all_game_history}))
 
 def calculate_games_stats(player_vs_cpu, player_vs_player, user_stats):
     user_stats['matches_played_pvc'] = player_vs_cpu.count()
@@ -97,26 +99,30 @@ def calculate_match_duration(player_vs_cpu, player_vs_player, user_stats):
     user_stats['longest_match'] = max(user_stats['longest_match_pvc'], user_stats['longest_match_pvp'])
     return user_stats
 
-def generate_game_sessions(player_vs_cpu, player_vs_player, user_stats):
+def generate_game_history(object_pvc, object_pvp):
     game_sessions = []
-    for match in player_vs_cpu:
+    for match in object_pvc:
+        player_info = get_user_info(match.left_player)
         match_entry = {
             'date': (match.created_at + timedelta(hours = 2)).strftime('%B %d, %Y - %H:%M:%S'),
-            'player': user_stats['display_name'],
-            'opponent_avatar': '/static/avatars/CPU.jpg',
+            'player': player_info.displayname,
+            'player_avatar': str(player_info.avatar),
             'opponent': 'CPU',
+            'opponent_avatar': '/static/avatars/CPU.jpg',
             'player_score': match.left_player_score,
             'opponent_score': match.right_player_score,
             'match_length': float(match.match_length)
         }
         game_sessions.append(match_entry)
-    for match in player_vs_player:
-        opponent_info = get_user_info(match.player_two)
+    for match in object_pvp:
+        player_one_info = get_user_info(match.player_one)
+        player_two_info = get_user_info(match.player_two)
         match_entry = {
             'date': (match.created_at + timedelta(hours = 2)).strftime('%B %d, %Y - %H:%M:%S'),
-            'player': user_stats['display_name'],
-            'opponent_avatar': str(opponent_info.avatar),
-            'opponent': opponent_info.displayname,
+            'player': player_one_info.displayname,
+            'player_avatar': str(player_one_info.avatar),
+            'opponent': player_two_info.displayname,
+            'opponent_avatar': str(player_two_info.avatar),
             'player_score': match.player_one_score,
             'opponent_score': match.player_two_score,
             'match_length': float(match.match_length)

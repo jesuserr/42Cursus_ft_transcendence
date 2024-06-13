@@ -18,7 +18,7 @@
         <img src="{{user_stats.avatar}}" width="150" height="150" alt="" onerror="this.onerror=null; this.src='/static/avatars/default.jpg'"/>
         <p class="mb-0 me-3" style="color:black">{{ user_stats.display_name }}</p>
     </div>
-    <h2>User statistics</h2>
+    <h2>Player stats</h2>
     <table>
         <tr>
             <th></th>
@@ -81,7 +81,7 @@
             <td>{{ user_stats.longest_match }} secs</td>
         </tr>
     </table><br>
-    <h2>Match history</h2>
+    <h2>Player gaming history</h2>
     <table>
         <tr>
             <th>Game Date</th>
@@ -91,11 +91,31 @@
             <th>Opponent Score</th>
             <th>Match Length</th>
         </tr>
-        {% for match in game_sessions %}
+        {% for match in player_game_history %}
         <tr>
             <td>{{ match.date }}</td>
-            <!-- {{ match.date|date:"Y-m-d" }} -->
-            <td><img src="{{user_stats.avatar}}" width="50" height="50" alt="" onerror="this.onerror=null; this.src='/static/avatars/default.jpg'"/> {{ match.player }}</td>
+            <td><img src="{{match.player_avatar}}" width="50" height="50" alt="" onerror="this.onerror=null; this.src='/static/avatars/default.jpg'"/> {{ match.player }}</td>
+            <td><img src="{{match.opponent_avatar}}" width="50" height="50" alt="" onerror="this.onerror=null; this.src='/static/avatars/default.jpg'"/> {{ match.opponent }}</td>
+            <td>{{ match.player_score }}</td>
+            <td>{{ match.opponent_score }}</td>
+            <td>{{ match.match_length }}</td>
+        </tr>
+        {% endfor %}
+    </table>
+    <h2>Server gaming history</h2>
+    <table>
+        <tr>
+            <th>Game Date</th>
+            <th>Player 1</th>
+            <th>Player 2</th>
+            <th>Player 1 Score</th>
+            <th>Player 2 Score</th>
+            <th>Match Length</th>
+        </tr>
+        {% for match in all_game_history %}
+        <tr>
+            <td>{{ match.date }}</td>
+            <td><img src="{{match.player_avatar}}" width="50" height="50" alt="" onerror="this.onerror=null; this.src='/static/avatars/default.jpg'"/> {{ match.player }}</td>
             <td><img src="{{match.opponent_avatar}}" width="50" height="50" alt="" onerror="this.onerror=null; this.src='/static/avatars/default.jpg'"/> {{ match.opponent }}</td>
             <td>{{ match.player_score }}</td>
             <td>{{ match.opponent_score }}</td>
