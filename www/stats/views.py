@@ -3,6 +3,7 @@ from django.http import HttpResponse, HttpResponseRedirect
 from main.token import *
 from game3.models import stats as stats_pvc         # pvc -> player vs cpu
 from game2.models import stats as stats_pvp         # pvp -> player vs player
+import json
 
 @token_required
 def index(request):
@@ -13,7 +14,7 @@ def index(request):
 
     user_stats = {}
     # Avatar and displayname
-    user_stats['avatar'] = tmp_user.avatar
+    user_stats['avatar'] = str(tmp_user.avatar)
     user_stats['display_name'] = tmp_user.displayname
     # Games played, won and lost
     user_stats = calculate_games_stats(player_vs_cpu, player_vs_player, user_stats)
@@ -26,12 +27,15 @@ def index(request):
     # Game sessions (Match history)
     game_sessions = generate_game_sessions(player_vs_cpu, player_vs_player, user_stats)
 
+    #user_stats_json = json.dumps(user_stats)
+    #game_sessions_json = json.dumps(game_sessions)
+    #return HttpResponse(render(request, "stats.html", {'user_stats': user_stats_json, 'game_sessions': game_sessions_json}))
     return HttpResponse(render(request, "stats.html", {'user_stats': user_stats, 'game_sessions': game_sessions}))
 
 def calculate_games_stats(player_vs_cpu, player_vs_player, user_stats):
     user_stats['matches_played_pvc'] = player_vs_cpu.count()
     user_stats['matches_played_pvp'] = player_vs_player.count()
-    user_stats['matches_played'] = user_stats['matches_played_pvc'] + user_stats['matches_played_pvp']    
+    user_stats['matches_played'] = user_stats['matches_played_pvc'] + user_stats['matches_played_pvp']
     user_stats['matches_won_pvc'] = player_vs_cpu.filter(left_player_win = True).count()
     user_stats['matches_won_pvp'] = player_vs_player.filter(player_one_win = True).count()
     user_stats['matches_won'] = user_stats['matches_won_pvc'] + user_stats['matches_won_pvp']
@@ -77,10 +81,10 @@ def calculate_aces_per_game(player_vs_cpu, player_vs_player, user_stats):
     return user_stats
 
 def calculate_match_duration(player_vs_cpu, player_vs_player, user_stats):
-    user_stats['shortest_match_pvc'] = min([data.match_length for data in player_vs_cpu]) if user_stats['matches_played_pvc'] else 0
-    user_stats['longest_match_pvc'] = max([data.match_length for data in player_vs_cpu]) if user_stats['matches_played_pvc'] else 0
-    user_stats['shortest_match_pvp'] = min([data.match_length for data in player_vs_player]) if user_stats['matches_played_pvp'] else 0
-    user_stats['longest_match_pvp'] = max([data.match_length for data in player_vs_player]) if user_stats['matches_played_pvp'] else 0
+    user_stats['shortest_match_pvc'] = float(min([data.match_length for data in player_vs_cpu])) if user_stats['matches_played_pvc'] else 0
+    user_stats['longest_match_pvc'] = float(max([data.match_length for data in player_vs_cpu])) if user_stats['matches_played_pvc'] else 0
+    user_stats['shortest_match_pvp'] = float(min([data.match_length for data in player_vs_player])) if user_stats['matches_played_pvp'] else 0
+    user_stats['longest_match_pvp'] = float(max([data.match_length for data in player_vs_player])) if user_stats['matches_played_pvp'] else 0
     if user_stats['shortest_match_pvc'] != 0 and user_stats['shortest_match_pvp'] != 0:
         user_stats['shortest_match'] = min(user_stats['shortest_match_pvc'], user_stats['shortest_match_pvp'])
     elif user_stats['shortest_match_pvc'] != 0:
@@ -97,25 +101,25 @@ def generate_game_sessions(player_vs_cpu, player_vs_player, user_stats):
     for match in player_vs_cpu:
         #print(match.__dict__)
         match_entry = {
-            'date': match.created_at + timedelta(hours = 2),
+            'date': (match.created_at + timedelta(hours = 2)).strftime('%B %d, %Y - %H:%M:%S'),
             'player': user_stats['display_name'],
+            'opponent_avatar': '/static/avatars/CPU.jpg',
             'opponent': 'CPU',
             'player_score': match.left_player_score,
-            'opponent_score': match.right_player_score,            
-            'opponent_avatar': '/static/avatars/CPU.jpg',
-            'match_length': match.match_length
+            'opponent_score': match.right_player_score,
+            'match_length': float(match.match_length)
         }
         game_sessions.append(match_entry)
     for match in player_vs_player:
         #print(match.__dict__)
         match_entry = {
-            'date': match.created_at + timedelta(hours = 2),
+            'date': (match.created_at + timedelta(hours = 2)).strftime('%B %d, %Y - %H:%M:%S'),
             'player': user_stats['display_name'],
+            'opponent_avatar': str(match.player_two_avatar),
             'opponent': match.player_two_displayname,
             'player_score': match.player_one_score,
             'opponent_score': match.player_two_score,
-            'opponent_avatar': match.player_two_avatar,
-            'match_length': match.match_length
+            'match_length': float(match.match_length)
         }
         game_sessions.append(match_entry)
     game_sessions = sorted(game_sessions, key=lambda x: x['date'], reverse=True)
