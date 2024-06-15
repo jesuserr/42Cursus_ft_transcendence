@@ -6,7 +6,7 @@ from .token import *
 
 def welcome(request):
     response = render(request, "main_welcome.html")
-    return response;
+    return response
 
 def index(request):
 	return maniPage(request)
@@ -37,3 +37,7 @@ def logoff(request):
 
 def fourtytwo(request):    
 	return fourtytwoLogin(request)
+
+def game(request):
+    response = render(request, "main_game.html")
+    return response

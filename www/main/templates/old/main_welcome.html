@@ -1,0 +1,26 @@
+{% include "main_menu.html" %}
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<link rel="stylesheet" href="/static/assets/css/welcome.css">
+<title>Bienvenido</title>
+<script>
+    function cargarPagina(url) {
+        document.getElementById('iframe-contenido').src = url;
+    }
+</script>
+</head>
+<body>
+<div class="welcome">
+	<h1>Welcome</h1>
+</div>
+<div class="button-container">
+	<button class="button submit arrow" type="submit" id="boton1" href="/main/login">Login or register</button>
+  <button class="button submit" id="boton2" href="{{Data.URL42}}">Login with 42</button>
+  <button class="button" id="boton3">Play annonimous</button>
+</div>
+</body>
+</html>
+

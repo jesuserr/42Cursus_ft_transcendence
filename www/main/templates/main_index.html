@@ -8,6 +8,7 @@
     <title>Teletext Style Page</title>
     <link rel="stylesheet" href="/static/assets/bootstrap/css/bootstrap.min.css">
     <link rel="stylesheet" href="/static/assets/css/custom.css">
+    <link rel="stylesheet" href="/static/assets/css/welcome.css">
 </head>
 <style>
 body {
@@ -22,6 +23,7 @@ body {
 	justify-content: center;
 	align-items: center;
 	text-align: center;
+	width: 20%;
 }
 
 .teletext-title {
@@ -44,7 +46,7 @@ body {
 	padding: 15px 20px;
 	cursor: pointer;
 	text-shadow: 1px 1px #000000;
-	width: 10rem;
+	width: 5rem;
 	font-size: 10px;
 }
 
@@ -55,31 +57,56 @@ body {
 
 </style>
 <body>
+	<div class="welcome">
+	<h1>Welcome</h1>
+</div>
+<div class="button-container">
+	<button class="button submit arrow" type="submit" id="boton1" href="/main/login">Login or register</button>
+  <button class="button submit" id="boton2" href="{{Data.URL42}}">Login with 42</button>
+  <button class="button" id="boton3">Play annonimous</button>
+</div>
     <div class="container d-flex align-items-center play-container">
         <div class="row justify-content-center">
-            <div class="col-md-5 teletext-box m-2">
+            <div class="col-md-2 teletext-box m-2">
                 <h3 class="teletext-title">Player vs Player</h3>
 		<p class="teletext-description">Play locally</p>
-                <button class="btn teletext-button" href="/game/GameTest/">Play</button>
+		<a href="/game4"><button class="btn teletext-button">Play</button></a>
             </div>
-            <div class="col-md-5 teletext-box m-2">
+            <div class="col-md-2 teletext-box m-2">
                 <h3 class="teletext-title">Player vs Player</h3>
 		<p class="teletext-description">Play remote</p>
-                <button class="btn teletext-button" href="/game2/GameTest2/">Play</button>
+		<a href="/game2"><button class="btn teletext-button" href="/game2/GameTest2/">Play</button></a>
             </div>
-	    <div class="col-md-5 teletext-box m-2">
+	    <div class="col-md-2 teletext-box m-2">
                 <h3 class="teletext-title">1 vs AI</h3>
                 <p class="teletext-description">play with our amazing AI</p>
-                <button class="btn teletext-button" href="/game2/GameTest2/">Play</button>
+		<a src="game3"><button class="btn teletext-button" href="/game2/GameTest2/">Play</button></a>
             </div>
-		<div class="col-md-5 teletext-box m-2">
+		<div class="col-md-2 teletext-box m-2">
 			<h3 class="teletext-title">TOURNAMENT</h3>
-		<p class="teletext-description">3 min game</p>
+		<p class="teletext-description">3 min game with friends</p>
                 <button class="btn teletext-button" href="/game2/GameTest2/">Play</button>
             </div>
 
         </div>
+	</div>
+	<div>
+	<div id="iframechat" style="display: flex; justify-content: center;">
+	    <iframe src="/chat" style="width: 65%; height: 450px;"></iframe></div>
+
     </div>
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            var displayNameElement = document.getElementById('displayname');
+			    console.log(displayNameElement);
+            if (displayNameElement !== '') {
+                document.querySelector('.welcome').style.display = 'none';
+				document.querySelector('.button-container').style.display = 'none';
+            }
+		else
+				    document.querySelector('.container').style.display = 'none';
+        });
+    </script>
 </body>
 </html>
 <body>

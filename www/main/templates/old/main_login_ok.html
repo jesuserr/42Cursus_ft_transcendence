@@ -1,0 +1,31 @@
+{% include "main_menu.html" %}
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, shrink-to-fit=no">
+    <title>Pong 42 New User</title>
+    <link rel="stylesheet" href="/static/assets/bootstrap/css/bootstrap.min.css">
+    <link rel="stylesheet" href="/static/assets/css/login.css">
+</head>
+
+<body>
+	<div class="static-bg"></div>
+	<div class="all-login">
+    	<div class="login">
+			<form class="post-form" method="POST">{% csrf_token %}
+        	<h2>Welcome</h2>
+			{{ form.as_p }}
+			<button type="submit" class="submit arrow">Login</button>
+		</form>
+			<div class="buttons">
+			<a href="/main/newuser"><button class="submit">New User</button></a>
+			<a href={{Data.URL42}}><button class="submit">Log with 42 user</button></a>
+			<div><p style="color:black;">{{ Data.ErrorMsg }}</p></div>
+			</div>
+	</div>
+	</div>
+</body>
+
+</html>
