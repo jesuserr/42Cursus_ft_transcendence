@@ -119,7 +119,7 @@ ul li a:before{
   left:0;
   width:100%;
   height:100%;
-  background: #25EA05;
+  background: #4CAF50;
   transition:0.5s;
   transform-origin:right;
   transform:scaleX(0);
@@ -131,6 +131,7 @@ ul li a:hover:before{
   transform-origin:left;
   transform:scaleX(1);
 }
+
 
 @media (max-width: 1216px) {
     .navbar-brand {

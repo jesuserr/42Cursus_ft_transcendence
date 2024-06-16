@@ -41,3 +41,7 @@ def fourtytwo(request):
 def game(request):
     response = render(request, "main_game.html")
     return response
+
+def stats(request):
+    response = render(request, "main_stats.html")
+    return response

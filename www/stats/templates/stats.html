@@ -1,127 +1,171 @@
 <!DOCTYPE html>
 <html>
 <head>
+	<link rel="stylesheet" href="/static/assets/bootstrap/css/bootstrap.min.css">
+	<link rel="stylesheet" href="/static/assets/css/styles.css">
     <title>User and Game Stats Dashboards</title>
     <style>
-        table, th, td {
-            border: 1px solid black;
-            border-collapse: collapse;
-        }
-        table {
-            width: 90%;
-        }
+	body {
+	background-color: rgba(0, 0, 0, 0) !important;
+	color: white;
+	font-family: 'Press Start 2P';
+	font-size: 11px;
+	margin: 15px;
+}
+	h4 {
+		margin-top: 10px;
+	}
+    table, th, td {
+        border: 1px solid black;
+        border-collapse: collapse;
+    }
+    table {
+        width: 100%;
+    }
     </style>
 </head>
 <body id="statsContainer">
-    <h1>User and Game Stats Dashboards</h1>
-    <div class="d-flex align-items-center">
-        <img src="{{user_stats.avatar}}" width="150" height="150" alt="" onerror="this.onerror=null; this.src='/static/avatars/default.jpg'"/>
-        <p class="mb-0 me-3" style="color:black">{{ user_stats.display_name }}</p>
+    <h3>User and Game Stats Dashboards</h3>
+    <div class="card bg-dark text-white" style="max-width: 540px;">
+        <div class="row no-gutters">
+            <div class="col-md-4">
+                <img src="{{user_stats.avatar}}" class="card-img" alt="" width="150" height="150" onerror="this.onerror=null; this.src='/static/avatars/default.jpg'"/>
+            </div>
+            <div class="col-md-8 d-flex align-items-center">
+                <div class="card-body">
+                    <p class="card-text mb-0" style="color:white;">{{ user_stats.display_name }}</p>
+                </div>
+            </div>
+        </div>
     </div>
-    <h2>Player stats</h2>
-    <table>
-        <tr>
-            <th></th>
-            <th>vs CPU</th>
-            <th>vs Human</th>
-            <th>Overall</th>
-        </tr>
-        <tr>
-            <td>Played matches</td>
-            <td>{{ user_stats.matches_played_pvc }}</td>
-            <td>{{ user_stats.matches_played_pvp }}</td>
-            <td>{{ user_stats.matches_played }}</td>
-        </tr>
-        <tr>
-            <td>Won matches</td>
-            <td>{{ user_stats.matches_won_pvc }} ({{ user_stats.matches_won_pvc_ratio }}%)</td>
-            <td>{{ user_stats.matches_won_pvp }} ({{ user_stats.matches_won_pvp_ratio }}%)</td>
-            <td>{{ user_stats.matches_won }} ({{ user_stats.matches_won_ratio }}%)</td>
-        </tr>
-        <tr>
-            <td>Lost matches</td>
-            <td>{{ user_stats.matches_lost_pvc }} ({{ user_stats.matches_lost_pvc_ratio }}%)</td>
-            <td>{{ user_stats.matches_lost_pvp }} ({{ user_stats.matches_lost_pvp_ratio }}%)</td>
-            <td>{{ user_stats.matches_lost }} ({{ user_stats.matches_lost_ratio }}%)</td>
-        </tr>
-        <tr>
-            <td>Goals scored per match</td>
-            <td>{{ user_stats.scored_goals_per_match_pvc }}</td>
-            <td>{{ user_stats.scored_goals_per_match_pvp }}</td>
-            <td>{{ user_stats.scored_goals_per_match }}</td>
-        </tr>
-        <tr>
-            <td>Goals received per match</td>
-            <td>{{ user_stats.received_goals_per_match_pvc }}</td>
-            <td>{{ user_stats.received_goals_per_match_pvp }}</td>
-            <td>{{ user_stats.received_goals_per_match }}</td>
-        </tr>
-        <tr>
-            <td>Direct goals scored per match</td>
-            <td>{{ user_stats.scored_aces_per_match_pvc }}</td>
-            <td>{{ user_stats.scored_aces_per_match_pvp }}</td>
-            <td>{{ user_stats.scored_aces_per_match }}</td>
-        </tr>
-        <tr>
-            <td>Direct goals received per match</td>
-            <td>{{ user_stats.received_aces_per_match_pvc }}</td>
-            <td>{{ user_stats.received_aces_per_match_pvp }}</td>
-            <td>{{ user_stats.received_aces_per_match }}</td>
-        </tr>
-        <tr>
-            <td>Shortest match</td>
-            <td>{{ user_stats.shortest_match_pvc }} secs</td>
-            <td>{{ user_stats.shortest_match_pvp }} secs</td>
-            <td>{{ user_stats.shortest_match }} secs</td>
-        </tr>
-        <tr>
-            <td>Longest match</td>
-            <td>{{ user_stats.longest_match_pvc }} secs</td>
-            <td>{{ user_stats.longest_match_pvp }} secs</td>
-            <td>{{ user_stats.longest_match }} secs</td>
-        </tr>
-    </table><br>
-    <h2>Player gaming history</h2>
-    <table>
-        <tr>
-            <th>Game Date</th>
-            <th>Player</th>
-            <th>Opponent</th>
-            <th>Player Score</th>
-            <th>Opponent Score</th>
-            <th>Match Length</th>
-        </tr>
-        {% for match in player_game_history %}
-        <tr>
-            <td>{{ match.date }}</td>
-            <td><img src="{{match.player_avatar}}" width="50" height="50" alt="" onerror="this.onerror=null; this.src='/static/avatars/default.jpg'"/> {{ match.player }}</td>
-            <td><img src="{{match.opponent_avatar}}" width="50" height="50" alt="" onerror="this.onerror=null; this.src='/static/avatars/default.jpg'"/> {{ match.opponent }}</td>
-            <td>{{ match.player_score }}</td>
-            <td>{{ match.opponent_score }}</td>
-            <td>{{ match.match_length }}</td>
-        </tr>
-        {% endfor %}
-    </table>
-    <h2>Server gaming history</h2>
-    <table>
-        <tr>
-            <th>Game Date</th>
-            <th>Player 1</th>
-            <th>Player 2</th>
-            <th>Player 1 Score</th>
-            <th>Player 2 Score</th>
-            <th>Match Length</th>
-        </tr>
-        {% for match in all_game_history %}
-        <tr>
-            <td>{{ match.date }}</td>
-            <td><img src="{{match.player_avatar}}" width="50" height="50" alt="" onerror="this.onerror=null; this.src='/static/avatars/default.jpg'"/> {{ match.player }}</td>
-            <td><img src="{{match.opponent_avatar}}" width="50" height="50" alt="" onerror="this.onerror=null; this.src='/static/avatars/default.jpg'"/> {{ match.opponent }}</td>
-            <td>{{ match.player_score }}</td>
-            <td>{{ match.opponent_score }}</td>
-            <td>{{ match.match_length }}</td>
-        </tr>
-        {% endfor %}
-    </table>    
+    
+    <div class="row">
+        <div class="col-md-4">
+            <h4>Player stats</h4>
+            <table class="table table-sm table-dark">
+                <thead>
+                    <tr>
+                        <th scope="col"></th>
+                        <th scope="col">vs CPU</th>
+                        <th scope="col">vs Human</th>
+                        <th scope="col">Overall</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <th scope="row">Played matches</th>
+                        <td>{{ user_stats.matches_played_pvc }}</td>
+                        <td>{{ user_stats.matches_played_pvp }}</td>
+                        <td>{{ user_stats.matches_played }}</td>
+                    </tr>
+                    <tr>
+                        <th scope="row">Won matches</th>
+                        <td>{{ user_stats.matches_won_pvc }} ({{ user_stats.matches_won_pvc_ratio }}%)</td>
+                        <td>{{ user_stats.matches_won_pvp }} ({{ user_stats.matches_won_pvp_ratio }}%)</td>
+                        <td>{{ user_stats.matches_won }} ({{ user_stats.matches_won_ratio }}%)</td>
+                    </tr>
+                    <tr>
+                        <th scope="row">Lost matches</th>
+                        <td>{{ user_stats.matches_lost_pvc }} ({{ user_stats.matches_lost_pvc_ratio }}%)</td>
+                        <td>{{ user_stats.matches_lost_pvp }} ({{ user_stats.matches_lost_pvp_ratio }}%)</td>
+                        <td>{{ user_stats.matches_lost }} ({{ user_stats.matches_lost_ratio }}%)</td>
+                    </tr>
+                    <tr>
+                        <th scope="row">Goals scored per match</th>
+                        <td>{{ user_stats.scored_goals_per_match_pvc }}</td>
+                        <td>{{ user_stats.scored_goals_per_match_pvp }}</td>
+                        <td>{{ user_stats.scored_goals_per_match }}</td>
+                    </tr>
+                    <tr>
+                        <th scope="row">Goals received per match</th>
+                        <td>{{ user_stats.received_goals_per_match_pvc }}</td>
+                        <td>{{ user_stats.received_goals_per_match_pvp }}</td>
+                        <td>{{ user_stats.received_goals_per_match }}</td>
+                    </tr>
+                    <tr>
+                        <th scope="row">Direct goals scored per match</th>
+                        <td>{{ user_stats.scored_aces_per_match_pvc }}</td>
+                        <td>{{ user_stats.scored_aces_per_match_pvp }}</td>
+                        <td>{{ user_stats.scored_aces_per_match }}</td>
+                    </tr>
+                    <tr>
+                        <th scope="row">Direct goals received per match</th>
+                        <td>{{ user_stats.received_aces_per_match_pvc }}</td>
+                        <td>{{ user_stats.received_aces_per_match_pvp }}</td>
+                        <td>{{ user_stats.received_aces_per_match }}</td>
+                    </tr>
+                    <tr>
+                        <th scope="row">Shortest match</th>
+                        <td>{{ user_stats.shortest_match_pvc }} secs</td>
+                        <td>{{ user_stats.shortest_match_pvp }} secs</td>
+                        <td>{{ user_stats.shortest_match }} secs</td>
+                    </tr>
+                    <tr>
+                        <th scope="row">Longest match</th>
+                        <td>{{ user_stats.longest_match_pvc }} secs</td>
+                        <td>{{ user_stats.longest_match_pvp }} secs</td>
+                        <td>{{ user_stats.longest_match }} secs</td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+        
+        <div class="col-md-4">
+            <h4>Player gaming history</h4>
+            <table class="table table-sm table-dark">
+                <thead>
+                    <tr>
+                        <th scope="col">Game Date</th>
+                        <th scope="col">Player</th>
+                        <th scope="col">Opponent</th>
+                        <th scope="col">Player Score</th>
+                        <th scope="col">Opponent Score</th>
+                        <th scope="col">Match Length</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for match in player_game_history %}
+                    <tr>
+                        <th scope="row">{{ match.date }}</th>
+                        <td><img src="{{match.player_avatar}}" width="25" height="25" alt="" onerror="this.onerror=null; this.src='/static/avatars/default.jpg'"/> {{ match.player }}</td>
+                        <td><img src="{{match.opponent_avatar}}" width="25" height="25" alt="" onerror="this.onerror=null; this.src='/static/avatars/default.jpg'"/> {{ match.opponent }}</td>
+                        <td>{{ match.player_score }}</td>
+                        <td>{{ match.opponent_score }}</td>
+                        <td>{{ match.match_length }}</td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+        
+        <div class="col-md-4">
+            <h4>Server gaming history</h4>
+            <table class="table table-sm table-dark">
+                <thead>
+                    <tr>
+                        <th scope="col">Game Date</th>
+                        <th scope="col">Player 1</th>
+                        <th scope="col">Player 2</th>
+                        <th scope="col">Player 1 Score</th>
+                        <th scope="col">Player 2 Score</th>
+                        <th scope="col">Match Length</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for match in all_game_history %}
+                    <tr>
+                        <th scope="row">{{ match.date }}</th>
+                        <td><img src="{{match.player_avatar}}" width="25" height="25" alt="" onerror="this.onerror=null; this.src='/static/avatars/default.jpg'"/> {{ match.player }}</td>
+                        <td><img src="{{match.opponent_avatar}}" width="25" height="25" alt="" onerror="this.onerror=null; this.src='/static/avatars/default.jpg'"/> {{ match.opponent }}</td>
+                        <td>{{ match.player_score }}</td>
+                        <td>{{ match.opponent_score }}</td>
+                        <td>{{ match.match_length }}</td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>    
 </body>
 </html>
+

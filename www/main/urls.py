@@ -11,4 +11,5 @@ urlpatterns = [
 	path("logoff", views.logoff, name="logoff"),
 	path("42auth", views.fourtytwo, name="fourtytwo"),
     path("game", views.game, name="game"),
+    path("stats", views.stats, name="stats"),
 ]

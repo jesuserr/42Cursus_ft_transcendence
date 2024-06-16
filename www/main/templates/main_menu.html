@@ -5,6 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Pong 42</title>
     <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css" integrity="sha512-6gG0j1d2TujP8wGXbQGF1gxIJH5GyfgL9n7BdGzppHw4+UfJjsR6xNogwFJrMKImzA7IS+PvOIHPP5TI7v4iKw==" crossorigin="anonymous" referrerpolicy="no-referrer" />
     <link rel="stylesheet" href="/static/assets/fonts/fontawesome-all.min.css">
     <link rel="stylesheet" href="/static/assets/css/Navbar-Centered-Brand.css">
     <link rel="stylesheet" href="/static/assets/css/styles.css">
@@ -13,11 +14,30 @@
 	body {
 		overflow-x: hidden;
 	}
+
+    #toggleButton {
+        background-color: grey;
+        color: white;
+        border: none;
+        border-radius: 50%;
+        width: 40px;
+        height: 40px;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        cursor: pointer;
+        font-size: 15px;
+        transition: background-color 0.3s ease;
+    }
+
+    #toggleButton:hover {
+        background-color: #45a049;
+    }
 </style>
 <body>
     <nav class="navbar navbar-expand-lg navbar-light py-3">
         <a href="/">
-            <img src="logo.jpg" width="30" height="30" alt="Logo">
+            <img src="/static/assets/img/logo.gif" width="100" height="100" alt="Logo">
         </a>
         <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNavDropdown" aria-controls="navbarNavDropdown" aria-expanded="false" aria-label="Toggle navigation">
             <span class="navbar-toggler-icon"></span>
@@ -41,7 +61,7 @@
                         Statistics
                     </a>
                     <div class="dropdown-menu" aria-labelledby="navbarDropdown2">
-                        <a class="dropdown-item" href="/stats">View</a>
+                        <a class="dropdown-item" href="/main/stats">View</a>
                     </div>
                 </li>
                 <li class="nav-item dropdown">
@@ -50,7 +70,7 @@
                     </a>
                     <div class="dropdown-menu" aria-labelledby="navbarDropdown3">
                         <a class="dropdown-item" href="/game">Local game</a>
-                        <a class="dropdown-item" href="/game3">Player vs CPU</a>
+                        <a class="dropdown-item" href="/main/game">Player vs CPU</a>
                         <a class="dropdown-item" href="/game4">Player vs Player (local)</a>
                         <a class="dropdown-item" href="/game2">Player vs Player (remote)</a>
                         <a class="dropdown-item" href="/chat">Chat</a>
@@ -62,7 +82,7 @@
                 <p id="displayname" class="mb-0 me-3" style="color:white">{{ User.displayname }}</p>
             </div>
 	    <div class="nav-item">
-		    <button id="toggleButton">Friends Show/Hide</button>
+		    <button id="toggleButton"> <i class="fas fa-users"></i></button>
 		    </div>
         </div>
     </nav>
