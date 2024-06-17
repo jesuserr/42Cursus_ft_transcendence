@@ -27,17 +27,19 @@ def index(request):
     user_stats = calculate_match_duration(player_vs_cpu, player_vs_player, user_stats)
     # Generates player gaming history
     player_game_history = generate_game_history(player_vs_cpu, player_vs_player)
+    player_game_history = sorted(player_game_history, key=lambda x: x['date'], reverse=True)
     # Generates server gaming history and removes duplicates
     all_game_history = generate_game_history(stats_pvc.objects.all(), stats_pvp.objects.all())
+    all_game_history = sorted(all_game_history, key=lambda x: x['date'])
     unique_game_history = {}
-    for game in all_game_history:
+    for game in reversed(all_game_history):
         unique_game_history[game['date']] = game
     all_game_history = list(unique_game_history.values())
 
     #user_stats_json = json.dumps(user_stats)
     #player_game_history_json = json.dumps(player_game_history)
     #all_game_history_json = json.dumps(all_game_history)
-    return HttpResponse(render(request, "stats.html", {'user_stats': user_stats, 'player_game_history': player_game_history, 'all_game_history': all_game_history}))
+    return HttpResponse(render(request, "stats_2.html", {'user_stats': user_stats, 'player_game_history': player_game_history, 'all_game_history': all_game_history}))    
 
 def calculate_games_stats(player_vs_cpu, player_vs_player, user_stats):
     user_stats['matches_played_pvc'] = player_vs_cpu.count()
@@ -132,7 +134,6 @@ def generate_game_history(object_pvc, object_pvp):
             'match_length': float(match.match_length)
         }
         game_sessions.append(match_entry)
-    game_sessions = sorted(game_sessions, key=lambda x: x['date'], reverse=True)
     return game_sessions
 
 def get_user_info(email):
