@@ -145,9 +145,9 @@ class GameConsumer5(AsyncWebsocketConsumer):
         temp.player_two_aces = score.right_aces
         temp.point_length = score.point_length
         if score.left_score > score.right_score:
-            temp.player_one_win = True
+            temp.player_one_win = temp.tournament = True
         else:
-            temp.player_two_win = True
+            temp.player_two_win = temp.tournament = True
         temp.save()
         temp = stats(player_one = room["player2_id"])               # player 2 stats
         temp.match_length = match_length
@@ -160,7 +160,7 @@ class GameConsumer5(AsyncWebsocketConsumer):
         temp.player_two_aces = score.left_aces
         temp.point_length = score.point_length
         if score.left_score > score.right_score:
-            temp.player_two_win = True
+            temp.player_two_win = temp.tournament = True
         else:
-            temp.player_one_win = True
+            temp.player_one_win = temp.tournament = True
         temp.save()
