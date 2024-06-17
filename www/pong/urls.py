@@ -36,4 +36,5 @@ urlpatterns = [
     path('api/token/refresh/', TokenRefreshView.as_view(), name='token_refresh'),
     path("stats/", include("stats.urls")),
 	path("friends/", include("friends.urls")),
+	path("tournament/", include("tournament.urls")),
 ]

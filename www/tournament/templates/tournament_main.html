@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8" />
+    <title>Pong 42 tournament</title>
+    <style>
+        body {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            height: 100vh;
+            margin: 0;
+            background-color: #000;
+            color: #FFD700;
+            font-family: 'Courier New', Courier, monospace;
+        }
+        .content {
+            width: 20%;
+        }
+        .iframegame {
+            width: 80%;
+            height: 70vh;
+        }
+        .iframechat {
+            width: 100%;
+            height: 30vh;
+        }
+		button:disabled {
+        color: white;
+    }
+    </style>
+</head>
+<body>
+    <div style="display: flex; width: 100%;">
+        <div class="content">
+			<h1 style="text-align: center; font-size: small;">Tournament {{ tournament_name }}</h1>
+			<div style="display: flex; justify-content: center; margin-top: 20px;">
+				<button disabled style="color: white;">Waiting players</button>
+			</div>
+			<h1 style="text-align: left; font-size: small;">Tournament participants:</h1>
+        </div>
+        <iframe class="iframegame" src="/game3/"></iframe>
+    </div>
+    <iframe class="iframechat" src="/chat/{{tournament_name}}"></iframe>
+	{{ tournament_name|json_script:"tournament_name" }}
+    <script src="/static/tournament/tournament.js"></script>
+</body>
+</html>
