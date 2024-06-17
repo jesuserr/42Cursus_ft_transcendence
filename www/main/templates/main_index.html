@@ -5,11 +5,50 @@
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, shrink-to-fit=no">
-    <title>Teletext Style Page</title>
+    <title>42 Pong</title>
     <link rel="stylesheet" href="/static/assets/bootstrap/css/bootstrap.min.css">
     <link rel="stylesheet" href="/static/assets/css/custom.css">
     <link rel="stylesheet" href="/static/assets/css/welcome.css">
 </head>
+<style>
+
+  @media (max-width: 900px) {
+	 .teletext-title {
+		font-size: 12px;
+	 }
+
+	 .teletext-description {
+		font-size: 10px;
+	 }
+    .button-container button,
+    .play-container .row .col-md-2 {
+      flex: 1 1 auto;
+      max-width: none;
+    }
+
+    .play-container .row .col-md-2 {
+      flex: 1 1 22%;
+      margin: 10px;
+    }
+
+    #iframechat {
+	margin-left: 0;
+    }
+  }
+
+@media (min-width: 900px) and (max-width: 1224px) {
+	.teletext-title {
+		font-size: 12px;
+	}
+
+	.teletext-description {
+		font-size: 10px;
+	}
+	#iframechat {
+		margin-left: 50px;
+	}
+}
+</style>
 <body>
 	<div class="welcome">
 		<h1>Welcome</h1>
@@ -24,18 +63,18 @@
         <div class="row justify-content-center">
             <div class="col-md-2 teletext-box m-2">
                 <h3 class="teletext-title">Player vs Player</h3>
-		<p class="teletext-description">Play locally with same keyboard</p>
+		<p class="teletext-description">Play locally</p>
 		<a href="/game4"><button class="btn teletext-button">Play</button></a>
             </div>
             <div class="col-md-2 teletext-box m-2">
                 <h3 class="teletext-title">Player vs Player</h3>
-		<p class="teletext-description">Play remotely</p>
-		<a href="/game2"><button class="btn teletext-button">Play</button></a>
+		<p class="teletext-description">Play remote</p>
+		<a href="/game2"><button class="btn teletext-button" href="/game2/GameTest2/">Play</button></a>
             </div>
 	    <div class="col-md-2 teletext-box m-2">
-                <h3 class="teletext-title">Player vs CPU</h3>
-                <p class="teletext-description">Play locally against AI</p>
-        <a href="/game3"><button class="btn teletext-button">Play</button></a>
+                <h3 class="teletext-title">1 vs AI</h3>
+                <p class="teletext-description">play with our amazing AI</p>
+		<a src="game3"><button class="btn teletext-button" href="/game2/GameTest2/">Play</button></a>
             </div>
 		<div class="col-md-2 teletext-box m-2">
 			<h3 class="teletext-title">TOURNAMENT</h3>
