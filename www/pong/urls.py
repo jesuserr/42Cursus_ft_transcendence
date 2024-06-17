@@ -31,6 +31,7 @@ urlpatterns = [
 	path("game2/", include("game2.urls")),
     path("game3/", include("game3.urls")),
     path("game4/", include("game4.urls")),
+    path("game5/", include("game5.urls")),
 	path('api/token/', TokenObtainPairView.as_view(), name='token_obtain_pair'),
     path('api/token/refresh/', TokenRefreshView.as_view(), name='token_refresh'),
     path("stats/", include("stats.urls")),

@@ -5,6 +5,7 @@ from game import gameconsumers
 from game2 import gameconsumers2
 from game3 import gameconsumers3
 from game4 import gameconsumers4
+from game5 import gameconsumers5
 from friends import friendsconsumers
 
 websocket_urlpatterns = [
@@ -14,4 +15,5 @@ websocket_urlpatterns = [
 	re_path(r"ws/game2/(?P<game_name>\w+)/$", gameconsumers2.GameConsumer2.as_asgi()),
     re_path(r"ws/game3/(?P<game_name>\w+)/$", gameconsumers3.GameConsumer3.as_asgi()),
     re_path(r"ws/game4/(?P<game_name>\w+)/$", gameconsumers4.GameConsumer4.as_asgi()),
+    re_path(r"ws/game5/(?P<game_name>\w+)/$", gameconsumers5.GameConsumer5.as_asgi()),
 ]
