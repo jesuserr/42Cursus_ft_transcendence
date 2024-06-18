@@ -80,7 +80,7 @@ function drawGameboard() {
     drawText(textSize, `${position.score_left}`, 0, canvas.width * 0.25 - textSize / 2 * scale, canvas.height / 12, 0);
     drawText(textSize, `${position.score_right}`, 0, canvas.width * 0.75 - textSize / 2 * scale, canvas.height / 12, 0);
     if (muted)
-        drawText(textSize / 3, "Muted", 0, canvas.width / 100, canvas.height * 0.02, 0);
+        drawText(textSize / 3, "Muted", 0, canvas.width / 100, canvas.height * 0.03, 0);
 }
 
 function determineScale() {
