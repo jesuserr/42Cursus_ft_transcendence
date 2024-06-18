@@ -13,6 +13,7 @@ class TournamentConsumer(AsyncJsonWebsocketConsumer):
         await self.channel_layer.group_add(self.room_group_name, self.channel_name)
         #Check user is logged
         await self.accept()
+        print(self.room_name)
 
     #When the connection is closed              
     async def disconnect(self, close_code):
