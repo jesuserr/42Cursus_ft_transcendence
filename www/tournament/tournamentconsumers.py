@@ -21,6 +21,7 @@ class TournamentConsumer(AsyncJsonWebsocketConsumer):
 
     #When the connection is closed              
     async def disconnect(self, close_code):
+        await self.unregisterUser()
         await self.channel_layer.group_discard(self.room_group_name, self.channel_name)
         
 	#When receive a message
@@ -49,16 +50,19 @@ class TournamentConsumer(AsyncJsonWebsocketConsumer):
 	#Resgister user
     @database_sync_to_async
     def registerUser(self):
-        #self.unregisterUser()
         try:
-            tmptournament = Tournament_List.objects.get(tournament=self.room_name)
+            self.tournament = Tournament_List.objects.get(tournament=self.room_name)
         except:
             tmptournament = Tournament_List()
             tmptournament.tournament = self.room_name
             tmptournament.save()
-            self.tournament = tmptournament
+            self.tournament = Tournament_List.objects.get(tournament=self.room_name)
+        try:
+            Tournament_Connected_Users.objects.get(tournament_name=self.tournament, email=self.user.email).delete()
+        except:
+            pass
         tmpuser = Tournament_Connected_Users()
-        tmpuser.tournamnet_name = tmptournament
+        tmpuser.tournament_name = self.tournament
         tmpuser.email = self.user.email
         tmpuser.save()
         
@@ -66,6 +70,10 @@ class TournamentConsumer(AsyncJsonWebsocketConsumer):
     @database_sync_to_async
     def unregisterUser(self):
         try:
-            Tournament_Connected_Users.objects.get(tournament_name=self.tournament, email=str(self.user.email)).delete()
+            tmp = Tournament_Connected_Users.objects.get(tournament_name=self.tournament, email=self.user.email)
+            tmp.delete()
         except:
             pass
+        if Tournament_Connected_Users.objects.filter(tournament_name=self.tournament).exists() == False:
+             self.tournament.delete()
+        
