@@ -11,6 +11,8 @@ let messageNumber = 0;
 let prevBallXSpeed = 0;
 let muted = false;
 let position = 0;
+let isMiddleButtonDown = false;
+let previousMouseY = 0;
 
 let countdownBeep = new Audio(`/static/game/sounds/beep_countdown.mp3`);
 let countdownGo = new Audio(`/static/game/sounds/go_countdown.mp3`);
@@ -193,6 +195,48 @@ window.addEventListener('keydown', function(event) {
 // Listen for keyup events and mark the key released as released :)
 window.addEventListener('keyup', function(event) {
     keys[event.code] = false;
+});
+
+// Paddle control pressing middle button and moving mouse, simulates key presses
+
+window.addEventListener('mousedown', function(event) {
+    if (event.button == 1)
+        isMiddleButtonDown = true;
+});
+
+window.addEventListener('mouseup', function(event) {
+    if (event.button == 1) {
+        isMiddleButtonDown = false;
+        if (position.player == 1) {
+            keys['KeyW'] = false;
+            keys['KeyS'] = false;
+        } else {
+            keys['ArrowUp'] = false;
+            keys['ArrowDown'] = false;
+        }
+    }
+});
+
+window.addEventListener('mousemove', function(event) {
+    if (event.clientY > previousMouseY && isMiddleButtonDown) {
+        if (position.player == 1) {
+            keys['KeyW'] = false;
+            keys['KeyS'] = true;
+        } else {
+            keys['ArrowUp'] = false;
+            keys['ArrowDown'] = true;
+        }
+    }
+    else if (event.clientY < previousMouseY && isMiddleButtonDown) {
+        if (position.player == 1) {
+            keys['KeyW'] = true;
+            keys['KeyS'] = false;
+        } else {
+            keys['ArrowUp'] = true;
+            keys['ArrowDown'] = false;
+        }
+    }
+    previousMouseY = event.clientY;
 });
 
 // ******************************* MAIN LOOP ***********************************
