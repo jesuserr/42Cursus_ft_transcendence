@@ -62,7 +62,7 @@ class TournamentConsumer(AsyncJsonWebsocketConsumer):
     #Get the user list from model
     @database_sync_to_async
     def getConnectedUserList(self):
-        data = serializers.serialize('json', Tournament_Connected_Users.objects.filter(tournament_name=self.tournament), fields=('email'))
+        data = serializers.serialize('json', Tournament_Connected_Users.objects.filter(tournament_name=self.tournament), fields=('email', 'display_name'))
         data_obj = json.loads(data)
         new_obj = {'SET_CONNECTED_USER_LIST': data_obj,}
         return new_obj

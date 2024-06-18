@@ -28,7 +28,13 @@
         }
 		button:disabled {
         color: white;
-    }
+    	}
+		#userTable {
+ 	    font-size: small;
+		margin-left: auto;
+    	margin-right: auto;
+		text-align: center;
+		}
     </style>
 </head>
 <body>
@@ -38,15 +44,14 @@
 			<div style="display: flex; justify-content: center; margin-top: 20px;">
 				<button disabled style="color: white;">Waiting players</button>
 			</div>
-			<h1 style="text-align: left; font-size: small;">Tournament participants:</h1>
+			<h1 style="text-align: left; font-size: small;">Connected participants:</h1>
 			<table id="userTable">
 				<tr>
-					<th></th>
 					<th></th>
 				</tr>
 			</table>
         </div>
-        <iframe class="iframegame" src="/game3/"></iframe>
+        <iframe class="iframegame" src=""></iframe>
     </div>
     <iframe class="iframechat" src="/chat/{{tournament_name}}"></iframe>
 	{{ tournament_name|json_script:"tournament_name" }}
