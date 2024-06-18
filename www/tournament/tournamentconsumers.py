@@ -4,6 +4,7 @@ from main.models import User
 from channels.db import database_sync_to_async
 from  main.token import *
 from django.core import serializers
+from .models import Tournament_Connected_Users, Tournament_List
 
 class TournamentConsumer(AsyncJsonWebsocketConsumer):
     #When the connection is established
@@ -12,8 +13,11 @@ class TournamentConsumer(AsyncJsonWebsocketConsumer):
         self.room_group_name = f"tournament_{self.room_name}"
         await self.channel_layer.group_add(self.room_group_name, self.channel_name)
         #Check user is logged
-        await self.accept()
-        print(self.room_name)
+        if 'tokenid' in self.scope['cookies'].keys():
+            await self.getUsernameModel()
+            if bool(self.user):
+                await self.accept()
+                await self.registerUser()
 
     #When the connection is closed              
     async def disconnect(self, close_code):
@@ -33,4 +37,35 @@ class TournamentConsumer(AsyncJsonWebsocketConsumer):
         elif 'GET_FRIENDS_USERS' in data:
             await self.sendFriendsUserList()
            
+	#Get the user from model
+    @database_sync_to_async
+    def getUsernameModel(self):
+        try:
+            token = self.scope['cookies']['tokenid']
+            self.user = get_user_from_token(token)
+        except:
+            self.user = ""
 	
+	#Resgister user
+    @database_sync_to_async
+    def registerUser(self):
+        #self.unregisterUser()
+        try:
+            tmptournament = Tournament_List.objects.get(tournament=self.room_name)
+        except:
+            tmptournament = Tournament_List()
+            tmptournament.tournament = self.room_name
+            tmptournament.save()
+            self.tournament = tmptournament
+        tmpuser = Tournament_Connected_Users()
+        tmpuser.tournamnet_name = tmptournament
+        tmpuser.email = self.user.email
+        tmpuser.save()
+        
+	#Unregister user
+    @database_sync_to_async
+    def unregisterUser(self):
+        try:
+            Tournament_Connected_Users.objects.get(tournament_name=self.tournament, email=str(self.user.email)).delete()
+        except:
+            pass
