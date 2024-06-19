@@ -48,7 +48,7 @@ def fourtytwoLogin(request):
 		tokenid = str(refresh.access_token)
 		tmpuser.password = hashlib.sha256(str(datetime.now(timezone.utc)).encode('utf-8')).hexdigest()
 		tmpuser.email = UserProfile42['email']
-		tmpuser.displayname = UserProfile42['displayname']
+		tmpuser.displayname = UserProfile42['login']
 		tmpuser.avatar = UserProfile42['image']['link']
 		tmpuser.tokenid = tokenid
 		tmpuser.fourtytwo = True
