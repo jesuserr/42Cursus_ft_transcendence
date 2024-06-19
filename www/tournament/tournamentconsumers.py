@@ -29,16 +29,18 @@ class TournamentConsumer(AsyncJsonWebsocketConsumer):
 	#When receive a message
     async def receive_json(self, data):
         #check the command
-        if 'GET_USER_LIST' in data:
-            await self.sendUserList()
-        elif 'GET_CONNECTED_USERS' in data:
-            await self.sendConnectedUserList()
-        elif 'FRIEND_USER' in data:
-            await self.FriendsUser(data['FRIEND_USER'])
-        elif 'UNFRIENDS_USER' in data:
-            await self.unFriendsUser(data['UNFRIENDS_USER'])
-        elif 'GET_FRIENDS_USERS' in data:
-            await self.sendFriendsUserList()
+        if 'PLAY' in data:
+            await self.Play()
+        
+	#Play command	
+    @database_sync_to_async
+    def Play(self):
+        users = Tournament_Connected_Users.objects.filter(tournament_name=self.tournament)
+        random_users = users.order_by('?')
+        for user in random_users:
+            user.pk = None  
+            user.tournament_name = self.tournament + "_PLAY"
+            user.save()
             
 	#send message to the group
     async def request_group_refresh_user_list(self, message):

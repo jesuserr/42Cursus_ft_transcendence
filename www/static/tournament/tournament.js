@@ -38,3 +38,9 @@ function Set_Connected_User_List(data) {
         table.removeChild(row);
     });
 }
+
+document.querySelector('#play').onclick = function (e) {
+   
+    socket.send(JSON.stringify({'PLAY': 'PLAY'}));
+   
+};
