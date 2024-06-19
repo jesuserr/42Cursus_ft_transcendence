@@ -11,10 +11,10 @@ body {
 	background-color: rgba(0, 0, 0, 0) !important;
 }
 </style>
-
 <body id="gameContainer">
     <canvas id="canvas"></canvas>    
 	{{ game_name|json_script:"game_name" }}
     <script src="/static/game2/pong.js"></script>
+    <script src="/static/game2/mouseControls.js"></script>
 </body>
 </html>
