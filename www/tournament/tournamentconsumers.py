@@ -38,7 +38,6 @@ class TournamentConsumer(AsyncJsonWebsocketConsumer):
         users = Tournament_Connected_Users.objects.filter(tournament_name=self.tournament)
         random_users = users.order_by('?')
         for user in random_users:
-            user.pk = None  
             user.tournament_name = self.tournamentplay
             user.save()
             
