@@ -11,8 +11,10 @@ let messageNumber = 0;
 let prevBallXSpeed = 0;
 let muted = false;
 let position = 0;
-let isMiddleButtonDown = false;
-let previousMouseY = 0;
+
+let isMiddleButtonDown = false;     // mouseControls.js related
+let previousMouseY = 0;             // mouseControls.js related
+let previousTouchY = 0;             // touchControls.js related
 
 let countdownBeep = new Audio(`/static/game/sounds/beep_countdown.mp3`);
 let countdownGo = new Audio(`/static/game/sounds/go_countdown.mp3`);
@@ -180,9 +182,6 @@ window.addEventListener('keydown', function(event) {
 window.addEventListener('keyup', function(event) {
     keys[event.code] = false;
 });
-
-// Paddle control pressing middle button and moving mouse, simulates key presses
-// external file mouseControls.js
 
 // ******************************* MAIN LOOP ***********************************
 
