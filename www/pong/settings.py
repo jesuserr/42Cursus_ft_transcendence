@@ -161,7 +161,7 @@ STATIC_URL = "/static/"
 STATIC_ROOT = "/pong/base/www/static"
 
 # domains accepted
-CSRF_TRUSTED_ORIGINS = ['https://10.11.2.4', 'https://www.pong42.com', 'https://www.pongpi.com','https://localhost', 'https://localhost:4443', 'https://127.0.0.1', 'https://wwww.pong42.com', 'https://192.168.1.114:4443']
+CSRF_TRUSTED_ORIGINS = ['https://10.11.2.4:4443', 'https://www.pong42.com', 'https://www.pongpi.com','https://localhost', 'https://localhost:4443', 'https://127.0.0.1', 'https://wwww.pong42.com', 'https://192.168.1.114:4443']
 
 # Email configuration 
 EMAIL_USE_TLS = True
