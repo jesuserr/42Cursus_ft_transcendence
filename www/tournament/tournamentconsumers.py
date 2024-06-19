@@ -4,7 +4,7 @@ from main.models import User
 from channels.db import database_sync_to_async
 from  main.token import *
 from django.core import serializers
-from .models import Tournament_Connected_Users, Tournament_List
+from .models import Tournament_Connected_Users, Tournament_List, Tournament_Play
 
 class TournamentConsumer(AsyncJsonWebsocketConsumer):
     #When the connection is established
@@ -26,20 +26,41 @@ class TournamentConsumer(AsyncJsonWebsocketConsumer):
         await self.request_group_refresh_user_list('REFRESH_USER_LIST')
         await self.channel_layer.group_discard(self.room_group_name, self.channel_name)
         
+		
+        
 	#When receive a message
     async def receive_json(self, data):
-        #check the command
         if 'PLAY' in data:
             await self.Play()
+		
+		
+		
+		#a apartir de aqui solo se ejecuta si el usuario es el primero conectado
+        #tmpuser = await self.getFirstConnectedUser()
+        #if (tmpuser.email != self.user.email):
+        #    return
         
+	#Get the first connected user
+    @database_sync_to_async
+    def getFirstConnectedUser(self):
+        user = Tournament_Connected_Users.objects.filter(tournament_name=self.tournament).first()
+        return user
+
+
 	#Play command	
     @database_sync_to_async
     def Play(self):
+        Tournament_Play.objects.filter(tournament_name=self.tournament).delete()
         users = Tournament_Connected_Users.objects.filter(tournament_name=self.tournament)
         random_users = users.order_by('?')
         for user in random_users:
-            user.tournament_name = self.tournamentplay
-            user.save()
+            tmpuser = Tournament_Play()
+            tmpuser.tournament_name = self.tournament
+            tmpuser.email = user.email
+            tmpuser.display_name = user.display_name
+            tmpuser.status = "WAITING"
+            tmpuser.save()
+            print(tmpuser)
             
 	#send message to the group
     async def request_group_refresh_user_list(self, message):
@@ -88,10 +109,6 @@ class TournamentConsumer(AsyncJsonWebsocketConsumer):
             tmptournament.tournament = self.room_name
             tmptournament.save()
             self.tournament = Tournament_List.objects.get(tournament=self.room_name)
-            tmptournament = Tournament_List()
-            tmptournament.tournament = self.room_name + "_PLAY"
-            tmptournament.save()
-            self.tournamentplay = Tournament_List.objects.get(tournament=self.room_name + "_PLAY")
         try:
             Tournament_Connected_Users.objects.get(tournament_name=self.tournament, email=self.user.email).delete()
         except:
@@ -112,5 +129,4 @@ class TournamentConsumer(AsyncJsonWebsocketConsumer):
             pass
         if Tournament_Connected_Users.objects.filter(tournament_name=self.tournament).exists() == False:
              self.tournament.delete()
-             self.tournamentplay.delete()
         

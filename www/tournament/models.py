@@ -9,3 +9,9 @@ class Tournament_Connected_Users(models.Model):
     tournament_name = models.ForeignKey(Tournament_List, on_delete=models.CASCADE)
     email = models.EmailField(unique=True)
     display_name = models.CharField(max_length=50, unique=True)
+
+class Tournament_Play(models.Model):
+    tournament_name = models.ForeignKey(Tournament_List, on_delete=models.CASCADE)
+    email = models.EmailField(unique=True)
+    display_name = models.CharField(max_length=50, unique=True)
+    status = models.CharField(max_length=50)
