@@ -33,18 +33,13 @@ class TournamentConsumer(AsyncJsonWebsocketConsumer):
         if 'PLAY' in data:
             await self.Play()
 		
-		
-		
-		#a apartir de aqui solo se ejecuta si el usuario es el primero conectado
-        #tmpuser = await self.getFirstConnectedUser()
-        #if (tmpuser.email != self.user.email):
-        #    return
-        
 	#Get the first connected user
     @database_sync_to_async
-    def getFirstConnectedUser(self):
-        user = Tournament_Connected_Users.objects.filter(tournament_name=self.tournament).first()
-        return user
+    def CheckIsTheFirstConnectedUser(self):
+        tmpuser = Tournament_Connected_Users.objects.filter(tournament_name=self.tournament).first()
+        if(tmpuser.email == self.user.email):
+            return True
+        return False
 
 
 	#Play command	
