@@ -39,7 +39,7 @@ class TournamentConsumer(AsyncJsonWebsocketConsumer):
         random_users = users.order_by('?')
         for user in random_users:
             user.pk = None  
-            user.tournament_name = self.tournament + "_PLAY"
+            user.tournament_name = self.tournamentplay
             user.save()
             
 	#send message to the group
@@ -83,11 +83,16 @@ class TournamentConsumer(AsyncJsonWebsocketConsumer):
     def registerUser(self):
         try:
             self.tournament = Tournament_List.objects.get(tournament=self.room_name)
+            self.tournamentplay = Tournament_List.objects.get(tournament=self.room_name + "_PLAY")
         except:
             tmptournament = Tournament_List()
             tmptournament.tournament = self.room_name
             tmptournament.save()
             self.tournament = Tournament_List.objects.get(tournament=self.room_name)
+            tmptournament = Tournament_List()
+            tmptournament.tournament = self.room_name + "_PLAY"
+            tmptournament.save()
+            self.tournamentplay = Tournament_List.objects.get(tournament=self.room_name + "_PLAY")
         try:
             Tournament_Connected_Users.objects.get(tournament_name=self.tournament, email=self.user.email).delete()
         except:
@@ -108,4 +113,5 @@ class TournamentConsumer(AsyncJsonWebsocketConsumer):
             pass
         if Tournament_Connected_Users.objects.filter(tournament_name=self.tournament).exists() == False:
              self.tournament.delete()
+             self.tournamentplay.delete()
         
