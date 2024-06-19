@@ -32,12 +32,15 @@ class TournamentConsumer(AsyncJsonWebsocketConsumer):
                      TournamentConsumer.tournament_dict[self.room_group_name]['text'] = 'Waiting for players'
                      TournamentConsumer.tournament_dict[self.room_group_name]['status'] = 1
                 msg = {'SET_BUTTON_PLAY_STATUS': {'text': TournamentConsumer.tournament_dict[self.room_group_name]['text'], 'status': TournamentConsumer.tournament_dict[self.room_group_name]['status']}}
-                await self.request_group_refresh_buttonPlay(msg)
+                await self.send_group_msg(msg)
 
     #When the connection is closed              
     async def disconnect(self, close_code):
         await self.unregisterUser()
         await self.request_group_refresh_user_list('REFRESH_USER_LIST')
+        if TournamentConsumer.tournament_dict[self.room_group_name]['text'] == 'Tournament started':
+            data = await self.PlayModel()
+            await self.request_group_refresh_tournament_status(data)
         connected_users_count = await self.get_connected_users_count()
         if TournamentConsumer.tournament_dict[self.room_group_name]['text'] == 'Waiting for players' and connected_users_count > 2:
             TournamentConsumer.tournament_dict[self.room_group_name]['text'] = 'Start the tournament'
@@ -46,18 +49,16 @@ class TournamentConsumer(AsyncJsonWebsocketConsumer):
             TournamentConsumer.tournament_dict[self.room_group_name]['text'] = 'Waiting for players'
             TournamentConsumer.tournament_dict[self.room_group_name]['status'] = 1
         msg = {'SET_BUTTON_PLAY_STATUS': {'text': TournamentConsumer.tournament_dict[self.room_group_name]['text'], 'status': TournamentConsumer.tournament_dict[self.room_group_name]['status']}}
-        await self.request_group_refresh_buttonPlay(msg)
+        await self.send_group_msg(msg)
         await self.channel_layer.group_discard(self.room_group_name, self.channel_name)
         
 	#When receive a message
     async def receive_json(self, data):
-        print(data)
         if 'PLAY' in data:
-            print('PLAY')
             TournamentConsumer.tournament_dict[self.room_group_name]['text'] = 'Tournament started'
             TournamentConsumer.tournament_dict[self.room_group_name]['status'] = 1
             msg = {'SET_BUTTON_PLAY_STATUS': {'text': TournamentConsumer.tournament_dict[self.room_group_name]['text'], 'status': TournamentConsumer.tournament_dict[self.room_group_name]['status']}}
-            await self.request_group_refresh_buttonPlay(msg)
+            await self.send_group_msg(msg)
             await self.Play()
             
     #Get the connected user count
@@ -66,7 +67,7 @@ class TournamentConsumer(AsyncJsonWebsocketConsumer):
         return Tournament_Connected_Users.objects.filter(tournament_name=self.tournament).count()
 	
 	#send message to the group
-    async def request_group_refresh_buttonPlay(self, message):
+    async def send_group_msg(self, message):
         await self.channel_layer.group_send(
 			self.room_group_name,
 			{
@@ -86,12 +87,35 @@ class TournamentConsumer(AsyncJsonWebsocketConsumer):
         if(tmpuser.email == self.user.email):
             return True
         return False
-
+    
+    @database_sync_to_async
+    def check_waiting_status(self):
+        waiting_count = Tournament_Play.objects.filter(tournament_name=self.tournament, status='WAITING').count()
+        if waiting_count >= 2:
+            return True
+        return False
+    
+    @database_sync_to_async
+    def delete_tournament_play_records(self):
+        Tournament_Play.objects.filter(tournament_name=self.tournament).delete()
+    @database_sync_to_async
+    def get_game_name_msg(self):
+        players = Tournament_Play.objects.filter(tournament_name=self.tournament, status='WAITING')[:2]
+        game_name = "/game5/"
+        game_name += self.tournament.tournament
+        for player in players:
+            game_name += '_' + player.email
+        msg = {'START_GAME': {'name': game_name, 'Player1': players[0].email, 'Player2': players[1].email}}
+        return msg
 
 	#Play command	
     async def Play(self):
-        data = await self.PlayModel()
+        data = await self.PlayModelInit()
         await self.request_group_refresh_tournament_status(data)
+        if await self.check_waiting_status():
+            msg = await self.get_game_name_msg()
+            print(msg)
+        
         
     async def request_group_refresh_tournament_status(self, message):
         await self.channel_layer.group_send(
@@ -101,13 +125,21 @@ class TournamentConsumer(AsyncJsonWebsocketConsumer):
 				'message': message,
 			}
 		)
-    
+        
 	#Receive message from the group to refresh the tournament status
     async def refresh_tournament_status(self, event):
         await self.send_json(event['message'])
-
+    
+	#Get the tournament status from model
     @database_sync_to_async
     def PlayModel(self):
+        data = serializers.serialize('json', Tournament_Play.objects.filter(tournament_name=self.tournament), fields=('email', 'display_name', 'status'))
+        data_obj = json.loads(data)
+        new_obj = {'REFRESH_TURNAMENT_STATUS': data_obj,}
+        return new_obj	
+
+    @database_sync_to_async
+    def PlayModelInit(self):
         Tournament_Play.objects.filter(tournament_name=self.tournament).delete()
         users = Tournament_Connected_Users.objects.filter(tournament_name=self.tournament)
         random_users = users.order_by('?')
@@ -173,15 +205,26 @@ class TournamentConsumer(AsyncJsonWebsocketConsumer):
             Tournament_Connected_Users.objects.get(tournament_name=self.tournament, email=self.user.email).delete()
         except:
             pass
-        tmpuser = Tournament_Connected_Users()
-        tmpuser.tournament_name = self.tournament
-        tmpuser.email = self.user.email
-        tmpuser.display_name = self.user.displayname
-        tmpuser.save()
+        try:
+            tmpuser = Tournament_Connected_Users()
+            tmpuser.tournament_name = self.tournament
+            tmpuser.email = self.user.email
+            tmpuser.display_name = self.user.displayname
+            tmpuser.save()
+        except:
+            pass
         
 	#Unregister user
     @database_sync_to_async
     def unregisterUser(self):
+        try:
+            tournament_play = Tournament_Play.objects.get(tournament_name=self.tournament, email=self.user.email)
+            if tournament_play.status == 'WAITING':
+                tournament_play.status = 'LOST_CONNECTION'
+                tournament_play.save()
+        except:
+        	pass
+        
         try:
             tmp = Tournament_Connected_Users.objects.get(tournament_name=self.tournament, email=self.user.email)
             tmp.delete()

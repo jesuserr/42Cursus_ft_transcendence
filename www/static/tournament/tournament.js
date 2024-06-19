@@ -42,6 +42,11 @@ function Set_Button_Play_Status(data) {
 	let playButton = document.querySelector('#play');
 	playButton.disabled = data.status;
 	playButton.textContent = data.text;
+	if (data.text == 'Waiting for players') {
+		var table = document.getElementById('tstatus');
+		table.innerHTML = ""; 
+		table.setAttribute('disabled', true); 
+	}
 }
 
 document.querySelector('#play').onclick = function (e) {
@@ -70,14 +75,5 @@ function Set_Connected_User_List(data) {
     existingRows.forEach((row, email) => {
         table.removeChild(row);
     });
-
-	/*
-    if (userList.length > 2) {
-        playButton.disabled = false;
-        playButton.textContent = "Start tournament"; 
-    } else {
-        playButton.disabled = true;
-        playButton.textContent = "Waiting for players"; 
-    }*/
 }
 
