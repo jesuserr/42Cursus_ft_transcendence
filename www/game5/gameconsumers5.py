@@ -21,6 +21,9 @@ class GameConsumer5(AsyncWebsocketConsumer):
         await self.channel_layer.group_add(self.room_group_name, self.channel_name)
         if 'tokenid' in self.scope['cookies'].keys():
             await self.getUsernameModel()
+            #for testing purposes dont delete
+            #if not  (await self.isvaliduser()):
+            #    return
             await self.accept()
             self.left_paddle = Paddle(PADDLE_GAP, HEIGHT // 2 - PADDLE_HEIGHT // 2, PADDLE_WIDTH, PADDLE_HEIGHT)
             self.right_paddle = Paddle(WIDTH - PADDLE_GAP - PADDLE_WIDTH, HEIGHT // 2 - PADDLE_HEIGHT // 2, PADDLE_WIDTH, PADDLE_HEIGHT)
@@ -41,7 +44,7 @@ class GameConsumer5(AsyncWebsocketConsumer):
                 await self.rooms[self.room_group_name]['players']['player2'].send_gameboard(self.ball, self.left_paddle, self.right_paddle, self.score, PLAYER_2)
                 asyncio.ensure_future(self.playGame())                      # Init game on players2 instance
             #print("Players Info: " + str(self.rooms[self.room_group_name]))
-
+			
     @database_sync_to_async
     def getUsernameModel(self):
         try:
@@ -52,6 +55,9 @@ class GameConsumer5(AsyncWebsocketConsumer):
             self.user = ""
 
     async def disconnect(self, close_code):
+        #for testing purposes dont delete
+        #if not  (await self.isvaliduser()):
+        #    return
         players = self.rooms[self.room_group_name]['players']           # alias
         room = self.rooms[self.room_group_name]                         # alias
         if players['player1'] == self:
@@ -68,6 +74,14 @@ class GameConsumer5(AsyncWebsocketConsumer):
             self.rooms[self.room_group_name]['key_states_1'] = json.loads(text_data)
         elif players['player2'] == self:
             self.rooms[self.room_group_name]['key_states_2'] = json.loads(text_data)
+            
+    @database_sync_to_async
+    def isvaliduser(self):
+        self.tournament = Tournament_List.objects.get(tournament = self.room_name.split('___')[0])
+        tmpplay = Tournament_Round.objects.get(tournament_name = self.tournament, round_name = self.room_name)
+        if (tmpplay.player1 == self.user.email or tmpplay.player2 == self.user.email):
+            return True
+        return False
 
     async def send_gameboard(self, ball, l_paddle, r_paddle, score, player):
         gameboard = {

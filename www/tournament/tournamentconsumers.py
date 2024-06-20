@@ -90,7 +90,7 @@ class TournamentConsumer(AsyncJsonWebsocketConsumer):
     @database_sync_to_async
     def next_round(self):
         won = Tournament_Play.objects.get(tournament_name=self.tournament, status='WON')
-        waiting = Tournament_Play.objects.get(tournament_name=self.tournament, status='WAITING')
+        waiting = Tournament_Play.objects.filter(tournament_name=self.tournament, status='WAITING').first()
         timestamp_seconds = int(time.time())
         game_name = ""
         game_name += self.tournament.tournament
