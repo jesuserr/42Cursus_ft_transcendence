@@ -15,6 +15,7 @@ class TournamentConsumer(AsyncJsonWebsocketConsumer):
     async def connect(self):
         self.room_name = self.scope["url_route"]["kwargs"]["tournament_name"]
         self.room_group_name = f"tournament_{self.room_name}"
+        print(self.room_group_name)
         await self.channel_layer.group_add(self.room_group_name, self.channel_name)
         TournamentConsumer.tournament_dict.setdefault(self.room_group_name, {})
         TournamentConsumer.tournament_dict[self.room_group_name].setdefault('text', 'Waiting for players')
@@ -77,7 +78,11 @@ class TournamentConsumer(AsyncJsonWebsocketConsumer):
 				'message': message,
 			}
 		)
-		
+    async def round_message(self, event):
+        if not (await self.CheckIsTheFirstConnectedUser()):
+            return
+        print(event)
+        
 	#Receive message from the group to refresh the button play
     async def send_group_msg_client(self, event):
         await self.send_json(event['message'])

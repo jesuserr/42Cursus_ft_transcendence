@@ -9,6 +9,7 @@ from channels.db import database_sync_to_async
 from main.models import User
 #from main.token import *                   -> makes time.time() crash
 from main.token import get_user_from_token  # solution
+from tournament.models import Tournament_List, Tournament_Round
 
 class GameConsumer5(AsyncWebsocketConsumer):
     rooms = {}  # Class variable shared by all instances of this class
@@ -128,8 +129,27 @@ class GameConsumer5(AsyncWebsocketConsumer):
             while time.time() - frame_start_time < FRAME_TIME:
                await asyncio.sleep((FRAME_TIME - (time.time() - frame_start_time)) * 0.0002)
         await self.pushStats(room, self.score)
+        await self.SendRoundEndMSG() 								  # send round end message	
         await players['player1'].close()                                # close websocket connections
         await players['player2'].close()
+        
+    async def SendRoundEndMSG(self):
+        room = self.rooms[self.room_group_name]
+        data = self.room_name.split('___')
+        tournament_name = 'tournament_'
+        tournament_name += data[0]
+        if self.score.left_score > self.score.right_score:
+            winner = room["player1_id"].email
+        else:
+            winner = room["player2_id"].email
+        msg = {'round': self.room_name, 'winner': winner}
+        await self.channel_layer.group_send(
+            tournament_name,
+            {
+                'type': 'round_message',
+                'message': msg
+            }
+        )
 
     @database_sync_to_async
     def pushStats(self, room, score):
@@ -164,3 +184,4 @@ class GameConsumer5(AsyncWebsocketConsumer):
         else:
             temp.player_one_win = temp.tournament = True
         temp.save()
+        
