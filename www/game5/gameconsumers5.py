@@ -22,27 +22,33 @@ class GameConsumer5(AsyncWebsocketConsumer):
         if 'tokenid' in self.scope['cookies'].keys():
             await self.getUsernameModel()
             #for testing purposes dont delete
-            #if not  (await self.isvaliduser()):
+            #if not  (await self.isValidUser()):
             #    return
             await self.accept()
             self.left_paddle = Paddle(PADDLE_GAP, HEIGHT // 2 - PADDLE_HEIGHT // 2, PADDLE_WIDTH, PADDLE_HEIGHT)
             self.right_paddle = Paddle(WIDTH - PADDLE_GAP - PADDLE_WIDTH, HEIGHT // 2 - PADDLE_HEIGHT // 2, PADDLE_WIDTH, PADDLE_HEIGHT)
             self.ball = Ball(WIDTH // 2, HEIGHT // 2, BALL_RADIUS)
             self.score = Score()
-            if self.room_group_name not in self.rooms.keys():
+            if self.room_group_name not in self.rooms.keys() and await self.isValidUser():
                 self.rooms[self.room_group_name] = {"players": {"player1": self}}
                 self.rooms[self.room_group_name]["key_states_1"] = {}
                 self.rooms[self.room_group_name]["player1_connected"] = True
                 self.rooms[self.room_group_name]["player2_connected"] = False
                 self.rooms[self.room_group_name]["player1_id"] = self.user
                 await self.rooms[self.room_group_name]['players']['player1'].send_gameboard(self.ball, self.left_paddle, self.right_paddle, self.score, PLAYER_1)
-            elif self.rooms[self.room_group_name]["player2_connected"] == False and self.rooms[self.room_group_name]["player1_id"] != self.user:
+                print("*** Playing", self.user)
+            elif self.rooms[self.room_group_name]["player2_connected"] == False and self.rooms[self.room_group_name]["player1_id"] != self.user and await self.isValidUser():
                 self.rooms[self.room_group_name]['players']['player2'] = self
                 self.rooms[self.room_group_name]["key_states_2"] = {}
                 self.rooms[self.room_group_name]["player2_connected"] = True
                 self.rooms[self.room_group_name]["player2_id"] = self.user
                 await self.rooms[self.room_group_name]['players']['player2'].send_gameboard(self.ball, self.left_paddle, self.right_paddle, self.score, PLAYER_2)
+                print("*** Playing", self.user)
                 asyncio.ensure_future(self.playGame())                      # Init game on players2 instance
+            else:
+                self.rooms[self.room_group_name]['players']['voyeur'] = self
+                await self.rooms[self.room_group_name]['players']['voyeur'].send_gameboard(self.ball, self.left_paddle, self.right_paddle, self.score, VOYEUR)
+                print("*** Not playing", self.user)
             #print("Players Info: " + str(self.rooms[self.room_group_name]))
 			
     @database_sync_to_async
@@ -56,7 +62,7 @@ class GameConsumer5(AsyncWebsocketConsumer):
 
     async def disconnect(self, close_code):
         #for testing purposes dont delete
-        #if not  (await self.isvaliduser()):
+        #if not  (await self.isValidUser()):
         #    return
         players = self.rooms[self.room_group_name]['players']           # alias
         room = self.rooms[self.room_group_name]                         # alias
@@ -76,7 +82,7 @@ class GameConsumer5(AsyncWebsocketConsumer):
             self.rooms[self.room_group_name]['key_states_2'] = json.loads(text_data)
             
     @database_sync_to_async
-    def isvaliduser(self):
+    def isValidUser(self):
         self.tournament = Tournament_List.objects.get(tournament = self.room_name.split('___')[0])
         tmpplay = Tournament_Round.objects.get(tournament_name = self.tournament, round_name = self.room_name)
         if (tmpplay.player1 == self.user.email or tmpplay.player2 == self.user.email):
@@ -130,6 +136,7 @@ class GameConsumer5(AsyncWebsocketConsumer):
             else:
                 await players['player1'].send_gameboard(self.ball, self.left_paddle, self.right_paddle, self.score, PLAYER_1)
                 await players['player2'].send_gameboard(self.ball, self.left_paddle, self.right_paddle, self.score, PLAYER_2)
+                await players['voyeur'].send_gameboard(self.ball, self.left_paddle, self.right_paddle, self.score, VOYEUR)
             handle_left_paddle_movement(room['key_states_1'], self.left_paddle)
             handle_right_paddle_movement(room['key_states_2'], self.right_paddle)
             self.ball.move()
@@ -138,6 +145,7 @@ class GameConsumer5(AsyncWebsocketConsumer):
             if self.score.won:
                 await players['player1'].send_gameboard(self.ball, self.left_paddle, self.right_paddle, self.score, PLAYER_1)
                 await players['player2'].send_gameboard(self.ball, self.left_paddle, self.right_paddle, self.score, PLAYER_2)
+                await players['voyeur'].send_gameboard(self.ball, self.left_paddle, self.right_paddle, self.score, VOYEUR)
                 break
             await asyncio.sleep((FRAME_TIME - (time.time() - frame_start_time)) * 0.2)
             while time.time() - frame_start_time < FRAME_TIME:
@@ -146,6 +154,7 @@ class GameConsumer5(AsyncWebsocketConsumer):
         await self.SendRoundEndMSG() 								  # send round end message	
         await players['player1'].close()                                # close websocket connections
         await players['player2'].close()
+        await players['voyeur'].close()
         
     async def SendRoundEndMSG(self):
         room = self.rooms[self.room_group_name]
