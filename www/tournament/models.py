@@ -15,3 +15,11 @@ class Tournament_Play(models.Model):
     email = models.EmailField(unique=True)
     display_name = models.CharField(max_length=50, unique=True)
     status = models.CharField(max_length=50)
+
+class Tournament_Round(models.Model):
+    tournament_name = models.ForeignKey(Tournament_List, on_delete=models.CASCADE)
+    round_name = models.CharField(max_length=50)
+    player1 = models.EmailField()
+    player2 = models.EmailField()
+    
+    

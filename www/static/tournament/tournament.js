@@ -11,7 +11,14 @@ socket.onmessage = function (e) {
 		Set_Button_Play_Status(data['SET_BUTTON_PLAY_STATUS']);
 	else if (data.hasOwnProperty("REFRESH_TURNAMENT_STATUS"))
 		Refresh_Tournament_Status(data);
+	else if (data.hasOwnProperty("START_GAME"))
+		Start_Game(data['START_GAME']);
 };
+
+function Start_Game(data) {
+    var iframe = document.getElementById('iframegame');
+    iframe.src = data.name;
+}
 
 function Refresh_Tournament_Status(data) {
     let statusElement = document.querySelector('#tstatus');

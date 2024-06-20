@@ -4,7 +4,9 @@ from main.models import User
 from channels.db import database_sync_to_async
 from  main.token import *
 from django.core import serializers
-from .models import Tournament_Connected_Users, Tournament_List, Tournament_Play
+from .models import Tournament_Connected_Users, Tournament_List, Tournament_Play, Tournament_Round
+import time
+
 
 class TournamentConsumer(AsyncJsonWebsocketConsumer):
     tournament_dict = {}
@@ -71,13 +73,13 @@ class TournamentConsumer(AsyncJsonWebsocketConsumer):
         await self.channel_layer.group_send(
 			self.room_group_name,
 			{
-				'type': 'refresh.ButtonPlay',
+				'type': 'send.group.msg.client',
 				'message': message,
 			}
 		)
 		
 	#Receive message from the group to refresh the button play
-    async def refresh_ButtonPlay(self, event):
+    async def send_group_msg_client(self, event):
         await self.send_json(event['message'])
         
 	#Get the first connected user
@@ -100,11 +102,20 @@ class TournamentConsumer(AsyncJsonWebsocketConsumer):
         Tournament_Play.objects.filter(tournament_name=self.tournament).delete()
     @database_sync_to_async
     def get_game_name_msg(self):
+        timestamp_seconds = int(time.time())
         players = Tournament_Play.objects.filter(tournament_name=self.tournament, status='WAITING')[:2]
-        game_name = "/game5/"
+        game_name = ""
         game_name += self.tournament.tournament
-        for player in players:
-            game_name += '_' + player.email
+        game_name += "___"
+        game_name += str(timestamp_seconds)
+        #Create a new round
+        tmpround = Tournament_Round()
+        tmpround.tournament_name = self.tournament
+        tmpround.round_name = game_name
+        tmpround.player1 = players[0].email
+        tmpround.player2 = players[1].email
+        tmpround.save()
+        game_name = "/game5/" + game_name
         msg = {'START_GAME': {'name': game_name, 'Player1': players[0].email, 'Player2': players[1].email}}
         return msg
 
@@ -114,9 +125,20 @@ class TournamentConsumer(AsyncJsonWebsocketConsumer):
         await self.request_group_refresh_tournament_status(data)
         if await self.check_waiting_status():
             msg = await self.get_game_name_msg()
-            print(msg)
+            await self.send_group_msg(msg)
+            await self.change_status(msg['START_GAME']['Player1'], 'PLAYING')
+            await self.change_status(msg['START_GAME']['Player2'], 'PLAYING')
+            data = await self.PlayModel()
+            await self.request_group_refresh_tournament_status(data)
+            
         
-        
+	#change status of the player
+    @database_sync_to_async
+    def change_status(self, player, status):
+        tmp = Tournament_Play.objects.get(tournament_name=self.tournament, email=player)
+        tmp.status = status
+        tmp.save()
+
     async def request_group_refresh_tournament_status(self, message):
         await self.channel_layer.group_send(
 			self.room_group_name,
@@ -231,5 +253,7 @@ class TournamentConsumer(AsyncJsonWebsocketConsumer):
         except:
             pass
         if Tournament_Connected_Users.objects.filter(tournament_name=self.tournament).exists() == False:
-             self.tournament.delete()
+            self.tournament.delete()
+            TournamentConsumer.tournament_dict[self.room_group_name]['text'] = 'Waiting for players'
+            TournamentConsumer.tournament_dict[self.room_group_name]['status'] = 1
         
