@@ -81,7 +81,20 @@ class TournamentConsumer(AsyncJsonWebsocketConsumer):
     async def round_message(self, event):
         if not (await self.CheckIsTheFirstConnectedUser()):
             return
-        print(event)
+        await self.update_round(event['message'])
+        data = await self.PlayModel()
+        await self.request_group_refresh_tournament_status(data)
+
+	#update model with the new round
+    @database_sync_to_async
+    def update_round(self, data):
+        tmp = Tournament_Play.objects.get(tournament_name=self.tournament, email=data['winner'])
+        tmp.status = 'WIN'
+        tmp.save()
+        tmp = Tournament_Play.objects.get(tournament_name=self.tournament, status='PLAYING')
+        tmp.status = 'LOST'
+        tmp.save()
+    
         
 	#Receive message from the group to refresh the button play
     async def send_group_msg_client(self, event):
