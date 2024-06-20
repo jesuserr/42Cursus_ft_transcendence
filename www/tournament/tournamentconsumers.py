@@ -110,6 +110,10 @@ class TournamentConsumer(AsyncJsonWebsocketConsumer):
         waiting.status = 'PLAYING'
         waiting.save()
         return msg
+    @database_sync_to_async
+    def get_won_user(self):
+        won_user = Tournament_Play.objects.filter(tournament_name=self.tournament, status='WON').first()
+        return won_user
     
     async def round_message(self, event):
         if not (await self.CheckIsTheFirstConnectedUser()):
@@ -118,14 +122,31 @@ class TournamentConsumer(AsyncJsonWebsocketConsumer):
         data = await self.PlayModel()
         await self.request_group_refresh_tournament_status(data)
         if await self.check_tournament_finished():
-            print('Tournament finished')
+            TournamentConsumer.tournament_dict[self.room_group_name]['text'] = 'Tournament finished'
+            TournamentConsumer.tournament_dict[self.room_group_name]['status'] = 1
+            msg = {'SET_BUTTON_PLAY_STATUS': {'text': TournamentConsumer.tournament_dict[self.room_group_name]['text'], 'status': TournamentConsumer.tournament_dict[self.room_group_name]['status']}}
+            await self.send_group_msg(msg)
+            won_user = await self.get_won_user()
+            msg = {'TOURNAMENT_FINISHED': won_user.display_name}
+            await self.send_group_msg(msg)
+            await self.channel_layer.group_send(
+					self.room_group_name,
+					{
+						'type': 'finish.tournament',
+						'message': 'finish.tournament',
+					}
+				)
         else:
             msg = await self.next_round()
             await self.send_group_msg(msg)
             data = await self.PlayModel()
             await self.request_group_refresh_tournament_status(data)
-        
-	#update model with the new round
+	
+	#Receive message from the group to finish the tournament
+    async def finish_tournament(self, event):
+        await self.close()
+    
+	# update model with the new round
     @database_sync_to_async
     def update_round(self, data):
         tmp = Tournament_Play.objects.get(tournament_name=self.tournament, email=data['winner'])

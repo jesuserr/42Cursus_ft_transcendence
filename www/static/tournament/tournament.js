@@ -13,7 +13,14 @@ socket.onmessage = function (e) {
 		Refresh_Tournament_Status(data);
 	else if (data.hasOwnProperty("START_GAME"))
 		Start_Game(data['START_GAME']);
+	else if (data.hasOwnProperty("TOURNAMENT_FINISHED"))
+		Tournament_Finished(data['TOURNAMENT_FINISHED'])
 };
+
+function Tournament_Finished(data) {
+	var winnerElement = document.getElementById('winner');
+    winnerElement.textContent = "The winner is " + data;
+}
 
 function Start_Game(data) {
     var iframe = document.getElementById('iframegame');
