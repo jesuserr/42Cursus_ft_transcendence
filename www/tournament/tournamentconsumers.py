@@ -78,24 +78,63 @@ class TournamentConsumer(AsyncJsonWebsocketConsumer):
 				'message': message,
 			}
 		)
+        
+	#check is torunament finished
+    @database_sync_to_async
+    def check_tournament_finished(self):
+        if Tournament_Play.objects.filter(tournament_name=self.tournament, status='WAITING').count() == 0:
+            return True
+        return False
+
+	#next round
+    @database_sync_to_async
+    def next_round(self):
+        won = Tournament_Play.objects.get(tournament_name=self.tournament, status='WON')
+        waiting = Tournament_Play.objects.get(tournament_name=self.tournament, status='WAITING')
+        timestamp_seconds = int(time.time())
+        game_name = ""
+        game_name += self.tournament.tournament
+        game_name += "___"
+        game_name += str(timestamp_seconds)
+        #Create a new round
+        tmpround = Tournament_Round()
+        tmpround.tournament_name = self.tournament
+        tmpround.round_name = game_name
+        tmpround.player1 = won.email
+        tmpround.player2 = waiting.email
+        tmpround.save()
+        game_name = "/game5/" + game_name
+        msg = {'START_GAME': {'name': game_name, 'Player1': won.email, 'Player2': waiting.email}}
+        won.status = 'PLAYING'
+        won.save()
+        waiting.status = 'PLAYING'
+        waiting.save()
+        return msg
+    
     async def round_message(self, event):
         if not (await self.CheckIsTheFirstConnectedUser()):
             return
         await self.update_round(event['message'])
         data = await self.PlayModel()
         await self.request_group_refresh_tournament_status(data)
-
+        if await self.check_tournament_finished():
+            print('Tournament finished')
+        else:
+            msg = await self.next_round()
+            await self.send_group_msg(msg)
+            data = await self.PlayModel()
+            await self.request_group_refresh_tournament_status(data)
+        
 	#update model with the new round
     @database_sync_to_async
     def update_round(self, data):
         tmp = Tournament_Play.objects.get(tournament_name=self.tournament, email=data['winner'])
-        tmp.status = 'WIN'
+        tmp.status = 'WON'
         tmp.save()
         tmp = Tournament_Play.objects.get(tournament_name=self.tournament, status='PLAYING')
         tmp.status = 'LOST'
         tmp.save()
     
-        
 	#Receive message from the group to refresh the button play
     async def send_group_msg_client(self, event):
         await self.send_json(event['message'])
