@@ -4,7 +4,7 @@ const socket = new WebSocket('wss://' + window.location.host + '/ws/tournament/'
 
 socket.onmessage = function (e) {
 	const data = JSON.parse(e.data);
-	console.log(data);
+	//console.log(data);
 	if (data.hasOwnProperty("SET_CONNECTED_USER_LIST"))
 		Set_Connected_User_List(data);
 	else if (data.hasOwnProperty("SET_BUTTON_PLAY_STATUS"))
