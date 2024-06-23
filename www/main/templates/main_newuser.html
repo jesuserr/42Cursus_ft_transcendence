@@ -8,6 +8,7 @@
     <link rel="stylesheet" href="/static/assets/bootstrap/css/bootstrap.min.css">
     <link rel="stylesheet" href="/static/assets/css/styles.css">
     <link rel="stylesheet" href="/static/assets/css/custom.css">
+    <link rel="stylesheet" href="/static/assets/css/background.css">
 </head>
 <style>
 	.card {
@@ -16,9 +17,13 @@
 	}
 </style>
 <body>
+	<div class="background-container">
+        <canvas id="test"></canvas>
+	</div>
+
     <div class="container d-flex justify-content-center align-items-center" style="margin-top: 10%;">
         <div class="card p-4 bg-light mb-3 form-email">
-             <form method="POST" class="post-form" enctype="multipart/form-data">
+             <form method="POST" class="post-form" enctype="multipart/form-data" style="z-index: 1;">
 				 <div style="padding: 1em;">
 				{{ Data.TopMsg }}
 				</div>
@@ -27,13 +32,14 @@
 				<div style="padding: 1em;">
                 {{ form.as_p }}
 				</div>
-                <button type="submit" class="btn btn-primary" style="background-color: black; border: black; padding: 0.8em;">{{ Data.Action }}</button>
+                <button type="submit" class="btn btn-primary" style="background-color: black; border: black; padding: 0.8em; z-index: 1;">{{ Data.Action }}</button>
             </form>
 			<div style="padding: 1em; color: red;">
             {{ Data.ErrorMsg }}
 			</div>
         </div>
     </div>
+    <script src="/static/main/background.js"></script>
 </body>
 </html>
 

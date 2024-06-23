@@ -64,4 +64,48 @@ body {
 
 #iframechat {
 	margin-top: 10px;
+	z-index: 1;
 }
+
+iframe {
+	z-index: 1;
+}
+
+
+  @media (max-width: 900px) {
+	 .teletext-title {
+		font-size: 12px;
+	 }
+
+	 .teletext-description {
+		font-size: 10px;
+	 }
+    .button-container button,
+    .play-container .row .col-md-2 {
+      flex: 1 1 auto;
+      max-width: none;
+    }
+
+    .play-container .row .col-md-2 {
+      flex: 1 1 22%;
+      margin: 10px;
+    }
+
+    #iframechat {
+	margin-left: 0;
+    }
+  }
+
+@media (min-width: 900px) and (max-width: 1224px) {
+	.teletext-title {
+		font-size: 12px;
+	}
+
+	.teletext-description {
+		font-size: 10px;
+	}
+	#iframechat {
+		margin-left: 50px;
+	}
+}
+

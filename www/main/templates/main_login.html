@@ -1,31 +1,30 @@
 {% include "main_menu.html" %}
 <!DOCTYPE html>
-<html lang="en">
-
+<html lang="es">
 <head>
-    <meta charset="utf-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, shrink-to-fit=no">
-    <title>Pong 42 New User</title>
-    <link rel="stylesheet" href="/static/assets/bootstrap/css/bootstrap.min.css">
-    <link rel="stylesheet" href="/static/assets/css/login.css">
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<link rel="stylesheet" href="/static/assets/css/welcome.css">
+<link rel="stylesheet" href="/static/assets/css/background.css">
+<title>Bienvenido</title>
+<script>
+    function cargarPagina(url) {
+        document.getElementById('iframe-contenido').src = url;
+    }
+</script>
 </head>
-
 <body>
-	<div class="static-bg"></div>
-	<div class="all-login">
-    	<div class="login">
-			<form class="post-form" method="POST">{% csrf_token %}
-        	<h2>Welcome</h2>
-			{{ form.as_p }}
-			<button type="submit" class="submit arrow">Login</button>
-		</form>
-			<div class="buttons">
-			<a href="/main/newuser"><button class="submit">New User</button></a>
-			<a href={{Data.URL42}}><button class="submit">Log with 42 user</button></a>
-			<div><p style="color:black;">{{ Data.ErrorMsg }}</p></div>
-			</div>
+	<div class="background-container">
+        <canvas id="test"></canvas>
 	</div>
-	</div>
+<div class="welcome">
+	<h1>Welcome</h1>
+</div>
+<div class="button-container">
+	<a src="/main/welcome" class="button submit arrow" type="submit" id="boton1">Login or register</a>
+		<a href="{{Data.URL42}}" class="button submit" id="boton2">Login with 42</a>
+		<a href="" class="button" id="boton3">Play annonimous</a>
+</div>
+<script src="/static/main/background.js"></script>
 </body>
-
 </html>

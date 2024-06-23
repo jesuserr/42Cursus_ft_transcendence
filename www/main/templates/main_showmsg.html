@@ -8,10 +8,15 @@
     <title>Teletext Style Page</title>
     <link rel="stylesheet" href="/static/assets/bootstrap/css/bootstrap.min.css">
     <link rel="stylesheet" href="/static/assets/css/custom.css">
+    <link rel="stylesheet" href="/static/assets/css/background.css">
 </head>
 <body>
-	<div style="display: flex; justify-content: center; align-items: center; height: 100vh; color: white;">
+	<div class="background-container">
+        <canvas id="test"></canvas>
+	</div>
+	<div style="display: flex; justify-content: center; align-items: center; height: 100vh; color: white; z-index: 1">
 		{{ Data.ErrorMsg }}
 	</div>
+	<script src="/static/main/background.js"></script>
 </body>
 </html>

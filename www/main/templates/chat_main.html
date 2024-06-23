@@ -1,0 +1,215 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Chat con Bootstrap</title>
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+    <link rel="stylesheet" href="styles.css">
+</head>
+<style>
+@import "https://fonts.googleapis.com/css?family=Press%20Start%202P";
+
+body {
+    background-color: rgba(0, 0, 0, 0);
+    color: #ffffff;
+    font-family: 'Press Start 2P';
+}
+
+h5 {
+	color: white;
+	margin-top: 10px;
+}
+
+.message {
+    padding: 10px;
+    margin-bottom: 5px;
+    background-color: #333333;
+    color: black;
+    border-radius: 5px;
+}
+
+.button {
+    background-color: #333333;
+    color: #ffffff;
+    padding: 5px 5px;
+    font-size: 11px;
+    cursor: pointer;
+    transition: background-color 0.3s, color 0.3s;
+}
+
+.button:hover {
+    background-color: #555555;
+}
+
+.chat-text {
+    width: 70%;
+    height: 200px;
+    padding: 10px;
+    overflow-y: auto;
+    white-space: pre-wrap;
+    background-color: rgba(128, 128, 128, 0.2);
+    color: #ffffff;
+}
+
+.users {
+	background-color: rgba(128, 128, 128, 0.2) !important;
+}
+
+#CURRENTUSER {
+    color: #ffffff;
+}
+
+
+.messages-container {
+    height: 75vh;
+    overflow-y: scroll;
+}
+
+.message {
+    padding: 10px;
+    margin-bottom: 5px;
+    background-color: #f0f0f0;
+    border-radius: 5px;
+}
+
+.chat-text {
+    width: 100%;
+    height: 320px;
+    padding: 10px;
+    overflow-y: auto;
+    white-space: pre-wrap;
+}
+
+.btns-left {
+	display: flex;
+	justify-content: center;
+}
+
+.text-center {
+	font-size: 12px;
+	color: white;
+}
+
+
+@media (max-width: 768px) {
+    .messages-container {
+        height: calc(100vh - 200px);
+    }
+}
+
+</style>
+
+<body>
+    <div class="container-fluid h-100">
+        <div class="row h-100">
+		 <div class="users col-md-2 bg-light d-flex flex-column" style="margin-top: 10px; border-radius: 4px;">
+		<div>
+			<p class="text-center" style="margin-top: 20px;">Conectados</p>
+			<select id="CONNECTEDUSERLIST" name="Connected Users" size="6"></select>
+			<div class="btns-left" style="margin-bottom: 5px;">
+			<input id="BLOCK_SELECTED_USER" type="button" value="Block" class="button">
+			<input id="CHAT_SELECTED_USER" type="button" value="Chat" class="button">
+			</div>
+		</div>
+		<div >
+			<p class="text-center">Bloqueados</p>
+			<select id="BLOCKUSERS" name="Block users" size="6"></select>
+			<div class="btns-left">
+			<input id="UNBLOCK_SELECTED_USER" type="button" value="Unblock" class="button">
+			</div>
+		</div>
+<!--		<div style="border-top: 2px solid black">
+			<h5 class="text-center">Todos los usuarios</h5>
+			<select id="USERLIST" name="All user list" size="3"></select>
+			</div> 
+		    <div class="btns-left">
+        <input id="CHAT_ALL_USERS" type="button" value="Chat with all" class="button">
+		    </div>--> 
+	    </div> 
+            <div class="col-md-9">
+		    <span><div style="margin-top: 10px;" id="CURRENTUSER">General</div></span>
+			<div id="CONTAINER_CHAT_TEXT">
+				<div id="CHATTEXT" class="chat-text" contenteditable="false"></div>
+
+			<div>
+                </div>
+                <div class="input-group mb-3">
+                    <input style="margin-top: 5px;" id="CHAT_MSG_INPUT" type="text" class="form-control" placeholder="Escribe tu mensaje...">
+		    <div id="MSG_STAUS_USERS">...</div>
+                    <div class="input-group-append">
+			    <input style="margin-top: 8px;"id="SEND_MSG" type="button" value="Send message" class="button">
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    {{ room_name|json_script:"room_name" }}
+    <!--    <script src="/static/chat/chat.js"></script> -->
+    <script>
+document.addEventListener("DOMContentLoaded", function() {
+    // Variables para los elementos del DOM
+    const chatText = document.getElementById("CHATTEXT");
+    const msgInput = document.getElementById("CHAT_MSG_INPUT");
+    const sendBtn = document.getElementById("SEND_MSG");
+    const currentUserDisplay = document.getElementById("CURRENTUSER");
+
+    // Evento para enviar mensaje
+    sendBtn.addEventListener("click", function() {
+        const message = msgInput.value.trim(); // Obtener el mensaje y limpiar espacios en blanco al inicio y final
+        
+        if (message !== "") {
+            // Crear un nuevo elemento de mensaje
+            const messageElement = document.createElement("div");
+            messageElement.classList.add("message");
+            messageElement.textContent = message;
+            
+            // Agregar el mensaje al contenedor de chat
+            chatText.appendChild(messageElement);
+            
+            // Limpiar el campo de entrada
+            msgInput.value = "";
+            
+            // Hacer scroll hacia abajo para mostrar el mensaje más reciente
+            chatText.scrollTop = chatText.scrollHeight;
+        }
+    });
+
+    // Evento para seleccionar usuario y actualizar display
+    document.getElementById("USERLIST").onchange = function() {
+        const selectedUser = this.value;
+        currentUserDisplay.textContent = selectedUser;
+    };
+
+    // Evento para bloquear usuario
+    document.getElementById("BLOCK_SELECTED_USER").onclick = function() {
+        const selectedUser = document.getElementById("USERLIST").value;
+        const blockedList = document.getElementById("BLOCKUSERS");
+        blockedList.options[blockedList.options.length] = new Option(selectedUser, selectedUser);
+    };
+
+    // Evento para desbloquear usuario
+    document.getElementById("UNBLOCK_SELECTED_USER").onclick = function() {
+        const selectedUser = document.getElementById("BLOCKUSERS").value;
+        document.getElementById("BLOCKUSERS").remove(document.getElementById("BLOCKUSERS").selectedIndex);
+    };
+
+    // Evento para chatear con todos los usuarios
+    document.getElementById("CHAT_ALL_USERS").onclick = function() {
+        const allUserList = document.getElementById("USERLIST").options;
+        Array.from(allUserList).forEach(function(user) {
+            const messageElement = document.createElement("div");
+            messageElement.classList.add("message");
+            messageElement.textContent = msgInput.value;
+            chatText.appendChild(messageElement);
+        });
+    };
+});
+
+</script>
+    <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.5.4/dist/umd/popper.min.js"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+</body>
+</html>
+

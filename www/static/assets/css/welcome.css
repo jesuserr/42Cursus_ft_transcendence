@@ -40,3 +40,9 @@
     background-color: #4CAF50;
   }
 
+  .welcome, .button-container {
+    position: relative;
+    z-index: 1;
+    text-align: center;
+    color: white;
+}

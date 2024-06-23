@@ -9,55 +9,13 @@
     <link rel="stylesheet" href="/static/assets/bootstrap/css/bootstrap.min.css">
     <link rel="stylesheet" href="/static/assets/css/custom.css">
     <link rel="stylesheet" href="/static/assets/css/welcome.css">
+    <link rel="stylesheet" href="/static/assets/css/background.css">
 </head>
-<style>
-
-  @media (max-width: 900px) {
-	 .teletext-title {
-		font-size: 12px;
-	 }
-
-	 .teletext-description {
-		font-size: 10px;
-	 }
-    .button-container button,
-    .play-container .row .col-md-2 {
-      flex: 1 1 auto;
-      max-width: none;
-    }
-
-    .play-container .row .col-md-2 {
-      flex: 1 1 22%;
-      margin: 10px;
-    }
-
-    #iframechat {
-	margin-left: 0;
-    }
-  }
-
-@media (min-width: 900px) and (max-width: 1224px) {
-	.teletext-title {
-		font-size: 12px;
-	}
-
-	.teletext-description {
-		font-size: 10px;
-	}
-	#iframechat {
-		margin-left: 50px;
-	}
-}
-</style>
 <body>
-	<div class="welcome">
-		<h1>Welcome</h1>
+	<div class="background-container">
+        <canvas id="test"></canvas>
 	</div>
-	<div class="button-container">
-		<button class="button submit arrow" type="submit" id="boton1" href="/main/login">Login or register</button>
-  	<button class="button submit" id="boton2" href="{{Data.URL42}}">Login with 42</button>
-  	<button class="button" id="boton3">Play annonimous</button>
-	</div>
+
 <div class="allpage">
     <div class="container play-container">
         <div class="row justify-content-center">
@@ -74,7 +32,7 @@
 	    <div class="col-md-2 teletext-box m-2">
                 <h3 class="teletext-title">Player vs CPU</h3>
                 <p class="teletext-description">Play locally against AI</p>
-        <a href="/game3"><button class="btn teletext-button">Play</button></a>
+        <a href="/main/game"><button class="btn teletext-button">Play</button></a>
             </div>
 		<div class="col-md-2 teletext-box m-2">
 			<h3 class="teletext-title">TOURNAMENT</h3>
@@ -90,18 +48,7 @@
 
     </div>
     </div>
-    <script>
-        document.addEventListener('DOMContentLoaded', function() {
-            var displayNameElement = document.getElementById('displayname');
-			    console.log(displayNameElement);
-            if (displayNameElement !== '') {
-                document.querySelector('.welcome').style.display = 'none';
-				document.querySelector('.button-container').style.display = 'none';
-            }
-		else
-				    document.querySelector('.container').style.display = 'none';
-        });
-    </script>
+    <script src="/static/main/background.js"></script>
 </body>
 </html>
 <body>

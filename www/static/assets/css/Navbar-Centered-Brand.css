@@ -1,3 +1,7 @@
+nav {
+	z-index: 2;
+}
+
 .bs-icon {
   --bs-icon-size: .75rem;
   display: flex;
