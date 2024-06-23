@@ -1,3 +1,6 @@
+UID := $(shell id -u)
+GID := $(shell id -g)
+
 all:
 	@mkdir ${HOME}/data >/dev/null 2>&1 || true
 	@chmod 777 ${HOME}/data >/dev/null 2>&1 || true
@@ -14,6 +17,8 @@ re:
 	@MYHOME=${HOME} docker compose -f ./scrs/docker-compose.yml up -d --build
 
 clean:
+	@docker exec -i django bash -c "chown -R $(UID):$(GID) /pong" >/dev/null 2>&1 || true
+	@docker exec -i postgresql bash -c "chown -R $(UID):$(GID) /var/lib/postgresql" >/dev/null 2>&1 || true
 	@MYHOME=${HOME} docker stop $$(docker ps -qa);\
 	docker rm $$(docker ps -qa);\
 	docker rmi -f $$(docker images -qa);\
