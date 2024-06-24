@@ -85,7 +85,7 @@
 		    </div>
         </div>
     </nav>
-    <div id="iframeContainer" style="position: fixed; top: 0; right: 0; height: 100%; width: 14%; display: none;">
+    <div id="iframeContainer" style="z-index: 2; position: fixed; top: 0; right: 0; height: 100%; width: 14%; display: none;">
 	    <iframe src="/friends" style="height: 100%; width: 100%;"></iframe></div>
     <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.9.2/dist/umd/popper.min.js"></script>
@@ -95,17 +95,20 @@
         if (displayName !== '') {
             document.getElementById('toggleButton').style.display = 'block';
         }
-        document.getElementById('toggleButton').addEventListener('click', function() {
-            var displayName = document.getElementById('displayname').innerText;
-            if (displayName !== '') {
-                var iframeContainer = document.getElementById('iframeContainer');
-                if (iframeContainer.style.display === 'none') {
-                    iframeContainer.style.display = 'block';
-                } else {
-                    iframeContainer.style.display = 'none';
-                }
+    	        document.getElementById('toggleButton').addEventListener('click', function() {
+            var iframeContainer = document.getElementById('iframeContainer');
+            if (iframeContainer.style.display === 'none' || iframeContainer.style.display === '') {
+                iframeContainer.style.display = 'block';
+            } else {
+                iframeContainer.style.display = 'none';
             }
         });
+
+        window.addEventListener('message', function(event) {
+            if (event.data === 'closeIframe') {
+                document.getElementById('iframeContainer').style.display = 'none';
+            }
+        }, false);
     </script>
 </body>
 </html>

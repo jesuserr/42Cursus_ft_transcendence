@@ -1,0 +1,79 @@
+@import "https://fonts.googleapis.com/css?family=Press%20Start%202P";
+
+body {
+	display: flex;
+	flex-direction: column;
+	align-items: center;
+	justify-content: center;
+	text-align: center;
+	height: 100vh;
+	margin: 0;
+	background-color: #000;
+	color: #FFD700;
+	font-family: 'Press Start 2P';
+	font-size: 14px;
+}
+	
+.nav-item {
+	position: absolute;
+	top: 20px;
+	left: 20px;
+}
+
+.connected {
+	color: green;
+}
+
+.disconnected {
+	color: red;
+}
+
+.button {
+	font-family: 'Press Start 2P';
+	background-color: #FFD700;
+	border: none;
+	color: black;
+	padding: 8px 16px;
+	text-align: center;
+	text-decoration: none;
+	display: inline-block;
+	font-size: 12px;
+	margin: 4px 2px;
+	cursor: pointer;
+}
+
+#toggleButton {
+	background-color: grey;
+	color: white;
+	border: none;
+	border-radius: 50%;
+	width: 40px;
+	height: 40px;
+	display: flex;
+	justify-content: center;
+	align-items: center;
+	cursor: pointer;
+	font-size: 15px;
+	transition: background-color 0.3s ease;
+}
+
+#toggleButton:hover {
+        background-color: #45a049;
+}
+
+
+#userList, #friendsList {
+	margin-top: 10px;
+        width: 150px;
+        height: 220px;
+        overflow-y: auto;
+	background-color: white;
+        border: none;
+        outline: none;
+        cursor: pointer;
+}
+
+#userTable, #friendsList, #userList, .button {
+         margin-bottom: 20px;
+}
+

@@ -26,6 +26,7 @@ body {
     font-size: 11px;
     cursor: pointer;
     transition: background-color 0.3s, color 0.3s;
+    margin-bottom: 5px;
 }
 
 .button:hover {
@@ -72,9 +73,22 @@ body {
 	color: white;
 }
 
-.button {
-	margin: 5px;
+
+.nav-tabs .nav-link {
+	padding: 5px 10px;
+	font-size: 0.85rem;
 }
+
+.nav-tabs .nav-link.active {
+	background-color: black; 
+	color: white;
+}
+
+.nav-tabs .nav-link:hover {
+	background-color: #333;
+	color: white;
+}
+
 @media (max-width: 768px) {
     .messages-container {
         height: calc(100vh - 200px);
