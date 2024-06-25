@@ -55,10 +55,13 @@ class TournamentConsumer(AsyncJsonWebsocketConsumer):
         await self.send_group_msg(msg)
         await self.request_group_refresh_user_list('')
         await self.channel_layer.group_discard(self.room_group_name, self.channel_name)
+        
     @database_sync_to_async
     def update_tournament_status(self):
-        self.tournament.status = TournamentConsumer.tournament_dict[self.room_group_name]['text']
-        self.tournament.save() 
+        if self.tournament.tournament:
+            self.tournament.status = TournamentConsumer.tournament_dict[self.room_group_name]['text']
+            self.tournament.save() 
+			
 	#When receive a message
     async def receive_json(self, data):
         if 'PLAY' in data:
