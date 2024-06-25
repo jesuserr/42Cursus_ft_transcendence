@@ -1,5 +1,6 @@
 UID := $(shell id -u)
 GID := $(shell id -g)
+USER := $(shell whoami)
 
 all:
 	@mkdir ${HOME}/data >/dev/null 2>&1 || true
@@ -17,7 +18,7 @@ re:
 	@MYHOME=${HOME} docker compose -f ./scrs/docker-compose.yml up -d --build
 
 clean:
-	@docker exec -i django bash -c "groupadd -g $(GID) $(USER)" >/dev/null 2>&1 || true
+	@docker exec -i django bash -c "groupadd -g $(GID) todelete" >/dev/null 2>&1 || true
 	@docker exec -i django bash -c "useradd -u $(UID) -g $(GID) -m $(USER)" >/dev/null 2>&1 || true
 	@docker exec -i django bash -c "chown -R $(UID):$(GID) /pong" >/dev/null 2>&1 || true
 	@docker exec -i postgresql bash -c "groupadd -g $(GID) $(USER)" >/dev/null 2>&1 || true
