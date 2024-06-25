@@ -15,7 +15,6 @@ class TournamentConsumer(AsyncJsonWebsocketConsumer):
     async def connect(self):
         self.room_name = self.scope["url_route"]["kwargs"]["tournament_name"]
         self.room_group_name = f"tournament_{self.room_name}"
-        print(self.room_group_name)
         await self.channel_layer.group_add(self.room_group_name, self.channel_name)
         TournamentConsumer.tournament_dict.setdefault(self.room_group_name, {})
         TournamentConsumer.tournament_dict[self.room_group_name].setdefault('text', 'Waiting for players')
@@ -36,6 +35,7 @@ class TournamentConsumer(AsyncJsonWebsocketConsumer):
                      TournamentConsumer.tournament_dict[self.room_group_name]['status'] = 1
                 msg = {'SET_BUTTON_PLAY_STATUS': {'text': TournamentConsumer.tournament_dict[self.room_group_name]['text'], 'status': TournamentConsumer.tournament_dict[self.room_group_name]['status']}}
                 await self.send_group_msg(msg)
+                await self.request_group_refresh_user_list('')
 
     #When the connection is closed              
     async def disconnect(self, close_code):
@@ -53,8 +53,12 @@ class TournamentConsumer(AsyncJsonWebsocketConsumer):
             TournamentConsumer.tournament_dict[self.room_group_name]['status'] = 1
         msg = {'SET_BUTTON_PLAY_STATUS': {'text': TournamentConsumer.tournament_dict[self.room_group_name]['text'], 'status': TournamentConsumer.tournament_dict[self.room_group_name]['status']}}
         await self.send_group_msg(msg)
+        await self.request_group_refresh_user_list('')
         await self.channel_layer.group_discard(self.room_group_name, self.channel_name)
-        
+    @database_sync_to_async
+    def update_tournament_status(self):
+        self.tournament.status = TournamentConsumer.tournament_dict[self.room_group_name]['text']
+        self.tournament.save() 
 	#When receive a message
     async def receive_json(self, data):
         if 'PLAY' in data:
@@ -334,4 +338,36 @@ class TournamentConsumer(AsyncJsonWebsocketConsumer):
             self.tournament.delete()
             TournamentConsumer.tournament_dict[self.room_group_name]['text'] = 'Waiting for players'
             TournamentConsumer.tournament_dict[self.room_group_name]['status'] = 1
+        
+    async def send_tournaments_with_user_count(self):
+        tournaments = await self.get_tournaments_with_user_count()
+        await self.send_json(tournaments)
+
+    @database_sync_to_async
+    def get_tournaments_with_user_count(self):
+        tournaments_list = Tournament_List.objects.all()
+        tournaments_with_count = []
+        for tournament in tournaments_list:
+            user_count = Tournament_Connected_Users.objects.filter(tournament_name=tournament.tournament).count()
+            tournaments_with_count.append({
+                'tournament_name': tournament.tournament,
+                'user_count': user_count,
+                'status': tournament.status  
+            })
+        return {'TOURNAMENT_LIST': tournaments_with_count}
+    
+	#send message to the group
+    async def request_group_refresh_user_list(self, message):
+        await self.update_tournament_status()
+        await self.channel_layer.group_send(
+			self.room_group_name,
+			{
+				'type': 'refresh.TournamentList',
+				'message': message,
+			}
+		)
+        
+    async def refresh_TournamentList(self, event):
+        await self.send_tournaments_with_user_count()
+        
         

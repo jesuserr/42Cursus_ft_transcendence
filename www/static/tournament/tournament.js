@@ -4,7 +4,7 @@ const socket = new WebSocket('wss://' + window.location.host + '/ws/tournament/'
 
 socket.onmessage = function (e) {
 	const data = JSON.parse(e.data);
-	//console.log(data);
+	console.log(data);
 	if (data.hasOwnProperty("SET_CONNECTED_USER_LIST"))
 		Set_Connected_User_List(data);
 	else if (data.hasOwnProperty("SET_BUTTON_PLAY_STATUS"))
@@ -15,6 +15,37 @@ socket.onmessage = function (e) {
 		Start_Game(data['START_GAME']);
 	else if (data.hasOwnProperty("TOURNAMENT_FINISHED"))
 		Tournament_Finished(data['TOURNAMENT_FINISHED'])
+	else if (data.hasOwnProperty("TOURNAMENT_LIST"))
+		Tournament_List(data['TOURNAMENT_LIST'])
+};
+
+function Tournament_List(data) {
+    var tournamentTable = document.getElementById('tournamentTable');
+    var tableBody = tournamentTable.getElementsByTagName('tbody')[0];
+    tableBody.innerHTML = ""; 
+
+    for (var i = 0; i < data.length; i++) {
+        var tournament = data[i];
+        var row = document.createElement('tr'); // Crea una nueva fila
+
+        // Crea y llena la celda del nombre del torneo
+        var nameCell = document.createElement('td');
+        nameCell.textContent = tournament.tournament_name;
+        row.appendChild(nameCell);
+
+        // Crea y llena la celda del conteo de usuarios
+        var countCell = document.createElement('td');
+        countCell.textContent = tournament.user_count;
+        row.appendChild(countCell);
+
+        // Crea y llena la celda del estado
+        var statusCell = document.createElement('td');
+        statusCell.textContent = tournament.status;
+        row.appendChild(statusCell);
+
+        // Añade la fila completa al cuerpo de la tabla
+        tableBody.appendChild(row);
+    }
 };
 
 function Tournament_Finished(data) {
@@ -91,3 +122,18 @@ function Set_Connected_User_List(data) {
     });
 }
 
+document.addEventListener('DOMContentLoaded', function() {
+    document.getElementById('create').addEventListener('click', function() {
+        var tournamentName = document.getElementById('tournamentName').value;
+        if (tournamentName !== '') {
+            var urlPattern = /^[a-zA-Z0-9-._~:/?#[\]@!$&'()*+,;=]+$/;
+            if (urlPattern.test(tournamentName)) {
+                window.location.href = "/tournament/" + tournamentName;
+            } else {
+                alert('The tournament name contains invalid characters.');
+            }
+        } else {
+            alert('The name of the tournament cannot be empty.');
+        }
+    });
+});

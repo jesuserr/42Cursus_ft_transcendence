@@ -36,13 +36,13 @@
         button:disabled {
             color: white;
         }
-        #userTable, #tstatusTable {
+        #userTable, #tstatusTable, #tournamentTable {
             font-size: small;
             margin-left: auto;
             margin-right: auto;
             text-align: center;
         }
-        #tstatusTable, #tstatusTable th, #tstatusTable td {
+        #tstatusTable, #tournamentTable th, #tournamentTable td, #tstatusTable th, #tstatusTable td {
             border: 1px solid white;
             border-collapse: collapse;
         }
@@ -73,6 +73,24 @@
         <iframe id="iframegame" class="iframegame" src=""></iframe>
         <div class="right-content">
             <h1 style="text-align: center; font-size: small;">Tournament list</h1>
+			<div style="display: flex; justify-content: center; margin-top: 20px;">
+				<button id="create">Go/Create tournament</button>
+			</div>
+			<br>
+			<div><center><input type="text" id="tournamentName" placeholder="All_star"></center></div>
+			<br>
+			<h1 style="text-align: left; font-size: small;">Tournaments:</h1>	
+			<center><table id="tournamentTable">
+				<thead>
+				<tr>
+					<th>Name</th>
+					<th>Users</th>
+					<th>Status</th>
+				</tr>
+				</thead>
+				<tbody>
+				</tbody>
+			</table></center>
         </div>
     </div>
     <iframe id="iframechat" class="iframechat" src="/chat/{{tournament_name}}"></iframe>
