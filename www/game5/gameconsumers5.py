@@ -21,7 +21,7 @@ class GameConsumer5(AsyncWebsocketConsumer):
         await self.channel_layer.group_add(self.room_group_name, self.channel_name)
         if 'tokenid' in self.scope['cookies'].keys():
             await self.getUsernameModel()
-            #for testing purposes dont delete
+            #for testing purposes dont delete (careful, it has been incorporated to the code, see below)
             #if not  (await self.isValidUser()):
             #    return
             await self.accept()
@@ -29,28 +29,25 @@ class GameConsumer5(AsyncWebsocketConsumer):
             self.right_paddle = Paddle(WIDTH - PADDLE_GAP - PADDLE_WIDTH, HEIGHT // 2 - PADDLE_HEIGHT // 2, PADDLE_WIDTH, PADDLE_HEIGHT)
             self.ball = Ball(WIDTH // 2, HEIGHT // 2, BALL_RADIUS)
             self.score = Score()
-            if self.room_group_name not in self.rooms.keys() and await self.isValidUser():
+            validUser = await self.isValidUser()                # Has to be checked here or fails if checked inside the if statements
+            if not validUser:
+                await self.send_gameboard(self.ball, self.left_paddle, self.right_paddle, self.score, VOYEUR)
+            elif self.room_group_name not in self.rooms.keys() and validUser:
                 self.rooms[self.room_group_name] = {"players": {"player1": self}}
                 self.rooms[self.room_group_name]["key_states_1"] = {}
                 self.rooms[self.room_group_name]["player1_connected"] = True
                 self.rooms[self.room_group_name]["player2_connected"] = False
                 self.rooms[self.room_group_name]["player1_id"] = self.user
                 await self.rooms[self.room_group_name]['players']['player1'].send_gameboard(self.ball, self.left_paddle, self.right_paddle, self.score, PLAYER_1)
-                print("*** Playing", self.user)
-            elif self.rooms[self.room_group_name]["player2_connected"] == False and self.rooms[self.room_group_name]["player1_id"] != self.user and await self.isValidUser():
+            elif self.rooms[self.room_group_name]["player2_connected"] == False and self.rooms[self.room_group_name]["player1_id"] != self.user and validUser:            
                 self.rooms[self.room_group_name]['players']['player2'] = self
                 self.rooms[self.room_group_name]["key_states_2"] = {}
                 self.rooms[self.room_group_name]["player2_connected"] = True
                 self.rooms[self.room_group_name]["player2_id"] = self.user
                 await self.rooms[self.room_group_name]['players']['player2'].send_gameboard(self.ball, self.left_paddle, self.right_paddle, self.score, PLAYER_2)
-                print("*** Playing", self.user)
                 asyncio.ensure_future(self.playGame())                      # Init game on players2 instance
-            else:
-                self.rooms[self.room_group_name]['players']['voyeur'] = self
-                await self.rooms[self.room_group_name]['players']['voyeur'].send_gameboard(self.ball, self.left_paddle, self.right_paddle, self.score, VOYEUR)
-                print("*** Not playing", self.user)
             #print("Players Info: " + str(self.rooms[self.room_group_name]))
-			
+
     @database_sync_to_async
     def getUsernameModel(self):
         try:
@@ -61,9 +58,12 @@ class GameConsumer5(AsyncWebsocketConsumer):
             self.user = ""
 
     async def disconnect(self, close_code):
-        #for testing purposes dont delete
+        #for testing purposes dont delete  (careful, it has been incorporated to the code, see below)
         #if not  (await self.isValidUser()):
         #    return
+        if not await self.isValidUser():
+            await self.channel_layer.group_discard(self.room_group_name, self.channel_name)
+            return
         players = self.rooms[self.room_group_name]['players']           # alias
         room = self.rooms[self.room_group_name]                         # alias
         if players['player1'] == self:
@@ -136,7 +136,6 @@ class GameConsumer5(AsyncWebsocketConsumer):
             else:
                 await players['player1'].send_gameboard(self.ball, self.left_paddle, self.right_paddle, self.score, PLAYER_1)
                 await players['player2'].send_gameboard(self.ball, self.left_paddle, self.right_paddle, self.score, PLAYER_2)
-                await players['voyeur'].send_gameboard(self.ball, self.left_paddle, self.right_paddle, self.score, VOYEUR)
             handle_left_paddle_movement(room['key_states_1'], self.left_paddle)
             handle_right_paddle_movement(room['key_states_2'], self.right_paddle)
             self.ball.move()
@@ -145,17 +144,18 @@ class GameConsumer5(AsyncWebsocketConsumer):
             if self.score.won:
                 await players['player1'].send_gameboard(self.ball, self.left_paddle, self.right_paddle, self.score, PLAYER_1)
                 await players['player2'].send_gameboard(self.ball, self.left_paddle, self.right_paddle, self.score, PLAYER_2)
-                await players['voyeur'].send_gameboard(self.ball, self.left_paddle, self.right_paddle, self.score, VOYEUR)
                 break
             await asyncio.sleep((FRAME_TIME - (time.time() - frame_start_time)) * 0.2)
             while time.time() - frame_start_time < FRAME_TIME:
                await asyncio.sleep((FRAME_TIME - (time.time() - frame_start_time)) * 0.0002)
         await self.pushStats(room, self.score)
-        await self.SendRoundEndMSG() 								  # send round end message	
-        await players['player1'].close()                                # close websocket connections
-        await players['player2'].close()
-        await players['voyeur'].close()
-        
+        await self.SendRoundEndMSG() 								                                                # send round end message
+        await self.channel_layer.group_send(self.room_group_name, {'type': 'close_all_connections', 'message': ''}) # close all websocket connections
+
+    async def close_all_connections(self, event):
+        await self.close()
+        print("Connection Closed")
+
     async def SendRoundEndMSG(self):
         room = self.rooms[self.room_group_name]
         data = self.room_name.split('___')
