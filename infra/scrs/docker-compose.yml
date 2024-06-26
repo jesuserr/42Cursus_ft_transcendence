@@ -4,6 +4,7 @@ services:
     build: ./requirements/postgresql
     volumes:
       - data_db:/var/lib/postgresql
+      - data:/data
     restart: always
     networks:
       - db
@@ -64,6 +65,12 @@ services:
     stdin_open: true 
     tty: true  
 volumes:
+  data:
+    driver: local
+    driver_opts:
+      type: none
+      device: ${MYHOME}/data
+      o: bind
   data_db:
     driver: local
     driver_opts:
