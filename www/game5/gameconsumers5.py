@@ -29,22 +29,23 @@ class GameConsumer5(AsyncWebsocketConsumer):
             self.right_paddle = Paddle(WIDTH - PADDLE_GAP - PADDLE_WIDTH, HEIGHT // 2 - PADDLE_HEIGHT // 2, PADDLE_WIDTH, PADDLE_HEIGHT)
             self.ball = Ball(WIDTH // 2, HEIGHT // 2, BALL_RADIUS)
             self.score = Score()
+            gameboard = await self.create_gameboard(self.ball, self.left_paddle, self.right_paddle, self.score)
             validUser = await self.isValidUser()                # Has to be checked here or fails if checked inside the if statements
             if not validUser:
-                await self.send_gameboard(self.ball, self.left_paddle, self.right_paddle, self.score, VOYEUR)
+                await self.send_gameboard(gameboard, VOYEUR)
             elif self.room_group_name not in self.rooms.keys() and validUser:
                 self.rooms[self.room_group_name] = {"players": {"player1": self}}
                 self.rooms[self.room_group_name]["key_states_1"] = {}
                 self.rooms[self.room_group_name]["player1_connected"] = True
                 self.rooms[self.room_group_name]["player2_connected"] = False
                 self.rooms[self.room_group_name]["player1_id"] = self.user
-                await self.rooms[self.room_group_name]['players']['player1'].send_gameboard(self.ball, self.left_paddle, self.right_paddle, self.score, PLAYER_1)
+                await self.rooms[self.room_group_name]['players']['player1'].send_gameboard(gameboard, PLAYER_1)
             elif self.rooms[self.room_group_name]["player2_connected"] == False and self.rooms[self.room_group_name]["player1_id"] != self.user and validUser:            
                 self.rooms[self.room_group_name]['players']['player2'] = self
                 self.rooms[self.room_group_name]["key_states_2"] = {}
                 self.rooms[self.room_group_name]["player2_connected"] = True
                 self.rooms[self.room_group_name]["player2_id"] = self.user
-                await self.rooms[self.room_group_name]['players']['player2'].send_gameboard(self.ball, self.left_paddle, self.right_paddle, self.score, PLAYER_2)
+                await self.rooms[self.room_group_name]['players']['player2'].send_gameboard(gameboard, PLAYER_2)
                 asyncio.ensure_future(self.playGame())                      # Init game on players2 instance
             #print("Players Info: " + str(self.rooms[self.room_group_name]))
 
@@ -53,7 +54,6 @@ class GameConsumer5(AsyncWebsocketConsumer):
         try:
             token = self.scope['cookies']['tokenid']
             self.user = get_user_from_token(token)
-            #print(self.user.__dict__)
         except:
             self.user = ""
 
@@ -89,7 +89,7 @@ class GameConsumer5(AsyncWebsocketConsumer):
             return True
         return False
 
-    async def send_gameboard(self, ball, l_paddle, r_paddle, score, player):
+    async def create_gameboard(self, ball, l_paddle, r_paddle, score):
         gameboard = {
             "width": WIDTH, "height": HEIGHT, "ball_x_speed": ball.x_vel,
             "ball_x": int(ball.x), "ball_y": int(ball.y), "ball_radius": ball.radius,
@@ -97,8 +97,12 @@ class GameConsumer5(AsyncWebsocketConsumer):
             "right_paddle_x": r_paddle.x, "right_paddle_y": r_paddle.y,
             "paddle_width": r_paddle.width, "paddle_height": r_paddle.height,
             "score_left": score.left_score, "score_right": score.right_score,
-            "winner": score.won, "player": player
+            "winner": score.won
             }
+        return gameboard
+    
+    async def send_gameboard(self, gameboard, player):
+        gameboard["player"] = player
         await self.send(text_data=json.dumps(gameboard))
 
     async def waiting_countdown(self):
@@ -118,32 +122,41 @@ class GameConsumer5(AsyncWebsocketConsumer):
             self.score.right_score = WINNING_SCORE
             self.score.left_score = 0
         self.score.won = True
+
+    async def send_gameboard_to_group(self, event):
+        if (self.user == self.rooms[self.room_group_name]["player1_id"]):
+            await self.send_gameboard(event['gameboard'], PLAYER_1)
+        elif (self.user == self.rooms[self.room_group_name]["player2_id"]):
+            await self.send_gameboard(event['gameboard'], PLAYER_2)
+        else:
+            await self.send_gameboard(event['gameboard'], VOYEUR)
             
     async def playGame(self):
         players = self.rooms[self.room_group_name]['players']           # alias
         room = self.rooms[self.room_group_name]                         # alias
-        await players['player1'].send_gameboard(self.ball, self.left_paddle, self.right_paddle, self.score, PLAYER_1)
-        await players['player2'].send_gameboard(self.ball, self.left_paddle, self.right_paddle, self.score, PLAYER_2)
+        gameboard = await self.create_gameboard(self.ball, self.left_paddle, self.right_paddle, self.score)
+        await players['player1'].send_gameboard(gameboard, PLAYER_1)
+        await players['player2'].send_gameboard(gameboard, PLAYER_2)
         await self.waiting_countdown()
         self.score.game_start_time = self.score.last_taken_time = time.time()
         while True:
             frame_start_time = time.time()
+            gameboard = await self.create_gameboard(self.ball, self.left_paddle, self.right_paddle, self.score)
             if not room["player2_connected"] or not room["player1_connected"]:      # check if any player got disconnected
                 await self.managing_disconnection()
-                await players['player1'].send_gameboard(self.ball, self.left_paddle, self.right_paddle, self.score, DISCONNECTED)
-                await players['player2'].send_gameboard(self.ball, self.left_paddle, self.right_paddle, self.score, DISCONNECTED)
+                await players['player1'].send_gameboard(gameboard, DISCONNECTED)
+                await players['player2'].send_gameboard(gameboard, DISCONNECTED)
                 break
-            else:
-                await players['player1'].send_gameboard(self.ball, self.left_paddle, self.right_paddle, self.score, PLAYER_1)
-                await players['player2'].send_gameboard(self.ball, self.left_paddle, self.right_paddle, self.score, PLAYER_2)
+            else:                
+                await self.channel_layer.group_send(self.room_group_name,{'type': 'send_gameboard_to_group','message': '','gameboard': gameboard})
             handle_left_paddle_movement(room['key_states_1'], self.left_paddle)
             handle_right_paddle_movement(room['key_states_2'], self.right_paddle)
             self.ball.move()
             handle_collision(self.ball, self.left_paddle, self.right_paddle, self.score)
             self.score.update(self.ball)
             if self.score.won:
-                await players['player1'].send_gameboard(self.ball, self.left_paddle, self.right_paddle, self.score, PLAYER_1)
-                await players['player2'].send_gameboard(self.ball, self.left_paddle, self.right_paddle, self.score, PLAYER_2)
+                gameboard = await self.create_gameboard(self.ball, self.left_paddle, self.right_paddle, self.score)
+                await self.channel_layer.group_send(self.room_group_name,{'type': 'send_gameboard_to_group','message': '','gameboard': gameboard})
                 break
             await asyncio.sleep((FRAME_TIME - (time.time() - frame_start_time)) * 0.2)
             while time.time() - frame_start_time < FRAME_TIME:
