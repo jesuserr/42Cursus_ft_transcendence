@@ -227,19 +227,22 @@ def NewUserCodeOkFillData(request):
         return response
 
 def AnonimousUser(request):
-      tmpusername = 'Anonimous' + str(int(time.time()))
-      tmpuser = User()
-      tmpuser.email = tmpusername + '@pong42.com'
-      tmpuser.displayname = tmpusername
-      tmpuser.password = hashlib.sha256(str(tmpusername).encode('utf-8')).hexdigest()
-      tmpuser.save()
-      refresh = RefreshToken.for_user(tmpuser)
-      tokenid = str(refresh.access_token)
-      tmpuser.tokenid = tokenid
-      tmpuser.save()
-      response = render(request, 'main_index.html', {'User': tmpuser})
-      response.set_cookie('tokenid', tokenid, secure=True, httponly=True)
-      return response
+      try:
+        tmpusername = str(datetime.now(timezone.utc).timestamp())
+        tmpuser = User()
+        tmpuser.email = tmpusername + '@pong42.com'
+        tmpuser.displayname = tmpusername
+        tmpuser.password = hashlib.sha256(str(tmpusername).encode('utf-8')).hexdigest()
+        tmpuser.save()
+        refresh = RefreshToken.for_user(tmpuser)
+        tokenid = str(refresh.access_token)
+        tmpuser.tokenid = tokenid
+        tmpuser.save()
+        response = render(request, 'main_index.html', {'User': tmpuser})
+        response.set_cookie('tokenid', tokenid, secure=True, httponly=True)
+        return response
+      except:
+        return HttpResponseRedirect("/")
 
 def urlavatar(ori):
     avatar = str(ori)
