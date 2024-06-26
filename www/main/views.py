@@ -30,6 +30,9 @@ def edituser(request):
     
 def login(request):
 	return loginPage(request)
+
+def logina(request):
+	return AnonimousUser(request)
  
 @token_required
 def logoff(request):
