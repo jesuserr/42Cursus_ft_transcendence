@@ -32,7 +32,7 @@
                     <div class="tab-pane fade show active" id="conectados" role="tabpanel" aria-labelledby="conectados-tab">
                         <div>
                             <p class="text-center" style="margin-top: 20px;">Conectados</p>
-                            <div id="CONNECTEDUSERLIST" name="Connected Users" style="height: 200px; background-color: rgba(128, 128, 128, 0.5); overflow-y: auto;"></div>
+                            <div id="CONNECTEDUSERLIST" name="Connected Users" style="height: 200px; background-color: rgba(128, 128, 128, 0.5); overflow-y: auto; font-size: 12px;"></div>
                             <div class="btns-left" style="margin-top: 5px;">
                                 <input id="BLOCK_SELECTED_USER" type="button" value="Block" class="btn button">
                                 <input id="CHAT_SELECTED_USER" type="button" value="Chat" class="btn button">
@@ -43,7 +43,7 @@
                     <div class="tab-pane fade" id="bloqueados" role="tabpanel" aria-labelledby="bloqueados-tab">
                         <div style="border-top: 2px solid black">
                             <p class="text-center" style="margin-top: 20px;">Bloqueados</p>
-                            <div id="BLOCKUSERS" name="Block users" class="userlist" style="height: 200px; background-color: rgba(128, 128, 128, 0.5); overflow-y: auto;"></div>
+                            <div id="BLOCKUSERS" name="Block users" class="userlist" style="height: 200px; background-color: rgba(128, 128, 128, 0.5); overflow-y: auto; font-size: 12px;"></div>
                             <div class="btns-left" style="margin-top: 5px;">
                                 <input id="UNBLOCK_SELECTED_USER" type="button" value="Unblock" class="btn button">
                             </div>
@@ -51,7 +51,7 @@
                     </div>
                     <div class="tab-pane fade" id="all" role="tabpanel" aria-labelledby="all-tab">
                         <p class="text-center" style="margin-top: 20px;">All users</p>
-			<div id="USERLIST" name="All user list" style="height: 200px; background-color: rgba(128, 128, 128, 0.5); overflow-y: auto;"></div> 
+			<div id="USERLIST" name="All user list" style="height: 200px; background-color: rgba(128, 128, 128, 0.5); overflow-y: auto; font-size: 12px;"></div> 
 		   	 <div class="btns-left" style="margin-top: 5px;">
         			<input id="BLOCK_SELECTED_USER" type="button" value="Block" class="btn button">
 		    </div>
@@ -62,13 +62,14 @@
         <div class="col-md-9">
             <span><div style="margin-top: 10px;" id="CURRENTUSER">General</div></span>
             <div id="CONTAINER_CHAT_TEXT">
-                <div id="CHATTEXT" class="chat-text" contenteditable="false"></div>
-                <div class="input-group mb-3">
-                    <input style="margin-top: 5px;" id="CHAT_MSG_INPUT" type="text" class="form-control" placeholder="Escribe tu mensaje...">
-                    <div id="MSG_STAUS_USERS">...</div>
-                    <div class="input-group-append">
-                        <input style="margin-top: 8px;" id="SEND_MSG" type="button" value="Send message" class="btn button">
-                    </div>
+                <div id="CHATTEXT" class="chat-text" contenteditable="false" style="font-size: 12px;"></div>
+				<div class="input-group mb-3">
+					<input style="margin-top: 5px;" id="CHAT_MSG_INPUT" type="text" class="form-control" placeholder="Escribe tu mensaje...">
+					<div id="divsendmsg" class="input-group-append">
+						<input style="margin-top: 8px;" id="SEND_MSG" type="button" value="Send message" class="btn button">
+					</div>
+				</div>
+				<div id="MSG_STATUS_USERS">...</div>
                 </div>
             </div>
         </div>
@@ -76,7 +77,7 @@
 </div>
 
     {{ room_name|json_script:"room_name" }}
-    <!--    <script src="/static/chat/chat.js"></script> -->
+    <script src="/static/chat/chat.js"></script>
     <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.5.4/dist/umd/popper.min.js"></script>
     <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>

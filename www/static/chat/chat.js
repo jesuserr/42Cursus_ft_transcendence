@@ -10,8 +10,8 @@ currentchat = '';
 
 // When the socket is open, display the connection status
 socket.onopen = function(e) {
-	document.getElementById("STATUS").innerText = "Connected";
-	document.getElementById("CONNECTION_STATUS").src = "/static/chat/connected.png";
+	//document.getElementById("STATUS").innerText = "Connected";
+	//document.getElementById("CONNECTION_STATUS").src = "/static/chat/connected.png";
 	//send a message to the server to get the user's displayname
 	socket.send(JSON.stringify({'GET_USERNAME': 'GET_USERNAME'}));
 	//send a message to the server to get the list of users
@@ -98,28 +98,27 @@ function New_Private_msg(data)
 	}
 }
 
-function Set_Chat_History(alldata)
-{
-	let data = alldata['DATA']
-	if (alldata['SET_CHAT_HISTORY'] == '')
-	{
-		
-		document.getElementById('CHATTEXT').value = '';
-		for (let i = 0; i < data.length; i++) 
-		{
-			document.getElementById('CHATTEXT').value += data[i].fields.displayname + ': ' + data[i].fields.message + '\n';
-			document.getElementById('CHATTEXT').scrollTop = document.getElementById('CHATTEXT').scrollHeight;
-		}
-	}
-	else
-	{
-		document.getElementById('CHATTEXT').value = '';
-		for (let i = 0; i < data.length; i++) 
-		{
-			document.getElementById('CHATTEXT').value += data[i].fields.displaynamefrom + ': ' + data[i].fields.message + '\n';
-			document.getElementById('CHATTEXT').scrollTop = document.getElementById('CHATTEXT').scrollHeight;
-		}
-	}
+function Set_Chat_History(alldata) {
+    let data = alldata['DATA'];
+    let chatContainer = document.getElementById('CHATTEXT');
+    chatContainer.innerHTML = '';
+
+    if (alldata['SET_CHAT_HISTORY'] == '') {
+        for (let i = 0; i < data.length; i++) {
+            let messageElement = document.createElement("span");
+            messageElement.textContent = data[i].fields.displayname + ': ' + data[i].fields.message;
+            chatContainer.appendChild(messageElement);
+            chatContainer.appendChild(document.createElement("br"));
+        }
+    } else {
+        for (let i = 0; i < data.length; i++) {
+            let messageElement = document.createElement("span");
+            messageElement.textContent = data[i].fields.displaynamefrom + ': ' + data[i].fields.message;
+            chatContainer.appendChild(messageElement);
+            chatContainer.appendChild(document.createElement("br"));
+        }
+    }
+    chatContainer.scrollTop = chatContainer.scrollHeight;
 }
 
 //Press enter to send the chat message
@@ -132,13 +131,15 @@ messageInput.addEventListener('keypress', function(event) {
 });
 
 //function to display the room chat message
-function New_Room_msg(data)
-{
-	if (currentchat == '')
-	{
-		document.getElementById('CHATTEXT').value += data.displayname + ': ' + data.message + '\n';
-		document.getElementById('CHATTEXT').scrollTop = document.getElementById('CHATTEXT').scrollHeight;
-	}
+function New_Room_msg(data) {
+    if (currentchat == '') {
+        let chatContainer = document.getElementById('CHATTEXT');
+        let messageElement = document.createElement("span");
+        messageElement.textContent = data.displayname + ': ' + data.message;
+        chatContainer.appendChild(messageElement);
+        chatContainer.appendChild(document.createElement("br"));
+        chatContainer.scrollTop = chatContainer.scrollHeight;
+    }
 }
 
 //Send chat message to the server
@@ -163,28 +164,16 @@ sendButton.addEventListener('click', function() {
 
 //function to fill connected user list
 function Set_Connected_Users(data) {
-    let select = document.getElementById("CONNECTEDUSERLIST");
-    let options = new Map();
-    for (let i = 0; i < select.options.length; i++) {
-        let option = select.options[i];
-        options.set(option.value, option);
-    }
+    let container = document.getElementById("CONNECTEDUSERLIST");
+    container.innerHTML = '';
     for (let i = 0; i < data.SET_CONNECTED_USERS.length; i++) {
         let user = data.SET_CONNECTED_USERS[i];
         if (USERID != user.pk) {
-            if (options.has(user.pk)) {
-                options.delete(user.pk);
-            }
-            else {
-                let option = document.createElement("option");
-                option.value = user.pk;
-                option.text = user.fields.displayname;
-                select.add(option, null);
-            }
+            let userElement = document.createElement("div");
+            userElement.textContent = user.fields.displayname;
+            userElement.className = "connected-user";
+            container.appendChild(userElement);
         }
-    }
-    for (let option of options.values()) {
-        select.removeChild(option);
     }
 }
 
@@ -192,48 +181,48 @@ function Set_Connected_Users(data) {
 function Set_Username(data) {
 	USERID = data.USER_ID;
 	USERDISPLAYNAME = data.SET_USERNAME;
-	document.getElementById("DISPLAYNAME").innerText = data.SET_USERNAME;
+	//document.getElementById("DISPLAYNAME").innerText = data.SET_USERNAME;
 };
 
 //function to fill User list
 function Set_User_List(data) {
-    let select = document.getElementById("USERLIST");
-    let options = new Map();
-    for (let i = 0; i < select.options.length; i++) {
-        let option = select.options[i];
-        options.set(option.value, option);
-    }
-    for (let i = 0; i < data.SET_USER_LIST.length; i++) {
-        let user = data.SET_USER_LIST[i];
-        if (USERID != user.fields.email) {
-            if (options.has(user.fields.email)) {
-                options.delete(user.fields.email);
-            }
-            else {
-                let option = document.createElement("option");
-                option.value = user.fields.email;
-                option.text = user.fields.displayname;
-                select.add(option, null);
-            }
+    let container = document.getElementById("USERLIST");
+    let usersMap = new Map();
+    container.childNodes.forEach(child => {
+        if (child.nodeType === Node.ELEMENT_NODE) { 
+            usersMap.set(child.getAttribute("data-email"), child);
         }
-    }
-    for (let option of options.values()) {
-        select.removeChild(option);
-    }
+    });
+    data.SET_USER_LIST.forEach(user => {
+        if (USERID !== user.fields.email) { 
+            if (!usersMap.has(user.fields.email)) { 
+                let userDiv = document.createElement("div");
+                userDiv.setAttribute("data-email", user.fields.email);
+                userDiv.textContent = user.fields.displayname;
+                container.appendChild(userDiv);
+            } 
+            usersMap.delete(user.fields.email); 
+        }
+    });
+    usersMap.forEach((value, key) => {
+        container.removeChild(value);
+    });
 }
 
 //function to fill blocked user list
-function Set_Blocked_Users(data)
-{
-	document.getElementById("BLOCKUSERS").length = 0;
-	for (let i = 0; i < data.SET_BLOCKED_USERS.length; i++) 
-	{
-		const opt = document.createElement("option");
-		opt.value = data.SET_BLOCKED_USERS[i].pk;
-		opt.text = data.SET_BLOCKED_USERS[i].fields.displayname;
-		document.getElementById("BLOCKUSERS").add(opt, null)
-	};
-};
+function Set_Blocked_Users(data) {
+    const blockUsersDiv = document.getElementById("BLOCKUSERS");
+    // Limpiar el contenido del div
+    blockUsersDiv.innerHTML = '';
+    // Iterar sobre los usuarios bloqueados y añadirlos al div
+    data.SET_BLOCKED_USERS.forEach(user => {
+        const userDiv = document.createElement("div");
+        userDiv.textContent = user.fields.displayname;
+        // Opcional: Asignar el pk como un atributo data-pk
+        userDiv.setAttribute("data-pk", user.pk);
+        blockUsersDiv.appendChild(userDiv);
+    });
+}
 
 // When the user clicks the block button, send the command to server
 document.querySelector('#BLOCK_SELECTED_USER').onclick = function (e) {
