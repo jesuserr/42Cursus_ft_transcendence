@@ -84,7 +84,7 @@ class GameConsumer5(AsyncWebsocketConsumer):
     @database_sync_to_async
     def isValidUser(self):
         self.tournament = Tournament_List.objects.get(tournament = self.room_name.split('___')[0])
-        tmpplay = Tournament_Round.objects.get(tournament_name = self.tournament, round_name = self.room_name)
+        tmpplay = Tournament_Round.objects.filter(tournament_name=self.tournament, round_name=self.room_name).first()
         if (tmpplay.player1 == self.user.email or tmpplay.player2 == self.user.email):
             return True
         return False

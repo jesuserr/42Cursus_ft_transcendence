@@ -4,7 +4,7 @@ const socket = new WebSocket('wss://' + window.location.host + '/ws/tournament/'
 
 socket.onmessage = function (e) {
 	const data = JSON.parse(e.data);
-	console.log(data);
+	//console.log(data);
 	if (data.hasOwnProperty("SET_CONNECTED_USER_LIST"))
 		Set_Connected_User_List(data);
 	else if (data.hasOwnProperty("SET_BUTTON_PLAY_STATUS"))
@@ -19,31 +19,35 @@ socket.onmessage = function (e) {
 		Tournament_List(data['TOURNAMENT_LIST'])
 };
 
+document.addEventListener('DOMContentLoaded', function() {
+    var tabla = document.getElementById('tournamentTable');
+    tabla.addEventListener('click', function(e) {
+        if (e.target.tagName === 'TD' && e.target.cellIndex === 0) {
+            var esTitulo = e.target.closest('tr').rowIndex === 0;
+            if (!esTitulo) {
+                var valorCelda = e.target.textContent; 
+                document.getElementById('tournamentName').value = valorCelda; 
+            }
+        }
+    });
+});
+
 function Tournament_List(data) {
     var tournamentTable = document.getElementById('tournamentTable');
     var tableBody = tournamentTable.getElementsByTagName('tbody')[0];
     tableBody.innerHTML = ""; 
-
     for (var i = 0; i < data.length; i++) {
         var tournament = data[i];
-        var row = document.createElement('tr'); // Crea una nueva fila
-
-        // Crea y llena la celda del nombre del torneo
+        var row = document.createElement('tr'); 
         var nameCell = document.createElement('td');
         nameCell.textContent = tournament.tournament_name;
         row.appendChild(nameCell);
-
-        // Crea y llena la celda del conteo de usuarios
         var countCell = document.createElement('td');
         countCell.textContent = tournament.user_count;
         row.appendChild(countCell);
-
-        // Crea y llena la celda del estado
         var statusCell = document.createElement('td');
         statusCell.textContent = tournament.status;
         row.appendChild(statusCell);
-
-        // Añade la fila completa al cuerpo de la tabla
         tableBody.appendChild(row);
     }
 };
