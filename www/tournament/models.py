@@ -8,13 +8,13 @@ class Tournament_List(models.Model):
 
 class Tournament_Connected_Users(models.Model):
     tournament_name = models.ForeignKey(Tournament_List, on_delete=models.CASCADE)
-    email = models.EmailField(unique=True)
-    display_name = models.CharField(max_length=50, unique=True)
+    email = models.EmailField(unique=False)
+    display_name = models.CharField(max_length=50, unique=False)
 
 class Tournament_Play(models.Model):
     tournament_name = models.ForeignKey(Tournament_List, on_delete=models.CASCADE)
-    email = models.EmailField(unique=True)
-    display_name = models.CharField(max_length=50, unique=True)
+    email = models.EmailField(unique=False)
+    display_name = models.CharField(max_length=50, unique=False)
     status = models.CharField(max_length=50)
 
 class Tournament_Round(models.Model):
