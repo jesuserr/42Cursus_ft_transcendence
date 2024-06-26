@@ -148,6 +148,7 @@ class TournamentConsumer(AsyncJsonWebsocketConsumer):
 				)
         else:
             msg = await self.next_round()
+            await asyncio.sleep(5)              # delay to see the winner of the round
             await self.send_group_msg(msg)
             data = await self.PlayModel()
             await self.request_group_refresh_tournament_status(data)

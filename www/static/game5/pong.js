@@ -41,11 +41,15 @@ function initGameboard() {
         drawText(textSize / 3, "Key W: Up", 0, canvas.width / 100, canvas.height * 0.95, 0);
         drawText(textSize / 3, "Key S: Down", 0, canvas.width / 100, canvas.height * 0.98, 0);
     }
-    else {
+    else if (position.player == 2) {
         if (countdown % 2)
             drawText(textSize, "Get ready!!", 0, canvas.width * 0.65, canvas.height / 3.5, 0);
         drawText(textSize / 3, "Key \u2191: Up", 0, canvas.width * 0.9, canvas.height * 0.95, 0);
         drawText(textSize / 3, "Key \u2193: Down", 0, canvas.width * 0.9, canvas.height * 0.98, 0);
+    }
+    else if (position.player == 3) {
+        drawText(textSize, "Match Starting!!", 1, 0, 0, 3.5);
+        drawText(textSize, String(position.p1_nick).slice(0, 15) + " vs " + String(position.p2_nick).slice(0, 15), 1, 0, 0, 1.5);
     }
     drawText(textSize, "Press M to mute", 1, 0, 0, 1.3); 
 }
@@ -101,13 +105,14 @@ function drawCountdown() {
         let countdownInterval = setInterval(() => {
             if (countdown >= 0 && position.player !=0) {
                 initGameboard();
-                if (countdown > 0) {
+                if (countdown > 0 && position.player <= 2) {
                     drawText(textSize, `${countdown}`, 1, 0, 0, 3.5);                
                     if (!muted)
                         countdownBeep.play();
                 }
                 else {
-                    drawText(textSize, "Go!!", 1, 0, 0, 3.5);
+                    if (position.player <= 2)
+                        drawText(textSize, "Go!!", 1, 0, 0, 3.5);
                     if (!muted)
                         countdownGo.play();
                 }
@@ -141,9 +146,9 @@ function drawWinners() {
     if (!muted)
         winSound.play();
     if (position.score_left > position.score_right)
-        drawText(textSize, "Left player wins!!", 1, 0, 0, 3.5);
+        drawText(textSize, String(position.p1_nick).slice(0, 15) + " wins!!", 1, 0, 0, 3.5);
     else
-        drawText(textSize, "Right player wins!!", 1, 0, 0, 3.5);
+        drawText(textSize, String(position.p2_nick).slice(0, 15) + " wins!!", 1, 0, 0, 3.5);
     if (position.player == 0)
         drawText(textSize, "Opponent disconnected!!", 1, 0, 0, 1.3);
 }
