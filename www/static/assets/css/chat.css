@@ -89,6 +89,11 @@ body {
 	color: white;
 }
 
+.selected {
+    background-color: #007bff; /* Color de fondo para el elemento seleccionado */
+    color: white; /* Color de la letra para el elemento seleccionado */
+}
+
 @media (max-width: 768px) {
     .messages-container {
         height: calc(100vh - 200px);
