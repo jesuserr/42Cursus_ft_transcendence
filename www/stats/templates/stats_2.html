@@ -143,6 +143,7 @@
                         <th scope="col">Player Score</th>
                         <th scope="col">Opponent Score</th>
                         <th scope="col">Match Length</th>
+                        <th scope="col">Tournament</th>
                     </tr>
                 </thead>
                 <tbody>
@@ -154,6 +155,7 @@
                         <td>{{ match.player_score }}</td>
                         <td>{{ match.opponent_score }}</td>
                         <td>{{ match.match_length }}</td>
+                        <td>{% if match.tournament %}<span style="color: green;">Yes</span>{% else %}<span style="color: red;">No</span>{% endif %}</td>
                     </tr>
                     {% endfor %}
                 </tbody>
@@ -170,6 +172,7 @@
                         <th scope="col">Player 1 Score</th>
                         <th scope="col">Player 2 Score</th>
                         <th scope="col">Match Length</th>
+                        <th scope="col">Tournament</th>
                     </tr>
                 </thead>
                 <tbody>
@@ -181,6 +184,7 @@
                         <td>{{ match.player_score }}</td>
                         <td>{{ match.opponent_score }}</td>
                         <td>{{ match.match_length }}</td>
+                        <td>{% if match.tournament %}<span style="color: green;">Yes</span>{% else %}<span style="color: red;">No</span>{% endif %}</td>
                     </tr>
                     {% endfor %}
                 </tbody>
