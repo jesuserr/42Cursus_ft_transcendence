@@ -9,7 +9,7 @@ from channels.db import database_sync_to_async
 from main.models import User
 #from main.token import *                   -> makes time.time() crash
 from main.token import get_user_from_token  # solution
-from tournament.models import Tournament_List, Tournament_Round
+from tournament.models import Tournament_List, Tournament_Round, Tournament_Play
 
 class GameConsumer5(AsyncWebsocketConsumer):
     rooms = {}  # Class variable shared by all instances of this class
@@ -90,6 +90,17 @@ class GameConsumer5(AsyncWebsocketConsumer):
         if (tmpplay.player1 == self.user.email or tmpplay.player2 == self.user.email):
             return True
         return False
+
+    @database_sync_to_async
+    def whoWonTournament(self):
+        try:
+            self.tournament = Tournament_List.objects.get(tournament = self.room_name.split('___')[0])
+            waiting_count = Tournament_Play.objects.filter(tournament=self.tournament, status='WAITING').count()
+            if (waiting_count == 0):
+                return Tournament_Play.objects.filter(tournament=self.tournament, status='WON').first()
+        except:
+            pass
+        return None
 
     async def create_gameboard(self, ball, l_paddle, r_paddle, score):
         gameboard = {
@@ -224,4 +235,6 @@ class GameConsumer5(AsyncWebsocketConsumer):
         else:
             temp.player_one_win = temp.tournament = True
         temp.save()
+        print("who")
+        print(self.WhoWonTournament())
         
