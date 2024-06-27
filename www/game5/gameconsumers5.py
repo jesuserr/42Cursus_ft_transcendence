@@ -229,6 +229,7 @@ class GameConsumer5(AsyncWebsocketConsumer):
             temp.player_one_win = temp.tournament = True
         else:
             temp.player_two_win = temp.tournament = True
+        temp.tournament_name = str(self.room_name.split('___')[0])
         temp.save()
         temp = stats(player_one = room["player2_id"])               # player 2 stats
         temp.match_length = match_length
@@ -244,7 +245,5 @@ class GameConsumer5(AsyncWebsocketConsumer):
             temp.player_two_win = temp.tournament = True
         else:
             temp.player_one_win = temp.tournament = True
+        temp.tournament_name = str(self.room_name.split('___')[0])
         temp.save()
-        
-        
-        
