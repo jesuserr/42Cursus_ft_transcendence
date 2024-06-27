@@ -222,6 +222,7 @@ class ChatConsumer(AsyncJsonWebsocketConsumer):
     
 	#Unblock user
     async def unblockUser(self, data):
+        print(data)
         await self.unblockUserModel(data)
         await self.sendBlockUserList()
     

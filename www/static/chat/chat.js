@@ -12,6 +12,7 @@ currentchat = '';
 socket.onopen = function(e) {
 	//document.getElementById("STATUS").innerText = "Connected";
 	//document.getElementById("CONNECTION_STATUS").src = "/static/chat/connected.png";
+	document.getElementById("CURRENTUSER").innerText =  roomName + ' - General';
 	//send a message to the server to get the user's displayname
 	socket.send(JSON.stringify({'GET_USERNAME': 'GET_USERNAME'}));
 	//send a message to the server to get the list of users
@@ -35,7 +36,7 @@ socket.onmessage = function (e) {
 	//parse the data
 	const data = JSON.parse(e.data);
 	//To deleted, show the data in the console
-	console.log(data);
+	//console.log(data);
 	//check the command and run the appropriate function
 	//if the command is "User", display the user's displayname
 	if (data.hasOwnProperty("SET_USERNAME")) 
@@ -162,18 +163,28 @@ sendButton.addEventListener('click', function() {
 //function to fill connected user list
 function Set_Connected_Users(data) {
     let container = document.getElementById("CONNECTEDUSERLIST");
-    container.innerHTML = '';
+    let existingUsers = container.querySelectorAll(".connected-user");
+    let existingUserPks = new Set(Array.from(existingUsers).map(user => user.getAttribute('data-pk')));
+
+    // Agregar o actualizar usuarios
     for (let i = 0; i < data.SET_CONNECTED_USERS.length; i++) {
         let user = data.SET_CONNECTED_USERS[i];
-        if (USERID != user.pk) {
+        if (USERID != user.pk && !existingUserPks.has(user.pk.toString())) {
             let userElement = document.createElement("div");
             userElement.textContent = user.fields.displayname;
             userElement.className = "connected-user";
-            // Guardar el pk del usuario como un atributo de datos en el div
             userElement.setAttribute('data-pk', user.pk);
             container.appendChild(userElement);
         }
+        existingUserPks.delete(user.pk.toString()); // Eliminar de los pks existentes si está presente
     }
+
+    // Eliminar usuarios que ya no están conectados
+    existingUsers.forEach(user => {
+        if (existingUserPks.has(user.getAttribute('data-pk'))) {
+            container.removeChild(user);
+        }
+    });
 }
 
 //function to set the user's displayname
@@ -189,14 +200,14 @@ function Set_User_List(data) {
     let usersMap = new Map();
     container.childNodes.forEach(child => {
         if (child.nodeType === Node.ELEMENT_NODE) { 
-            usersMap.set(child.getAttribute("data-email"), child);
+            usersMap.set(child.getAttribute("data-pk"), child);
         }
     });
     data.SET_USER_LIST.forEach(user => {
         if (USERID !== user.fields.email) { 
             if (!usersMap.has(user.fields.email)) { 
                 let userDiv = document.createElement("div");
-                userDiv.setAttribute("data-email", user.fields.email);
+                userDiv.setAttribute("data-pk", user.fields.email);
                 userDiv.textContent = user.fields.displayname;
                 container.appendChild(userDiv);
             } 
@@ -239,6 +250,38 @@ document.addEventListener('DOMContentLoaded', function() {
     });
 });
 
+// Añadir evento click a todos los elementos seleccionables dentro de CONNECTEDUSERLIST
+document.addEventListener('DOMContentLoaded', function() {
+    // Usar delegación de eventos para manejar clics en elementos div dentro de CONNECTEDUSERLIST
+    document.querySelector('#BLOCKUSERS').addEventListener('click', function(e) {
+        // Verificar si el elemento clickeado es un div
+        if (e.target.tagName === 'DIV') {
+            // Eliminar la clase selected de todos los elementos div
+            this.querySelectorAll('div').forEach(el => {
+                el.classList.remove('selected');
+            });
+            // Añadir la clase selected al elemento clickeado
+            e.target.classList.add('selected');
+        }
+    });
+});
+
+// Añadir evento click a todos los elementos seleccionables dentro de CONNECTEDUSERLIST
+document.addEventListener('DOMContentLoaded', function() {
+    // Usar delegación de eventos para manejar clics en elementos div dentro de CONNECTEDUSERLIST
+    document.querySelector('#USERLIST').addEventListener('click', function(e) {
+        // Verificar si el elemento clickeado es un div
+        if (e.target.tagName === 'DIV') {
+            // Eliminar la clase selected de todos los elementos div
+            this.querySelectorAll('div').forEach(el => {
+                el.classList.remove('selected');
+            });
+            // Añadir la clase selected al elemento clickeado
+            e.target.classList.add('selected');
+        }
+    });
+});
+
 // Ajustar el código del botón BLOCK_SELECTED_USER para usar el elemento seleccionado
 document.querySelector('#BLOCK_SELECTED_USER').onclick = function (e) {
     var selectedUser = document.querySelector('#CONNECTEDUSERLIST .selected');
@@ -246,20 +289,29 @@ document.querySelector('#BLOCK_SELECTED_USER').onclick = function (e) {
     if (!selectedUser || selectedUser.dataset.value == '') {
         alert("Please select a user to block, from the list of users");
     } else {
-		console.log(selectedUser.dataset.pk);
+        socket.send(JSON.stringify({'BLOCK_USER': selectedUser.dataset.pk}));
+    }
+};
+
+// Ajustar el código del botón BLOCK_SELECTED_USER para usar el elemento seleccionado
+document.querySelector('#BLOCK_SELECTED_USER2').onclick = function (e) {
+    var selectedUser = document.querySelector('#USERLIST .selected');
+
+    if (!selectedUser || selectedUser.dataset.value == '') {
+        alert("Please select a user to block, from the list of users");
+    } else {
         socket.send(JSON.stringify({'BLOCK_USER': selectedUser.dataset.pk}));
     }
 };
 
 // When the user clicks the unblock button, send the command to server
 document.querySelector('#UNBLOCK_SELECTED_USER').onclick = function (e) {
-    var userList = document.getElementById("BLOCKUSERS");
-    var selectedOption = userList.options[userList.selectedIndex];
-
-    if (selectedOption == null || selectedOption.value == '') {
-        alert("Please select a user to unblock, form the list of blocked users");
+    // Encontrar el div seleccionado dentro del contenedor #BLOCKUSERS
+    var selectedUser = document.querySelector('#BLOCKUSERS .selected');
+	if (!selectedUser || selectedUser.dataset.value == '') {
+        alert("Please select a user to unblock, from the list of block users");
     } else {
-        socket.send(JSON.stringify({'UNBLOCK_USER': selectedOption.value}));
+        socket.send(JSON.stringify({'UNBLOCK_USER': selectedUser.dataset.pk}));
     }
 };
 
@@ -267,7 +319,7 @@ document.querySelector('#UNBLOCK_SELECTED_USER').onclick = function (e) {
 // When the user clicks the send button, send the command to server
 document.querySelector('#CHAT_ALL_USERS').onclick = function (e) 
 {
-	document.getElementById("CURRENTUSER").innerText = 'General';
+	document.getElementById("CURRENTUSER").innerText =  roomName + ' - General';
 	currentchat = '';
 	socket.send(JSON.stringify({'GET_CHAT_HISTORY': '', 'LENGTH': 100}));
 };
@@ -279,29 +331,29 @@ document.querySelector('#CHAT_SELECTED_USER').onclick = function (e) {
     var selectedUserDiv = userList.querySelector(".selected") || connectedUserList.querySelector(".selected");
 
     if (!selectedUserDiv) {
-        alert("Please select a user to chat with, from the list of users or connected users");
+        alert("Please select a user to chat with, from the list of users or connected users.");
     } else {
         var selectedUserId = selectedUserDiv.dataset.pk;
         var selectedUserDisplayname = selectedUserDiv.textContent;
         currentchat = selectedUserId;
         currentchatdisplayname = selectedUserDisplayname;
 
-        // Resetear la selección visual de los usuarios
+        // Cambiar el color solo de los divs que coincidan con la pk seleccionada
         var allUserDivs = userList.querySelectorAll("div");
         allUserDivs.forEach(div => {
-            div.classList.remove('selected');
-            div.style.fontWeight = 'normal';
-            div.style.color = 'white';
+            if (div.dataset.pk === selectedUserId) {
+                div.style.color = 'white';
+            } 
         });
 
         var allConnectedUserDivs = connectedUserList.querySelectorAll("div");
         allConnectedUserDivs.forEach(div => {
-            div.classList.remove('selected');
-            div.style.fontWeight = 'normal';
-            div.style.color = 'white';
+            if (div.dataset.pk === selectedUserId) {
+                div.style.color = 'white';
+            } 
         });
 
-        document.getElementById("CURRENTUSER").innerText = selectedUserDisplayname;
+        document.getElementById("CURRENTUSER").innerText = roomName + " - " + selectedUserDisplayname;
         socket.send(JSON.stringify({'GET_CHAT_HISTORY': selectedUserId, 'LENGTH': 100}));
     }
 };
