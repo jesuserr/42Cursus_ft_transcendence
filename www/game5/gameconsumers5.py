@@ -21,9 +21,6 @@ class GameConsumer5(AsyncWebsocketConsumer):
         await self.channel_layer.group_add(self.room_group_name, self.channel_name)
         if 'tokenid' in self.scope['cookies'].keys():
             await self.getUsernameModel()
-            #for testing purposes dont delete (careful, it has been incorporated to the code, see below)
-            #if not  (await self.isValidUser()):
-            #    return
             await self.accept()
             self.left_paddle = Paddle(PADDLE_GAP, HEIGHT // 2 - PADDLE_HEIGHT // 2, PADDLE_WIDTH, PADDLE_HEIGHT)
             self.right_paddle = Paddle(WIDTH - PADDLE_GAP - PADDLE_WIDTH, HEIGHT // 2 - PADDLE_HEIGHT // 2, PADDLE_WIDTH, PADDLE_HEIGHT)
@@ -60,9 +57,6 @@ class GameConsumer5(AsyncWebsocketConsumer):
             self.user = ""
 
     async def disconnect(self, close_code):
-        #for testing purposes dont delete  (careful, it has been incorporated to the code, see below)
-        #if not  (await self.isValidUser()):
-        #    return
         if not await self.isValidUser():
             await self.channel_layer.group_discard(self.room_group_name, self.channel_name)
             return
@@ -90,26 +84,6 @@ class GameConsumer5(AsyncWebsocketConsumer):
         if (tmpplay.player1 == self.user.email or tmpplay.player2 == self.user.email):
             return True
         return False
-    
-    async def whoWonTournament(self):
-        await asyncio.sleep(1)
-        if (await self.whoWonTournamentModel(1) == True):
-            return await self.whoWonTournamentModel(2)
-        return None
-
-    @database_sync_to_async
-    def whoWonTournamentModel(self, option):
-        if (option == 1):
-            self.tournament = Tournament_List.objects.get(tournament = self.room_name.split('___')[0])
-            waiting_count = Tournament_Play.objects.filter(tournament_name=self.tournament, status='WAITING').count()
-            playing_count = Tournament_Play.objects.filter(tournament_name=self.tournament, status='PLAYING').count()
-            if (waiting_count == 0 and playing_count == 0):
-                return True
-            return False
-        if (option == 2):
-                tmp = Tournament_Play.objects.filter(tournament_name=self.tournament, status='WON').first()
-                return tmp.email
-        return None
 
     async def create_gameboard(self, ball, l_paddle, r_paddle, score):
         gameboard = {
@@ -125,7 +99,15 @@ class GameConsumer5(AsyncWebsocketConsumer):
             gameboard["p1_nick"] = str(self.rooms[self.room_group_name]["player1_nick"])
             gameboard["p2_nick"] = str(self.rooms[self.room_group_name]["player2_nick"])
         return gameboard
-    
+
+    async def send_gameboard_to_group(self, event):
+        if (self.user == self.rooms[self.room_group_name]["player1_id"]):
+            await self.send_gameboard(event['gameboard'], PLAYER_1)
+        elif (self.user == self.rooms[self.room_group_name]["player2_id"]):
+            await self.send_gameboard(event['gameboard'], PLAYER_2)
+        else:
+            await self.send_gameboard(event['gameboard'], VOYEUR)
+
     async def send_gameboard(self, gameboard, player):
         gameboard["player"] = player
         await self.send(text_data=json.dumps(gameboard))
@@ -147,14 +129,6 @@ class GameConsumer5(AsyncWebsocketConsumer):
             self.score.right_score = WINNING_SCORE
             self.score.left_score = 0
         self.score.won = True
-
-    async def send_gameboard_to_group(self, event):
-        if (self.user == self.rooms[self.room_group_name]["player1_id"]):
-            await self.send_gameboard(event['gameboard'], PLAYER_1)
-        elif (self.user == self.rooms[self.room_group_name]["player2_id"]):
-            await self.send_gameboard(event['gameboard'], PLAYER_2)
-        else:
-            await self.send_gameboard(event['gameboard'], VOYEUR)
             
     async def playGame(self):
         players = self.rooms[self.room_group_name]['players']           # alias
@@ -185,14 +159,10 @@ class GameConsumer5(AsyncWebsocketConsumer):
             await asyncio.sleep((FRAME_TIME - (time.time() - frame_start_time)) * 0.2)
             while time.time() - frame_start_time < FRAME_TIME:
                await asyncio.sleep((FRAME_TIME - (time.time() - frame_start_time)) * 0.0002)
-        await self.SendRoundEndMSG() 
-        tournamentWinner = await self.whoWonTournament()
-        await self.pushStats(room, self.score)
+        await self.SendRoundEndMSG()
+        tournament_winner = await self.whoWonTournament()
+        await self.pushStats(room, self.score, tournament_winner)
         await self.channel_layer.group_send(self.room_group_name, {'type': 'close_all_connections', 'message': ''}) # close all websocket connections
-
-    async def close_all_connections(self, event):
-        await self.close()
-        print("Connection Closed")
 
     async def SendRoundEndMSG(self):
         room = self.rooms[self.room_group_name]
@@ -212,8 +182,28 @@ class GameConsumer5(AsyncWebsocketConsumer):
             }
         )
 
+    async def whoWonTournament(self):
+        await asyncio.sleep(1)
+        if (await self.whoWonTournamentModel(1) == True):
+            return await self.whoWonTournamentModel(2)
+        return None
+
     @database_sync_to_async
-    def pushStats(self, room, score):
+    def whoWonTournamentModel(self, option):
+        if (option == 1):
+            self.tournament = Tournament_List.objects.get(tournament = self.room_name.split('___')[0])
+            waiting_count = Tournament_Play.objects.filter(tournament_name=self.tournament, status='WAITING').count()
+            playing_count = Tournament_Play.objects.filter(tournament_name=self.tournament, status='PLAYING').count()
+            if (waiting_count == 0 and playing_count == 0):
+                return True
+            return False
+        if (option == 2):
+                tmp = Tournament_Play.objects.filter(tournament_name=self.tournament, status='WON').first()
+                return tmp.email
+        return None
+    
+    @database_sync_to_async
+    def pushStats(self, room, score, tournament_winner):
         match_length = time.time() - score.game_start_time
         temp = stats(player_one = room["player1_id"])               # player 1 stats
         temp.match_length = match_length
@@ -230,6 +220,10 @@ class GameConsumer5(AsyncWebsocketConsumer):
         else:
             temp.player_two_win = temp.tournament = True
         temp.tournament_name = str(self.room_name.split('___')[0])
+        if (tournament_winner == str(room["player1_id"])):
+            temp.player_one_tournament_win = True
+        elif (tournament_winner == str(room["player2_id"])): 
+            temp.player_two_tournament_win = True
         temp.save()
         temp = stats(player_one = room["player2_id"])               # player 2 stats
         temp.match_length = match_length
@@ -246,4 +240,12 @@ class GameConsumer5(AsyncWebsocketConsumer):
         else:
             temp.player_one_win = temp.tournament = True
         temp.tournament_name = str(self.room_name.split('___')[0])
+        if (tournament_winner == str(room["player1_id"])):
+            temp.player_two_tournament_win = True
+        elif (tournament_winner == str(room["player2_id"])): 
+            temp.player_one_tournament_win = True
         temp.save()
+
+    async def close_all_connections(self, event):
+        await self.close()
+        print("Connection Closed")
