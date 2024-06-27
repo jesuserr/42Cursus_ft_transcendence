@@ -155,7 +155,7 @@
                         <td>{{ match.player_score }}</td>
                         <td>{{ match.opponent_score }}</td>
                         <td>{{ match.match_length }}</td>
-                        <td>{% if match.tournament %}<span style="color: green;">Yes</span>{% else %}<span style="color: red;">No</span>{% endif %}</td>
+                        <td>{% if match.tournament %}<span style="color: green;">{{match.tournament_name}}</span>{% else %}<span style="color: red;">No</span>{% endif %}</td>
                     </tr>
                     {% endfor %}
                 </tbody>
@@ -183,8 +183,8 @@
                         <td><img src="{{match.opponent_avatar}}" width="25" height="25" alt="" onerror="this.onerror=null; this.src='/static/avatars/default.jpg'"/> {{ match.opponent }}</td>
                         <td>{{ match.player_score }}</td>
                         <td>{{ match.opponent_score }}</td>
-                        <td>{{ match.match_length }}</td>
-                        <td>{% if match.tournament %}<span style="color: green;">Yes</span>{% else %}<span style="color: red;">No</span>{% endif %}</td>
+                        <td>{{ match.match_length }}</td>                        
+                        <td>{% if match.tournament %}<span style="color: green;">{{match.tournament_name}}</span>{% else %}<span style="color: red;">No</span>{% endif %}</td>
                     </tr>
                     {% endfor %}
                 </tbody>

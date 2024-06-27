@@ -18,3 +18,4 @@ class stats(models.Model):
 	point_length = ArrayField(models.DecimalField(max_digits = 5, decimal_places = 2), default=list)
 	created_at = models.DateTimeField(default=timezone.now)
 	tournament = models.BooleanField(default=False)
+	tournament_name = models.CharField(max_length=50, default='')

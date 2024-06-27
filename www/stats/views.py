@@ -136,8 +136,9 @@ def generate_game_history(object_pvc, object_pvp, object_pvp_tour):
             'player_score': match.player_one_score,
             'opponent_score': match.player_two_score,
             'match_length': float(match.match_length),
-            'tournament': match.tournament
-        }
+            'tournament': match.tournament,
+            'tournament_name': match.tournament_name
+        }        
         game_sessions.append(match_entry)
     return game_sessions
 
