@@ -65,7 +65,7 @@
     <div class="tab-content mt-3" id="myTabContent">
         <div class="tab-pane fade show active" id="player-stats" role="tabpanel" aria-labelledby="player-stats-tab">
             <h4>Player stats</h4>
-            <table class="table table-sm table-dark">
+            <table class="table table-sm table-dark" style="display: none;">
                 <thead>
                     <tr>
                         <th scope="col"></th>
@@ -131,9 +131,28 @@
                     </tr>
                 </tbody>
             </table>
-            <div id="tournaments-won">Tournaments Won: {{ user_stats.tournaments_won }}</div>
-            <div id="tournaments-lost">Tournaments Lost: {{ user_stats.tournaments_lost }}</div>
-            <div id="tournaments-played">Tournaments Played: {{ user_stats.tournaments_played }}</div>
+	    <div class="container-fluid d-flex justify-content-center" style="margin-bottom: 15px">
+			<div class="col-md-2">
+            			<div style="display: none;" id="tournaments-won">Tournaments Won: {{ user_stats.tournaments_won }}</div>
+            			<div style="display: none;"id="tournaments-lost">Tournaments Lost: {{ user_stats.tournaments_lost }}</div>
+            			<div style="display: none;"id="tournaments-played">Tournaments Played: {{ user_stats.tournaments_played }}</div>
+            			<canvas id="donutChart" style="margin-top: 10px;"></canvas>
+			</div>
+		</div>
+	<div class="container-fluid">
+		<div class="row row-cols-3 d-flex justify-content-between">
+			<div class="col-md-4 mb-4">
+				<canvas id="matchesChart"></canvas>
+			</div>
+       			<div class="col-md-4 mb-4">
+            			<canvas id="goalsChart"></canvas>
+        		</div>
+			<div class="col-md-4 mb-4">
+			<canvas id="matchDurationChart" width="400" height="200"></canvas>
+			</div>
+    		</div>
+	</div>
+
         </div>
         <div class="tab-pane fade" id="player-history" role="tabpanel" aria-labelledby="player-history-tab">
             <h4>Player gaming history</h4>
@@ -194,10 +213,166 @@
             </table>
         </div>
     </div>
-
     <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.5.4/dist/umd/popper.min.js"></script>
     <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+	    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+	<script>
+        document.addEventListener('DOMContentLoaded', function () {
+    const tournamentsWon = {{ user_stats.tournaments_won }};
+            const tournamentsLost = {{ user_stats.tournaments_lost }};
+            const tournamentsPlayed = {{ user_stats.tournaments_played }};
+
+			 const remainingTournaments = tournamentsPlayed - (tournamentsWon + tournamentsLost);
+    const allZero = (tournamentsWon === 0 && tournamentsLost === 0 && remainingTournaments === 0);
+
+    const emptyDonutColor = 'rgba(255, 255, 255, 0.5)';
+    const emptyDonutBorderColor = 'rgba(255, 255, 255, 1)';
+    const donutData = allZero ? [1] : [tournamentsWon, tournamentsLost, remainingTournaments];
+    const donutLabels = allZero ? ['No Tournaments yet'] : ['Tournaments Won', 'Tournaments Lost', 'Remaining Tournaments'];
+    const donutColors = allZero ? [emptyDonutColor] : ['rgba(153, 102, 255, 0.2)', 'rgba(255, 206, 86, 0.2)', 'rgba(54, 162, 235, 0.5)'];
+    const donutBorders = allZero ? [emptyDonutBorderColor] : ['rgba(153, 102, 255, 1)', 'rgba(255, 206, 86, 1)', 'rgba(54, 162, 235, 1)'];
+
+    const ctxDonut = document.getElementById('donutChart').getContext('2d');
+    const donutChart = new Chart(ctxDonut, {
+        type: 'doughnut',
+        data: {
+            labels: donutLabels,
+            datasets: [{
+                data: donutData,
+                backgroundColor: donutColors,
+                borderColor: donutBorders,
+                borderWidth: 1
+            }]
+        },
+        options: {
+            responsive: true,
+            plugins: {
+                legend: {
+                    position: 'top',
+                },
+                tooltip: {
+                    callbacks: {
+                        label: function (tooltipItem) {
+                            return tooltipItem.label + ': ' + tooltipItem.raw;
+                        }
+                    }
+                }
+            }
+        }
+	     });
+
+
+
+	var matchesPlayedPVC = {{ user_stats.matches_played_pvc }};
+        var matchesPlayedPVP = {{ user_stats.matches_played_pvp }};
+        var matchesPlayedOverall = {{ user_stats.matches_played }};
+        
+        var matchesWonPVC = {{ user_stats.matches_won_pvc }};
+        var matchesWonPVP = {{ user_stats.matches_won_pvp }};
+        var matchesWonOverall = {{ user_stats.matches_won }};
+        
+        var goalsScoredPVC = {{ user_stats.scored_goals_per_match_pvc }};
+        var goalsScoredPVP = {{ user_stats.scored_goals_per_match_pvp }};
+        var goalsScoredOverall = {{ user_stats.scored_goals_per_match }};
+
+        // Gráfico de partidos jugados
+        var ctx = document.getElementById('matchesChart').getContext('2d');
+        var matchesChart = new Chart(ctx, {
+            type: 'bar',
+            data: {
+                labels: ['vs CPU', 'vs Human', 'Overall'],
+                datasets: [{
+                    label: 'Played matches',
+                    data: [matchesPlayedPVC, matchesPlayedPVP, matchesPlayedOverall],
+                    backgroundColor: 'rgba(75, 192, 192, 0.2)',
+                    borderColor: 'rgba(75, 192, 192, 1)',
+                    borderWidth: 1
+                }, {
+                    label: 'Won matches',
+                    data: [matchesWonPVC, matchesWonPVP, matchesWonOverall],
+                    backgroundColor: 'rgba(153, 102, 255, 0.2)',
+                    borderColor: 'rgba(153, 102, 255, 1)',
+                    borderWidth: 1
+                }]
+            },
+            options: {
+                scales: {
+                    y: {
+                        beginAtZero: true
+                    }
+                }
+            }
+        });
+
+        // Gráfico de goles por partido
+        var ctx2 = document.getElementById('goalsChart').getContext('2d');
+        var goalsChart = new Chart(ctx2, {
+            type: 'bar',
+            data: {
+                labels: ['vs CPU', 'vs Human', 'Overall'],
+                datasets: [{
+                    label: 'Goals scored per match',
+                    data: [goalsScoredPVC, goalsScoredPVP, goalsScoredOverall],
+                    backgroundColor: 'rgba(255, 206, 86, 0.2)',
+                    borderColor: 'rgba(255, 206, 86, 1)',
+                    borderWidth: 1
+                }]
+            },
+            options: {
+                scales: {
+                    y: {
+                        beginAtZero: true
+                    }
+                }
+            }
+        });
+
+			 var shortestMatches = [
+            {{ user_stats.shortest_match_pvc }},
+            {{ user_stats.shortest_match_pvp }},
+            {{ user_stats.shortest_match }}
+        ];
+        var longestMatches = [
+            {{ user_stats.longest_match_pvc }},
+            {{ user_stats.longest_match_pvp }},
+            {{ user_stats.longest_match }}
+        ];
+        var labels = ['PVC', 'PVP', 'Total'];
+
+        // Configurar el gráfico
+        var ctx = document.getElementById('matchDurationChart').getContext('2d');
+        var myChart = new Chart(ctx, {
+            type: 'bar',
+            data: {
+                labels: labels,
+                datasets: [{
+                    label: 'Shortest Matches (secs)',
+                    data: shortestMatches,
+                    backgroundColor: 'rgba(54, 162, 235, 0.5)',
+                    borderColor: 'rgba(54, 162, 235, 1)',
+                    borderWidth: 1
+                }, {
+                    label: 'Longest Matches (secs)',
+                    data: longestMatches,
+                    backgroundColor: 'rgba(255, 99, 132, 0.5)',
+                    borderColor: 'rgba(255, 99, 132, 1)',
+                    borderWidth: 1
+                }]
+            },
+            options: {
+                scales: {
+                    yAxes: [{
+                        ticks: {
+                            beginAtZero: true
+                        }
+                    }]
+                }
+            }
+        });
+
+        });
+	</script>
 </body>
 </html>
 
