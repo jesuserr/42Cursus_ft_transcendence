@@ -76,12 +76,30 @@ function Typing(data)
 	}
 }
 
-//function to display the private message
+// Función para mostrar el mensaje privado
 function New_Private_msg(data) {
     if (currentchat == data.emailto || currentchat == data.emailfrom) {
         let chatTextDiv = document.getElementById('CHATTEXT');
         let messageDiv = document.createElement('div');
-        messageDiv.textContent = data.displaynamefrom + ': ' + data.message;
+
+        const urlRegex = /(https?:\/\/[^\s]+)/g;
+        let messageContent = document.createDocumentFragment();
+        messageContent.appendChild(document.createTextNode(data.displaynamefrom + ': '));
+        let parts = data.message.split(urlRegex);
+
+        parts.forEach(part => {
+            if (part.match(urlRegex)) {
+				let a = document.createElement('a');
+				a.href = part;
+				a.target = '_blank';
+				a.textContent = part 
+				messageContent.appendChild(a);
+            } else {
+                messageContent.appendChild(document.createTextNode(part));
+            }
+        });
+
+        messageDiv.appendChild(messageContent);
         chatTextDiv.appendChild(messageDiv);
         chatTextDiv.scrollTop = chatTextDiv.scrollHeight;
     } else {
@@ -101,17 +119,43 @@ function Set_Chat_History(alldata) {
     let chatContainer = document.getElementById('CHATTEXT');
     chatContainer.innerHTML = '';
 
+    const urlRegex = /(https?:\/\/[^\s]+)/g;
+
+    let processMessage = function(displayName, message) {
+        let messageElement = document.createElement("span");
+        let parts = message.split(urlRegex);
+
+        let textNode = document.createTextNode(displayName + ': ');
+        messageElement.appendChild(textNode);
+
+        parts.forEach(part => {
+            if (part.match(urlRegex)) {
+                let a = document.createElement('a');
+                a.href = part;
+                a.textContent = part;
+                a.target = '_blank'; 
+                messageElement.appendChild(a);
+            } else {
+                messageElement.appendChild(document.createTextNode(part));
+            }
+        });
+
+        return messageElement;
+    };
+
     if (alldata['SET_CHAT_HISTORY'] == '') {
         for (let i = 0; i < data.length; i++) {
-            let messageElement = document.createElement("span");
-            messageElement.textContent = data[i].fields.displayname + ': ' + data[i].fields.message;
+            let displayName = data[i].fields.displayname;
+            let message = data[i].fields.message;
+            let messageElement = processMessage(displayName, message);
             chatContainer.appendChild(messageElement);
             chatContainer.appendChild(document.createElement("br"));
         }
     } else {
         for (let i = 0; i < data.length; i++) {
-            let messageElement = document.createElement("span");
-            messageElement.textContent = data[i].fields.displaynamefrom + ': ' + data[i].fields.message;
+            let displayName = data[i].fields.displaynamefrom;
+            let message = data[i].fields.message;
+            let messageElement = processMessage(displayName, message);
             chatContainer.appendChild(messageElement);
             chatContainer.appendChild(document.createElement("br"));
         }
@@ -133,7 +177,25 @@ function New_Room_msg(data) {
     if (currentchat == '') {
         let chatContainer = document.getElementById('CHATTEXT');
         let messageElement = document.createElement("span");
-        messageElement.textContent = data.displayname + ': ' + data.message;
+        
+        const urlRegex = /(https?:\/\/[^\s]+)/g;
+        let parts = data.message.split(urlRegex);
+
+        let displayNameText = document.createTextNode(data.displayname + ': ');
+        messageElement.appendChild(displayNameText);
+
+        parts.forEach(part => {
+            if (part.match(urlRegex)) {
+                let a = document.createElement('a');
+                a.href = part;
+                a.textContent = part;
+                a.target = '_blank'; 
+                messageElement.appendChild(a);
+            } else {
+                messageElement.appendChild(document.createTextNode(part));
+            }
+        });
+
         chatContainer.appendChild(messageElement);
         chatContainer.appendChild(document.createElement("br"));
         chatContainer.scrollTop = chatContainer.scrollHeight;
@@ -321,6 +383,12 @@ document.querySelector('#CHAT_ALL_USERS').onclick = function (e)
 {
 	document.getElementById("CURRENTUSER").innerText =  roomName + ' - General';
 	currentchat = '';
+	var boton = document.getElementById('PRIVATE_GAME');
+    if (currentchat === '') {
+        boton.disabled = true;
+    } else {
+        boton.disabled = false;
+    }
 	socket.send(JSON.stringify({'GET_CHAT_HISTORY': '', 'LENGTH': 100}));
 };
 
@@ -337,6 +405,12 @@ document.querySelector('#CHAT_SELECTED_USER').onclick = function (e) {
         var selectedUserDisplayname = selectedUserDiv.textContent;
         currentchat = selectedUserId;
         currentchatdisplayname = selectedUserDisplayname;
+		var boton = document.getElementById('PRIVATE_GAME');
+		if (currentchat === '') {
+			boton.disabled = true;
+		} else {
+			boton.disabled = false;
+		}
 
         // Cambiar el color solo de los divs que coincidan con la pk seleccionada
         var allUserDivs = userList.querySelectorAll("div");
@@ -377,3 +451,18 @@ chatInput.addEventListener('input', function()
 	socket.send(JSON.stringify({'TYPING': currentchat}));
 });
 
+// Primero, selecciona el botón por su ID
+const botonPrivateGame = document.getElementById('PRIVATE_GAME');
+
+// Luego, añade un event listener que escuche por el evento 'click'
+botonPrivateGame.addEventListener('click', function() {
+    const baseUrl = window.location.origin;
+    let randomString = '';
+    const stringLength = 10; 
+    for (let i = 0; i < stringLength; i++) {
+        const randomNumber = Math.floor(Math.random() * (122 - 97 + 1)) + 97;
+        randomString += String.fromCharCode(randomNumber);
+    }
+    const link = `${baseUrl}/game2/${randomString}`;
+    socket.send(JSON.stringify({ 'SEND_PRIVATE_MSG': currentchat, 'DISPLAYNAMETO': currentchatdisplayname , 'MESSAGE': 'Follow the link to play a private game with me: ' + link }));
+});
