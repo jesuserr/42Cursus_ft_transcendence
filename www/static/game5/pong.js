@@ -33,25 +33,13 @@ const socket = new WebSocket('wss://' + window.location.host + '/ws/game5/' + ga
 function initGameboard() {
     canvas.style.display = 'block';
     drawGameboard();
-    if (position.player == 1) {
-        if (messageNumber == 0)
-            drawText(textSize, "Waiting for Player 2...", 1, 0, 0, 3.5);
-        else if (countdown % 2)
-            drawText(textSize, "Get ready!!", 0, canvas.width * 0.15, canvas.height / 3.5, 0);
-        drawText(textSize / 3, "Key W: Up", 0, canvas.width / 100, canvas.height * 0.95, 0);
-        drawText(textSize / 3, "Key S: Down", 0, canvas.width / 100, canvas.height * 0.98, 0);
-    }
-    else if (position.player == 2) {
-        if (countdown % 2)
-            drawText(textSize, "Get ready!!", 0, canvas.width * 0.65, canvas.height / 3.5, 0);
-        drawText(textSize / 3, "Key \u2191: Up", 0, canvas.width * 0.9, canvas.height * 0.95, 0);
-        drawText(textSize / 3, "Key \u2193: Down", 0, canvas.width * 0.9, canvas.height * 0.98, 0);
-    }
-    else if (position.player == 3) {
+    if (position.player == 1 && position.p2_nick && position.p1_nick)
+        drawText(textSize / 2, "Key W: Up / Key S: Down", 2, 0, 0, 1.02);    
+    else if (position.player == 2 && position.p2_nick && position.p1_nick)
+        drawText(textSize / 2, "Key \u2191: Up / Key \u2193: Down", 3, 0, 0, 1.02);
+    else if (position.player == 3 && position.p2_nick && position.p1_nick)
         drawText(textSize, "Match Starting!!", 1, 0, 0, 3.5);
-        drawText(textSize, String(position.p1_nick).slice(0, 15) + " vs " + String(position.p2_nick).slice(0, 15), 1, 0, 0, 1.5);
-    }
-    drawText(textSize, "Press M to mute", 1, 0, 0, 1.3); 
+    drawText(textSize, "Press M to mute", 1, 0, 0, 1.3);
 }
 
 function drawGameboard() {
@@ -85,6 +73,18 @@ function drawGameboard() {
     // Print the scores
     drawText(textSize, `${position.score_left}`, 0, canvas.width * 0.25 - textSize / 2 * scale, canvas.height / 12, 0);
     drawText(textSize, `${position.score_right}`, 0, canvas.width * 0.75 - textSize / 2 * scale, canvas.height / 12, 0);
+    if (position.player == 1 && position.p2_nick && position.p1_nick)
+        drawText(textSize, String(position.p1_nick).slice(0, 11), 2, 0, 0, 1.06);
+    else if (position.player == 2 && position.p2_nick && position.p1_nick)
+        drawText(textSize, String(position.p2_nick).slice(0, 11), 3, 0, 0, 1.06);
+    else if (position.player == 3  && position.p2_nick && position.p1_nick) {
+        drawText(textSize, String(position.p1_nick).slice(0, 11), 2, 0, 0, 1.06);
+        drawText(textSize, "vs", 1, 0, 0, 1.06);
+        drawText(textSize, String(position.p2_nick).slice(0, 11), 3, 0, 0, 1.06);
+        ctx.fillStyle = 'red';
+        ctx.font = `${textSize / 2 * scale}px 'Press Start 2P'`;
+        ctx.fillText("🔴 Live", canvas.width * 0.91, canvas.height * 0.05);
+    }
     if (muted)
         drawText(textSize / 3, "Muted", 0, canvas.width / 100, canvas.height * 0.03, 0);
 }
@@ -138,6 +138,10 @@ function drawText(size, text, center, x, y, height) {
     let textWidth = ctx.measureText(text).width;
     if (center == 1)
         ctx.fillText(text, (canvas.width - textWidth) / 2, canvas.height / height);
+    else if (center == 2)
+        ctx.fillText(text, ((canvas.width / 2) - textWidth) / 2, canvas.height / height);
+    else if (center == 3)
+        ctx.fillText(text, (canvas.width / 2) + ((canvas.width / 2) - textWidth) / 2, canvas.height / height);
     else
         ctx.fillText(text, x, y);
 }
