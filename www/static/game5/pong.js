@@ -73,17 +73,15 @@ function drawGameboard() {
     // Print the scores
     drawText(textSize, `${position.score_left}`, 0, canvas.width * 0.25 - textSize / 2 * scale, canvas.height / 12, 0);
     drawText(textSize, `${position.score_right}`, 0, canvas.width * 0.75 - textSize / 2 * scale, canvas.height / 12, 0);
-    if (position.player == 1 && position.p2_nick && position.p1_nick)
-        drawText(textSize, String(position.p1_nick).slice(0, 11), 2, 0, 0, 1.06);
-    else if (position.player == 2 && position.p2_nick && position.p1_nick)
-        drawText(textSize, String(position.p2_nick).slice(0, 11), 3, 0, 0, 1.06);
-    else if (position.player == 3  && position.p2_nick && position.p1_nick) {
-        drawText(textSize, String(position.p1_nick).slice(0, 11), 2, 0, 0, 1.06);
-        drawText(textSize, "vs", 1, 0, 0, 1.06);
-        drawText(textSize, String(position.p2_nick).slice(0, 11), 3, 0, 0, 1.06);
-        ctx.fillStyle = 'red';
-        ctx.font = `${textSize / 2 * scale}px 'Press Start 2P'`;
-        ctx.fillText("🔴 Live", canvas.width * 0.91, canvas.height * 0.05);
+    if (position.p2_nick && position.p1_nick) {
+        drawText(textSize, String(position.p1_nick).slice(0, 12), 2, 0, 0, 1.06);    
+        drawText(textSize, String(position.p2_nick).slice(0, 12), 3, 0, 0, 1.06);
+        if (position.player == 3) {
+            drawText(textSize, "vs", 1, 0, 0, 1.06);        
+            ctx.fillStyle = 'red';
+            ctx.font = `${textSize / 2 * scale}px 'Press Start 2P'`;
+            ctx.fillText("🔴 Live", canvas.width * 0.91, canvas.height * 0.05);
+        }
     }
     if (muted)
         drawText(textSize / 3, "Muted", 0, canvas.width / 100, canvas.height * 0.03, 0);
@@ -150,9 +148,9 @@ function drawWinners() {
     if (!muted)
         winSound.play();
     if (position.score_left > position.score_right)
-        drawText(textSize, String(position.p1_nick).slice(0, 15) + " wins!!", 1, 0, 0, 3.5);
+        drawText(textSize, String(position.p1_nick).slice(0, 20) + " wins!!", 1, 0, 0, 3.5);
     else
-        drawText(textSize, String(position.p2_nick).slice(0, 15) + " wins!!", 1, 0, 0, 3.5);
+        drawText(textSize, String(position.p2_nick).slice(0, 20) + " wins!!", 1, 0, 0, 3.5);
     if (position.player == 0)
         drawText(textSize, "Opponent disconnected!!", 1, 0, 0, 1.3);
 }

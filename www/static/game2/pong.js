@@ -74,9 +74,9 @@ function drawGameboard() {
     // Print the scores
     drawText(textSize, `${position.score_left}`, 0, canvas.width * 0.25 - textSize / 2 * scale, canvas.height / 12, 0);
     drawText(textSize, `${position.score_right}`, 0, canvas.width * 0.75 - textSize / 2 * scale, canvas.height / 12, 0);
-    drawText(textSize, String(position.p1_nick).slice(0, 11), 2, 0, 0, 1.06);
+    drawText(textSize, String(position.p1_nick).slice(0, 12), 2, 0, 0, 1.06);
     if (position.p2_nick)
-        drawText(textSize, String(position.p2_nick).slice(0, 11), 3, 0, 0, 1.06);
+        drawText(textSize, String(position.p2_nick).slice(0, 12), 3, 0, 0, 1.06);
     if (muted)
         drawText(textSize / 3, "Muted", 0, canvas.width / 100, canvas.height * 0.03, 0);
 }
