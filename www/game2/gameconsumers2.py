@@ -31,12 +31,14 @@ class GameConsumer2(AsyncWebsocketConsumer):
                 self.rooms[self.room_group_name]["player1_connected"] = True
                 self.rooms[self.room_group_name]["player2_connected"] = False
                 self.rooms[self.room_group_name]["player1_id"] = self.user
+                self.rooms[self.room_group_name]["player1_nick"] = str(self.user.displayname)
                 await self.rooms[self.room_group_name]['players']['player1'].send_gameboard(self.ball, self.left_paddle, self.right_paddle, self.score, PLAYER_1)
             elif self.rooms[self.room_group_name]["player2_connected"] == False and self.rooms[self.room_group_name]["player1_id"] != self.user:
                 self.rooms[self.room_group_name]['players']['player2'] = self
                 self.rooms[self.room_group_name]["key_states_2"] = {}
                 self.rooms[self.room_group_name]["player2_connected"] = True
                 self.rooms[self.room_group_name]["player2_id"] = self.user
+                self.rooms[self.room_group_name]["player2_nick"] = str(self.user.displayname)
                 await self.rooms[self.room_group_name]['players']['player2'].send_gameboard(self.ball, self.left_paddle, self.right_paddle, self.score, PLAYER_2)
                 asyncio.ensure_future(self.playGame())                      # Init game on players2 instance
             #print("Players Info: " + str(self.rooms[self.room_group_name]))
@@ -76,8 +78,10 @@ class GameConsumer2(AsyncWebsocketConsumer):
             "right_paddle_x": r_paddle.x, "right_paddle_y": r_paddle.y,
             "paddle_width": r_paddle.width, "paddle_height": r_paddle.height,
             "score_left": score.left_score, "score_right": score.right_score,
-            "winner": score.won, "player": player
+            "winner": score.won, "player": player, "p1_nick": self.rooms[self.room_group_name]["player1_nick"]
             }
+        if self.rooms[self.room_group_name]["player2_connected"] == True:
+            gameboard["p2_nick"] = self.rooms[self.room_group_name]["player2_nick"]
         await self.send(text_data=json.dumps(gameboard))
 
     async def waiting_countdown(self):

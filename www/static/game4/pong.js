@@ -36,10 +36,10 @@ function drawCountdown() {
         if (countdown >= 0) {
             drawGameboard();            
             drawText(textSize, "M to mute / P to pause", 1, 0, 0, 1.3);
-            drawText(textSize / 3, "Key W: Up", 0, canvas.width / 100, canvas.height * 0.95, 0);
-            drawText(textSize / 3, "Key S: Down", 0, canvas.width / 100, canvas.height * 0.98, 0);
-            drawText(textSize / 3, "Key \u2191: Up", 0, canvas.width * 0.9, canvas.height * 0.95, 0);
-            drawText(textSize / 3, "Key \u2193: Down", 0, canvas.width * 0.9, canvas.height * 0.98, 0);      
+            drawText(textSize, "Player 1", 2, 0, 0, 1.06);
+            drawText(textSize, "Player 2", 3, 0, 0, 1.06);
+            drawText(textSize / 2, "Key W: Up / Key S: Down", 2, 0, 0, 1.02);
+            drawText(textSize / 2, "Key \u2191: Up / Key \u2193: Down", 3, 0, 0, 1.02);
             if (countdown > 0) {
                 drawText(textSize, `${countdown}`, 1, 0, 0, 3.5);
                 if (!muted)
@@ -66,10 +66,10 @@ function initGameboard() {
     drawGameboard();
     drawText(textSize, "Get Ready!!", 1, 0, 0, 3.5);
     drawText(textSize, "M to mute / P to pause", 1, 0, 0, 1.3);
-    drawText(textSize / 3, "Key W: Up", 0, canvas.width / 100, canvas.height * 0.95, 0);
-    drawText(textSize / 3, "Key S: Down", 0, canvas.width / 100, canvas.height * 0.98, 0);
-    drawText(textSize / 3, "Key \u2191: Up", 0, canvas.width * 0.9, canvas.height * 0.95, 0);
-    drawText(textSize / 3, "Key \u2193: Down", 0, canvas.width * 0.9, canvas.height * 0.98, 0);
+    drawText(textSize, "Player 1", 2, 0, 0, 1.06);
+    drawText(textSize, "Player 2", 3, 0, 0, 1.06);
+    drawText(textSize / 2, "Key W: Up / Key S: Down", 2, 0, 0, 1.02);
+    drawText(textSize / 2, "Key \u2191: Up / Key \u2193: Down", 3, 0, 0, 1.02);
 }
 
 function drawGameboard() {
@@ -103,6 +103,8 @@ function drawGameboard() {
     // Print the scores
     drawText(textSize, `${position.score_left}`, 0, canvas.width * 0.25 - textSize / 2 * scale, canvas.height / 12, 0);
     drawText(textSize, `${position.score_right}`, 0, canvas.width * 0.75 - textSize / 2 * scale, canvas.height / 12, 0);
+    drawText(textSize, "Player 1", 2, 0, 0, 1.06);
+    drawText(textSize, "Player 2", 3, 0, 0, 1.06);    
     if (muted)
         drawText(textSize / 3, "Muted", 0, canvas.width / 100, canvas.height * 0.03, 0);
     if (keys['F14'] && messageNumber > 0)
@@ -127,6 +129,10 @@ function drawText(size, text, center, x, y, height) {
     let textWidth = ctx.measureText(text).width;
     if (center == 1)
         ctx.fillText(text, (canvas.width - textWidth) / 2, canvas.height / height);
+    else if (center == 2)
+        ctx.fillText(text, ((canvas.width / 2) - textWidth) / 2, canvas.height / height);
+    else if (center == 3)
+        ctx.fillText(text, (canvas.width / 2) + ((canvas.width / 2) - textWidth) / 2, canvas.height / height);
     else
         ctx.fillText(text, x, y);
 }
@@ -165,9 +171,9 @@ socket.onmessage = function(event) {
                 if (!muted)
                     winSound.play();
                 if (position.score_left > position.score_right)
-                    drawText(textSize, "Left Player wins!!", 1, 0, 0, 3.5);
+                    drawText(textSize, "Player 1 wins!!", 1, 0, 0, 3.5);
                 else
-                    drawText(textSize, "Right Player wins!!", 1, 0, 0, 3.5);
+                    drawText(textSize, "Player 2 wins!!", 1, 0, 0, 3.5);
             }, 500);
         }
     }

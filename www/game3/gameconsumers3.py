@@ -47,7 +47,7 @@ class GameConsumer3(AsyncWebsocketConsumer):
             "right_paddle_x": r_paddle.x, "right_paddle_y": r_paddle.y,
             "paddle_width": r_paddle.width, "paddle_height": r_paddle.height,
             "score_left": score.left_score, "score_right": score.right_score,
-            "winner": score.won
+            "winner": score.won, "p1_nick": str(self.user.displayname)
             }
         await self.send(text_data=json.dumps(gameboard))
 
