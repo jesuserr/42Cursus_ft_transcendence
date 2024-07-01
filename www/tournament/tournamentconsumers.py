@@ -148,6 +148,19 @@ class TournamentConsumer(AsyncJsonWebsocketConsumer):
 				)
         else:
             msg = await self.next_round()
+            #send warm message to the next players
+            message_data = {
+        	'room_name': 'chat_' + self.room_name,
+        	'email': self.tournament.tournament,
+        	'displayname': self.tournament.tournament,
+        	'message': await self.get_displayname_from_email(msg['START_GAME']['Player1']) + ' and ' + await self.get_displayname_from_email(msg['START_GAME']['Player2']) + ' are the following players',
+			}
+            await self.channel_layer.group_send(
+			'chat_' + self.room_name,
+			{
+				'type': 'chat.room.message',
+				'message': json.dumps(message_data),
+			})
             await asyncio.sleep(5)              # delay to see the winner of the round
             await self.send_group_msg(msg)
             data = await self.PlayModel()
@@ -222,6 +235,28 @@ class TournamentConsumer(AsyncJsonWebsocketConsumer):
             await self.change_status(msg['START_GAME']['Player2'], 'PLAYING')
             data = await self.PlayModel()
             await self.request_group_refresh_tournament_status(data)
+            #send warm message to the next players
+            message_data = {
+        	'room_name': 'chat_' + self.room_name,
+        	'email': self.tournament.tournament,
+        	'displayname': self.tournament.tournament,
+        	'message': await self.get_displayname_from_email(msg['START_GAME']['Player1']) + ' and ' + await self.get_displayname_from_email(msg['START_GAME']['Player2']) + ' are the following players',
+			}
+            await self.channel_layer.group_send(
+			'chat_' + self.room_name,
+			{
+				'type': 'chat.room.message',
+				'message': json.dumps(message_data),
+			})
+            
+
+    @database_sync_to_async
+    def get_displayname_from_email(self, email):
+        #try:
+            tmp = User.objects.get(email=email)
+            return tmp.displayname
+        #except:
+        #    return None
             
         
 	#change status of the player
