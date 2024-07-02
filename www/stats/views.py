@@ -9,15 +9,17 @@ import json
 from itertools import chain
 from django.views.decorators.csrf import csrf_exempt
 
+
 @csrf_exempt
 @token_required
 def friendstat(request):
-    response = render(request, "main_stats_friends.html", {'email': request.POST.get('email')})
+    token = request.COOKIES.get('tokenid')
+    tmp = get_user_from_token(token)
+    response = render(request, "main_stats_friends.html", {'email': request.POST.get('email'), 'User': tmp})
     return response
 
 @token_required
 def friend(request):
-    print(request.GET.get('email'))
     return index(request, request.GET.get('email'))
 
 @token_required

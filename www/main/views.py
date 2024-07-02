@@ -41,10 +41,23 @@ def logoff(request):
 def fourtytwo(request):    
 	return fourtytwoLogin(request)
 
+@token_required
 def game(request):
-    response = render(request, "main_game.html")
-    return response
+	token = request.COOKIES.get('tokenid')
+	tmp = get_user_from_token(token)
+	response = render(request, "main_game.html", {'User': tmp})
+	return response
 
+@token_required
 def stats(request):
-    response = render(request, "main_stats.html")
-    return response
+	token = request.COOKIES.get('tokenid')
+	tmp = get_user_from_token(token)
+	response = render(request, "main_stats.html", {'User': tmp})
+	return response
+
+@token_required
+def tournament(request):
+	token = request.COOKIES.get('tokenid')
+	tmp = get_user_from_token(token)
+	response = render(request, "main_tournament.html", {'User': tmp})
+	return response
