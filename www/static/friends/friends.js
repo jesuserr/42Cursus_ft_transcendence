@@ -97,3 +97,24 @@ function Set_Connected_Users(data) {
         table.deleteRow(row.rowIndex);
     });
 }
+
+document.getElementById('FriendStats').addEventListener('click', function() {
+    const friendsList = document.getElementById('friendsList');
+    const userList = document.getElementById('userList');
+    let selectedEmail = null;
+
+    if (friendsList.value) {
+        selectedEmail = friendsList.value;
+    } else if (userList.value) {
+        selectedEmail = userList.value;
+    }
+
+    if (selectedEmail) {
+        // Construir la URL con parámetros de consulta
+        const url = `/stats/friendstat?email=${encodeURIComponent(selectedEmail)}`;
+        // Cambiar la ubicación de la ventana principal
+        window.top.location.href = url;
+    } else {
+        alert('Por favor, selecciona un amigo o un usuario.');
+    }
+});

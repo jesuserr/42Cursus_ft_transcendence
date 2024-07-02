@@ -8,10 +8,24 @@ from main.models import User
 import json
 from itertools import chain
 
+
 @token_required
-def index(request):
-    token = request.COOKIES.get('tokenid')
-    tmp_user = get_user_from_token(token)
+def friendstat(request):
+    response = render(request, "main_stats_friends.html", {'email': request.GET.get('email')})
+    return response
+
+@token_required
+def friend(request):
+    print(request.GET.get('email'))
+    return index(request, request.GET.get('email'))
+
+@token_required
+def index(request, useremail = None):
+    try:
+        tmp_user = User.objects.get(email=useremail)
+    except:
+        token = request.COOKIES.get('tokenid')
+        tmp_user = get_user_from_token(token)
     player_vs_cpu = stats_pvc.objects.filter(left_player = tmp_user)
     player_vs_player = stats_pvp.objects.filter(player_one = tmp_user)
     player_vs_player_tour = stats_pvp_tour.objects.filter(player_one = tmp_user)
