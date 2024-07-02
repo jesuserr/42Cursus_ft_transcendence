@@ -109,12 +109,20 @@ document.getElementById('FriendStats').addEventListener('click', function() {
         selectedEmail = userList.value;
     }
 
-    if (selectedEmail) {
-        // Construir la URL con parámetros de consulta
-        const url = `/stats/friendstat?email=${encodeURIComponent(selectedEmail)}`;
-        // Cambiar la ubicación de la ventana principal
-        window.top.location.href = url;
-    } else {
+	if (selectedEmail) {
+		var form = document.createElement("form");
+		form.setAttribute("method", "post");
+		form.setAttribute("action", `/stats/friendstat`);
+		form.setAttribute("target", "_top"); 
+		var hiddenField = document.createElement("input");
+		hiddenField.setAttribute("type", "hidden");
+		hiddenField.setAttribute("name", "email");
+		hiddenField.setAttribute("value", selectedEmail);
+		form.appendChild(hiddenField);
+		document.body.appendChild(form);
+		form.submit();
+		document.body.removeChild(form);
+	} else {
         alert('Por favor, selecciona un amigo o un usuario.');
     }
 });

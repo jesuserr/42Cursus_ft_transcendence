@@ -7,11 +7,12 @@ from game5.models import stats as stats_pvp_tour    # pvp -> player vs player (t
 from main.models import User
 import json
 from itertools import chain
+from django.views.decorators.csrf import csrf_exempt
 
-
+@csrf_exempt
 @token_required
 def friendstat(request):
-    response = render(request, "main_stats_friends.html", {'email': request.GET.get('email')})
+    response = render(request, "main_stats_friends.html", {'email': request.POST.get('email')})
     return response
 
 @token_required

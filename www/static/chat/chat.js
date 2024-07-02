@@ -444,17 +444,13 @@ selects.forEach(function(select) {
     });
 });
 
-// when user is typing, send the command to server
 var chatInput = document.getElementById('CHAT_MSG_INPUT');
 chatInput.addEventListener('input', function() 
 {
 	socket.send(JSON.stringify({'TYPING': currentchat}));
 });
 
-// Primero, selecciona el botón por su ID
 const botonPrivateGame = document.getElementById('PRIVATE_GAME');
-
-// Luego, añade un event listener que escuche por el evento 'click'
 botonPrivateGame.addEventListener('click', function() {
     const baseUrl = window.location.origin;
     let randomString = '';
@@ -466,3 +462,24 @@ botonPrivateGame.addEventListener('click', function() {
     const link = `${baseUrl}/game2/${randomString}`;
     socket.send(JSON.stringify({ 'SEND_PRIVATE_MSG': currentchat, 'DISPLAYNAMETO': currentchatdisplayname , 'MESSAGE': 'Follow the link to play a private game with me: ' + link }));
 });
+
+document.getElementById('FriendStats').addEventListener('click', function() {
+    var selectedUser = document.querySelector('#USERLIST .selected');
+    if (!selectedUser || selectedUser.dataset.value == '') {
+        alert("Please select a user to view their stats.");
+    } else {
+		var form = document.createElement("form");
+		form.setAttribute("method", "post");
+		form.setAttribute("action", `/stats/friendstat`);
+		form.setAttribute("target", "_top"); 
+		var hiddenField = document.createElement("input");
+		hiddenField.setAttribute("type", "hidden");
+		hiddenField.setAttribute("name", "email");
+		hiddenField.setAttribute("value", selectedUser.dataset.pk);
+		form.appendChild(hiddenField);
+		document.body.appendChild(form);
+		form.submit();
+    }
+});
+
+
