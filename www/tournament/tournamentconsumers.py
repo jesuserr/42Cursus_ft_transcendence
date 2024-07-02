@@ -212,7 +212,6 @@ class TournamentConsumer(AsyncJsonWebsocketConsumer):
         game_name += self.tournament.tournament
         game_name += "___"
         game_name += str(timestamp_seconds)
-        print(self.user.email + " " + game_name) 
         #Create a new round
         tmpround = Tournament_Round()
         tmpround.tournament_name = self.tournament
@@ -252,13 +251,12 @@ class TournamentConsumer(AsyncJsonWebsocketConsumer):
 
     @database_sync_to_async
     def get_displayname_from_email(self, email):
-        #try:
+        try:
             tmp = User.objects.get(email=email)
             return tmp.displayname
-        #except:
-        #    return None
-            
-        
+        except:
+            return "UnName"
+                    
 	#change status of the player
     @database_sync_to_async
     def change_status(self, player, status):
