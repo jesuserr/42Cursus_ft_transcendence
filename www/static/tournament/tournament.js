@@ -131,10 +131,11 @@ document.addEventListener('DOMContentLoaded', function() {
         var tournamentName = document.getElementById('tournamentName').value;
         if (tournamentName !== '') {
             var urlPattern = /^[a-zA-Z0-9-._~:/?#[\]@!$&'()*+,;=]+$/;
-            if (urlPattern.test(tournamentName)) {
+            var tripleUnderscorePattern = /___/;
+            if (urlPattern.test(tournamentName) && !tripleUnderscorePattern.test(tournamentName)) {
                 window.location.href = "/tournament/" + tournamentName;
             } else {
-                alert('The tournament name contains invalid characters.');
+                alert('The tournament name contains invalid characters or three consecutive underscores.');
             }
         } else {
             alert('The name of the tournament cannot be empty.');
