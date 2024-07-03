@@ -65,7 +65,7 @@
     <div class="tab-content mt-3" id="myTabContent">
         <div class="tab-pane fade show active" id="player-stats" role="tabpanel" aria-labelledby="player-stats-tab">
             <h4>Player stats</h4>
-            <table class="table table-sm table-dark" style="display: none;">
+            <table class="table table-sm table-dark">
                 <thead>
                     <tr>
                         <th scope="col"></th>
@@ -129,14 +129,29 @@
                         <td>{{ user_stats.longest_match_pvp }} secs</td>
                         <td>{{ user_stats.longest_match }} secs</td>
                     </tr>
+                    <tr>
+                        <th scope="row">Played tournaments</th>
+                        <td> --- </td>
+                        <td> --- </td>
+                        <td>{{ user_stats.tournaments_played }}</td>
+                    </tr>
+                    <tr>
+                        <th scope="row">Won tournaments</th>
+                        <td> --- </td>
+                        <td> --- </td>
+                        <td>{{ user_stats.tournaments_won }} ({{ user_stats.tournaments_won_ratio }}%)</td>
+                    </tr>
+                    <tr>
+                        <th scope="row">Lost tournaments</th>
+                        <td> --- </td>                        
+                        <td> --- </td>
+                        <td>{{ user_stats.tournaments_lost }} ({{ user_stats.tournaments_lost_ratio }}%)</td>
+                    </tr>
                 </tbody>
             </table>
 	    <div class="container-fluid d-flex justify-content-center" style="margin-bottom: 15px">
 			<div class="col-md-2">
-            			<div style="display: none;" id="tournaments-won">Tournaments Won: {{ user_stats.tournaments_won }}</div>
-            			<div style="display: none;"id="tournaments-lost">Tournaments Lost: {{ user_stats.tournaments_lost }}</div>
-            			<div style="display: none;"id="tournaments-played">Tournaments Played: {{ user_stats.tournaments_played }}</div>
-            			<canvas id="donutChart" style="margin-top: 10px;"></canvas>
+                <canvas id="donutChart" style="margin-top: 10px;"></canvas>
 			</div>
 		</div>
 	<div class="container-fluid">
@@ -172,8 +187,23 @@
                     {% for match in player_game_history %}
                     <tr>
                         <td>{{ match.date }}</td>
-                        <td><img src="{{match.player_avatar}}" width="25" height="25" alt="" onerror="this.onerror=null; this.src='/static/avatars/default.jpg'"/> {{ match.player }}</td>
-                        <td><img src="{{match.opponent_avatar}}" width="25" height="25" alt="" onerror="this.onerror=null; this.src='/static/avatars/default.jpg'"/> {{ match.opponent }}</td>
+                        <td>
+                            <img src="{{match.player_avatar}}" width="25" height="25" alt="" onerror="this.onerror=null; this.src='/static/avatars/default.jpg'"/>
+                            {% if match.player_score > match.opponent_score %}
+                                <span style="color: green;">(W)</span>
+                            {% else %}
+                                <span style="color: red;">(L)</span>
+                            {% endif %}
+                            {{ match.player }}
+                        </td>
+                        <td><img src="{{match.opponent_avatar}}" width="25" height="25" alt="" onerror="this.onerror=null; this.src='/static/avatars/default.jpg'"/>
+                            {% if match.player_score > match.opponent_score %}
+                                <span style="color: red;">(L)</span>
+                            {% else %}
+                                <span style="color: green;">(W)</span>
+                            {% endif %}
+                            {{ match.opponent }}
+                        </td>
                         <td>{{ match.player_score }}</td>
                         <td>{{ match.opponent_score }}</td>
                         <td>{{ match.match_length }}</td>
@@ -201,8 +231,23 @@
                     {% for match in all_game_history %}
                     <tr>
                         <td>{{ match.date }}</td>
-                        <td><img src="{{match.player_avatar}}" width="25" height="25" alt="" onerror="this.onerror=null; this.src='/static/avatars/default.jpg'"/> {{ match.player }}</td>
-                        <td><img src="{{match.opponent_avatar}}" width="25" height="25" alt="" onerror="this.onerror=null; this.src='/static/avatars/default.jpg'"/> {{ match.opponent }}</td>
+                        <td>
+                            <img src="{{match.player_avatar}}" width="25" height="25" alt="" onerror="this.onerror=null; this.src='/static/avatars/default.jpg'"/>
+                            {% if match.player_score > match.opponent_score %}
+                                <span style="color: green;">(W)</span>
+                            {% else %}
+                                <span style="color: red;">(L)</span>
+                            {% endif %}
+                            {{ match.player }}
+                        </td>
+                        <td><img src="{{match.opponent_avatar}}" width="25" height="25" alt="" onerror="this.onerror=null; this.src='/static/avatars/default.jpg'"/>
+                            {% if match.player_score > match.opponent_score %}
+                                <span style="color: red;">(L)</span>
+                            {% else %}
+                                <span style="color: green;">(W)</span>
+                            {% endif %}
+                            {{ match.opponent }}
+                        </td>
                         <td>{{ match.player_score }}</td>
                         <td>{{ match.opponent_score }}</td>
                         <td>{{ match.match_length }}</td>                        

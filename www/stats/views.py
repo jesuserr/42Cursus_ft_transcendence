@@ -9,7 +9,6 @@ import json
 from itertools import chain
 from django.views.decorators.csrf import csrf_exempt
 
-
 @csrf_exempt
 @token_required
 def friendstat(request):
@@ -80,6 +79,8 @@ def calculate_games_stats(player_vs_cpu, player_vs_player, player_vs_player_tour
     user_stats['tournaments_won'] = player_vs_player_tour.filter(player_one_tournament_win = True).count()
     user_stats['tournaments_played'] = countPlayedTournaments(stats_pvp_tour.objects.all())
     user_stats['tournaments_lost'] = user_stats['tournaments_played'] - user_stats['tournaments_won']
+    user_stats['tournaments_won_ratio'] = round(user_stats['tournaments_won'] / user_stats['tournaments_played'] * 100, 1) if user_stats['tournaments_played'] else 0
+    user_stats['tournaments_lost_ratio'] = round(user_stats['tournaments_lost'] / user_stats['tournaments_played'] * 100, 1) if user_stats['tournaments_played'] else 0
     return user_stats
 
 def countPlayedTournaments(object_pvp_tour):
@@ -144,7 +145,7 @@ def generate_game_history(object_pvc, object_pvp, object_pvp_tour):
             'player': player_info.displayname,
             'player_avatar': str(player_info.avatar),
             'opponent': 'CPU',
-            'opponent_avatar': '/static/avatars/CPU.jpg',
+            'opponent_avatar': '/static/avatars/Hal9000.png',
             'player_score': match.left_player_score,
             'opponent_score': match.right_player_score,
             'match_length': float(match.match_length),
