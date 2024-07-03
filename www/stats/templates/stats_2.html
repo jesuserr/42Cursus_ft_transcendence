@@ -176,9 +176,8 @@
                     <tr>
                         <th scope="col">Game Date</th>
                         <th scope="col">Player</th>
-                        <th scope="col">Opponent</th>
-                        <th scope="col">Player Score</th>
-                        <th scope="col">Opponent Score</th>
+                        <th scope="col">Score</th>
+                        <th scope="col">Opponent</th>                        
                         <th scope="col">Match Length</th>
                         <th scope="col">Tournament</th>
                     </tr>
@@ -196,6 +195,7 @@
                             {% endif %}
                             {{ match.player }}
                         </td>
+                        <td>{{ match.player_score }} - {{ match.opponent_score }}</td>                        
                         <td><img src="{{match.opponent_avatar}}" width="25" height="25" alt="" onerror="this.onerror=null; this.src='/static/avatars/default.jpg'"/>
                             {% if match.player_score > match.opponent_score %}
                                 <span style="color: red;">(L)</span>
@@ -204,8 +204,6 @@
                             {% endif %}
                             {{ match.opponent }}
                         </td>
-                        <td>{{ match.player_score }}</td>
-                        <td>{{ match.opponent_score }}</td>
                         <td>{{ match.match_length }}</td>
                         <td>{% if match.tournament %}<span style="color: green;">{{match.tournament_name}}</span>{% else %}<span style="color: red;">No</span>{% endif %}</td>
                     </tr>
@@ -220,9 +218,8 @@
                     <tr>
                         <th scope="col">Game Date</th>
                         <th scope="col">Player 1</th>
+                        <th scope="col">Score</th>
                         <th scope="col">Player 2</th>
-                        <th scope="col">Player 1 Score</th>
-                        <th scope="col">Player 2 Score</th>
                         <th scope="col">Match Length</th>
                         <th scope="col">Tournament</th>
                     </tr>
@@ -240,6 +237,7 @@
                             {% endif %}
                             {{ match.player }}
                         </td>
+                        <td>{{ match.player_score }} - {{ match.opponent_score }}</td>
                         <td><img src="{{match.opponent_avatar}}" width="25" height="25" alt="" onerror="this.onerror=null; this.src='/static/avatars/default.jpg'"/>
                             {% if match.player_score > match.opponent_score %}
                                 <span style="color: red;">(L)</span>
@@ -247,9 +245,7 @@
                                 <span style="color: green;">(W)</span>
                             {% endif %}
                             {{ match.opponent }}
-                        </td>
-                        <td>{{ match.player_score }}</td>
-                        <td>{{ match.opponent_score }}</td>
+                        </td>                        
                         <td>{{ match.match_length }}</td>                        
                         <td>{% if match.tournament %}<span style="color: green;">{{match.tournament_name}}</span>{% else %}<span style="color: red;">No</span>{% endif %}</td>
                     </tr>
