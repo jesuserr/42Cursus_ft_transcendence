@@ -216,3 +216,38 @@ font.load().then(function () {
     console.log('Font is not available');
     animationLoop();
   });
+
+// ****************************** PLAY AGAIN ***********************************
+
+// When socket is closed, draw button to play again
+socket.onclose = function(event) {
+    setTimeout(function() {
+        drawPlayAgainButton();
+    }, 2000);
+};
+
+function drawPlayAgainButton() {
+    ctx.clearRect(canvas.width / 3, canvas.height / 1.45, canvas.width / 3, canvas.height / 9);
+    ctx.beginPath();
+    ctx.setLineDash([]);
+    ctx.lineWidth = scale * 6;
+    ctx.strokeStyle = 'white';
+    ctx.rect(canvas.width / 3, canvas.height / 1.45, canvas.width / 3, canvas.height / 9);
+    ctx.stroke();
+    drawText(textSize, "Play again", 1, 0, 0, 1.3);
+    canvas.addEventListener('click', function(event) {
+        const rect = canvas.getBoundingClientRect();
+        const x = event.clientX - rect.left - ctx.lineWidth * 2;
+        const y = event.clientY - rect.top - ctx.lineWidth * 2;
+        if (isClickInsideButton(x, y))
+            window.location.reload();
+    });
+    window.addEventListener('keydown', function(event) {
+        if (event.code === 'Space' || event.code === 'Enter' || event.code === 'KeyY')
+            window.location.reload();
+    });
+}
+
+function isClickInsideButton(x, y) {
+    return x > canvas.width / 3 && y > canvas.height / 1.45 && x < canvas.width / 1.5 && y < canvas.height * 0.8;
+}
