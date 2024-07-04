@@ -64,7 +64,7 @@ def editProfile(request):
 ## Logoff ##
 
 def logoffPage(request):
-       response = render(request, 'main_index.html')
+       response = render(request, 'main_root.html')
        response.set_cookie('tokenid', '')
        return response
 
@@ -111,7 +111,7 @@ def loginPage(request):
 
 ## Main page ##
 
-def maniPage(request):
+def mainPage(request):
     try:
         token = request.COOKIES.get('tokenid')
         tmp = get_user_from_token(token)

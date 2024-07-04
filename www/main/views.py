@@ -9,7 +9,11 @@ def welcome(request):
     return response
 
 def index(request):
-	return maniPage(request)
+	response = render(request, "main_iframe.html")
+	return response
+
+def main(request):
+	return mainPage(request)
 
 def newuser(request):
 	if not request.method == 'POST':

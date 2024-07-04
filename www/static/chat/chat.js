@@ -87,17 +87,22 @@ function New_Private_msg(data) {
         messageContent.appendChild(document.createTextNode(data.displaynamefrom + ': '));
         let parts = data.message.split(urlRegex);
 
-        parts.forEach(part => {
-            if (part.match(urlRegex)) {
+		parts.forEach(part => {
+			if (part.match(urlRegex)) {
 				let a = document.createElement('a');
 				a.href = part;
-				a.target = '_blank';
-				a.textContent = part 
+				// Comprobar si el enlace es del mismo dominio
+				if (new URL(part).hostname === window.location.hostname) {
+					a.target = '_parent'; // Mismo dominio, abrir en el contexto del padre
+				} else {
+					a.target = '_blank'; // Diferente dominio, abrir en una nueva ventana/tab
+				}
+				a.textContent = part;
 				messageContent.appendChild(a);
-            } else {
-                messageContent.appendChild(document.createTextNode(part));
-            }
-        });
+			} else {
+				messageContent.appendChild(document.createTextNode(part));
+			}
+		});
 
         messageDiv.appendChild(messageContent);
         chatTextDiv.appendChild(messageDiv);
@@ -133,7 +138,12 @@ function Set_Chat_History(alldata) {
                 let a = document.createElement('a');
                 a.href = part;
                 a.textContent = part;
-                a.target = '_blank'; 
+                // Comprobar si el enlace es del mismo dominio
+                if (new URL(part).hostname === window.location.hostname) {
+                    a.target = '_parent'; // Mismo dominio, abrir en el contexto del padre
+                } else {
+                    a.target = '_blank'; // Diferente dominio, abrir en una nueva ventana/tab
+                }
                 messageElement.appendChild(a);
             } else {
                 messageElement.appendChild(document.createTextNode(part));
@@ -189,7 +199,12 @@ function New_Room_msg(data) {
                 let a = document.createElement('a');
                 a.href = part;
                 a.textContent = part;
-                a.target = '_blank'; 
+                // Comprobar si el enlace es del mismo dominio
+                if (new URL(part).hostname === window.location.hostname) {
+                    a.target = '_parent'; // Mismo dominio, abrir en el contexto del padre
+                } else {
+                    a.target = '_blank'; // Diferente dominio, abrir en una nueva ventana/tab
+                }
                 messageElement.appendChild(a);
             } else {
                 messageElement.appendChild(document.createTextNode(part));
@@ -471,7 +486,7 @@ document.getElementById('FriendStats').addEventListener('click', function() {
 		var form = document.createElement("form");
 		form.setAttribute("method", "post");
 		form.setAttribute("action", `/stats/friendstat`);
-		form.setAttribute("target", "_top"); 
+		form.setAttribute("target", "_parent"); 
 		var hiddenField = document.createElement("input");
 		hiddenField.setAttribute("type", "hidden");
 		hiddenField.setAttribute("name", "email");

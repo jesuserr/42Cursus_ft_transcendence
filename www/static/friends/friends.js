@@ -113,7 +113,7 @@ document.getElementById('FriendStats').addEventListener('click', function() {
 		var form = document.createElement("form");
 		form.setAttribute("method", "post");
 		form.setAttribute("action", `/stats/friendstat`);
-		form.setAttribute("target", "_top"); 
+		form.setAttribute("target", "_parent");
 		var hiddenField = document.createElement("input");
 		hiddenField.setAttribute("type", "hidden");
 		hiddenField.setAttribute("name", "email");

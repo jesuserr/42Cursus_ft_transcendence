@@ -60,7 +60,7 @@ def fourtytwoLogin(request):
 		if (tmpuser.tfa == True):
 			return tfa(request, tmpuser)
 		FormData['ErrorMsg'] = 'You have logged in with the user of 42'
-		response = render(request, 'main_index.html', {'Data': FormData, 'User': tmpuser})
+		response = render(request, 'main_root.html', {'Data': FormData, 'User': tmpuser})
 		response.set_cookie('tokenid', tokenid, secure=True, httponly=True)
 		return response
 	except:
