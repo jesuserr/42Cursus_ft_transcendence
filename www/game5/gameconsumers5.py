@@ -62,9 +62,9 @@ class GameConsumer5(AsyncWebsocketConsumer):
             return
         players = self.rooms[self.room_group_name]['players']           # alias
         room = self.rooms[self.room_group_name]                         # alias
-        if players['player1'] == self:
+        if 'player1' in players and players['player1'] == self:
             self.rooms[self.room_group_name]["player1_connected"] = False
-        elif players['player2'] == self:
+        if 'player2' in players and players['player2'] == self:
             self.rooms[self.room_group_name]["player2_connected"] = False
         if not room["player2_connected"] and not room["player1_connected"]:
             del self.rooms[self.room_group_name]                        # delete room_group_name from dictionary when both players disconnect
