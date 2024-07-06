@@ -27,7 +27,7 @@
         cursor: pointer;
         font-size: 15px;
         transition: background-color 0.3s ease;
-	margin-right: 10px;
+        margin-right: 10px;
     }
 
     #toggleButton:hover {
@@ -47,6 +47,11 @@
         margin-top: 0.5rem;
     }
 
+    .navbar {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+    }
 </style>
 <body>
     <nav class="navbar navbar-light py-3">
@@ -57,19 +62,19 @@
         <div id="navbarNavDropdown">
             <ul class="navbar-nav mr-auto"></ul>
             <div class="user-menu">
-		    <button id="toggleButton"><i class="fas fa-users"></i></button>
-		    <div class="user-menu">
-                <img src="{{ User.avatar }}" width="40" height="40" style="margin-right: 0.4rem;" class="rounded-circle" alt="Usuario" onerror="this.onerror=null; this.src='/static/avatars/default.jpg'">
-                <a id="displayname" class="nav-link dropdown-toggle" href="#" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false" style="color:white">{{ User.displayname }}</a>
-                <div class="dropdown-menu" aria-labelledby="displayname">
-                    <a class="dropdown-item" href="/main/edituser">Edit profile</a>
-                    <a class="dropdown-item" onclick="return confirm('Are you sure want to close the session?')" href="/main/logoff">Logoff</a>
+                <button id="toggleButton"><i class="fas fa-users"></i></button>
+                <div class="user-menu">
+                    <img src="{{ User.avatar }}" width="40" height="40" style="margin-right: 0.4rem;" class="rounded-circle" alt="Usuario" onerror="this.onerror=null; this.src='/static/avatars/default.jpg'">
+                    <a id="displayname" class="nav-link dropdown-toggle" href="#" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false" style="color:white">{{ User.displayname }}</a>
+                    <div class="dropdown-menu" aria-labelledby="displayname">
+                        <a class="dropdown-item" href="/main/edituser">Edit profile</a>
+                        <a class="dropdown-item" onclick="return confirm('Are you sure want to close the session?')" href="/main/logoff">Logoff</a>
+                    </div>
                 </div>
             </div>
-	    </div>
         </div>
-</nav>
         {% endif %}
+    </nav>
     <div id="iframeContainer" style="z-index: 2; position: fixed; top: 0; right: 0; height: 100%; width: 14%; display: none;">
         <iframe src="/friends" style="height: 100%; width: 100%;"></iframe>
     </div>
