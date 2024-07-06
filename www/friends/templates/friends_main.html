@@ -48,25 +48,6 @@
             cursor: pointer;
         }
 
-	    #toggleButton {
-        background-color: grey;
-        color: white;
-        border: none;
-        border-radius: 50%;
-        width: 40px;
-        height: 40px;
-        display: flex;
-        justify-content: center;
-        align-items: center;
-        cursor: pointer;
-        font-size: 15px;
-        transition: background-color 0.3s ease;
-    }
-
-    #toggleButton:hover {
-        background-color: #45a049;
-    }
-
 
 	    #userList, #friendsList {
 	margin-top: 10px;
@@ -84,10 +65,6 @@
     </style>
 </head>
 <body>
-	<div class="nav-item">
-		<button id="toggleButton"> <i class="fas fa-arrow-right"></i></button>
-	</div>
-
     Friends connected
     <table id="userTable">
         <tr>
@@ -110,10 +87,5 @@
 		<button id="FriendStats" class="button">View Friend's Stats</button>
     </div>
     <script src="/static/friends/friends.js"></script>
-        <script>
-        document.getElementById('toggleButton').addEventListener('click', function() {
-            document.body.style.display = 'none';
-        });
-    </script>
 </body>
 </html>

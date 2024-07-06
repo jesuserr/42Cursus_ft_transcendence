@@ -46,3 +46,25 @@
     text-align: center;
     color: white;
 }
+
+@media (min-width: 520px) and (max-width: 810px) {	
+	#boton1, #boton2, #boton3 {
+		font-size: 10px;
+	}
+
+	.welcome {
+		width: 60%;
+		height: 15rem;	
+	}
+}
+
+@media (max-width: 520px)
+{
+	h1 {
+		font-size: 10px;	
+	}
+
+	#boton1, #boton2, #boton3 {
+		font-size: 5px !important;
+	}
+}

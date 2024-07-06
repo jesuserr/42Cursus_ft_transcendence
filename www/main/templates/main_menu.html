@@ -5,15 +5,14 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Pong 42</title>
     <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css" integrity="sha512-6gG0j1d2TujP8wGXbQGF1gxIJH5GyfgL9n7BdGzppHw4+UfJjsR6xNogwFJrMKImzA7IS+PvOIHPP5TI7v4iKw==" crossorigin="anonymous" referrerpolicy="no-referrer" />
     <link rel="stylesheet" href="/static/assets/fonts/fontawesome-all.min.css">
     <link rel="stylesheet" href="/static/assets/css/Navbar-Centered-Brand.css">
     <link rel="stylesheet" href="/static/assets/css/styles.css">
 </head>
 <style>
-	body {
-		overflow-x: hidden;
-	}
+    body {
+        overflow-x: hidden;
+    }
 
     #toggleButton {
         background-color: grey;
@@ -28,74 +27,57 @@
         cursor: pointer;
         font-size: 15px;
         transition: background-color 0.3s ease;
+	margin-right: 10px;
     }
 
     #toggleButton:hover {
         background-color: #45a049;
     }
+
+    .user-menu {
+        display: flex;
+        align-items: center;
+        position: relative;
+    }
+
+    .user-menu .dropdown-menu {
+        left: 0;
+        right: auto;
+        top: 100%;
+        margin-top: 0.5rem;
+    }
+
 </style>
 <body>
-    <nav class="navbar navbar-expand-lg navbar-light py-3">
+    <nav class="navbar navbar-light py-3">
         <a href="/main/main">
             <img src="/static/assets/img/logo.gif" width="100" height="100" alt="Logo">
         </a>
-        <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNavDropdown" aria-controls="navbarNavDropdown" aria-expanded="false" aria-label="Toggle navigation">
-            <span class="navbar-toggler-icon"></span>
-        </button>
-        <div class="collapse navbar-collapse" id="navbarNavDropdown">
-            <ul class="navbar-nav mr-auto">
-                <li class="nav-item dropdown">
-                    <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown1" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                        User Management
-                    </a>
-                    <div class="dropdown-menu" aria-labelledby="navbarDropdown1">
-                        <a class="dropdown-item" href="/main/login">Login</a>
-                        <a class="dropdown-item" href="/main/edituser">Edit profile</a>
-                        <a onclick="return confirm('Are you sure want to close the session?')" class="dropdown-item" href="/main/logoff">Logoff</a>
-                        <a class="dropdown-item" href="/deploy">Deploy</a>
-                        <a class="dropdown-item" href="/deploy/reboot">Reboot</a>
-                    </div>
-                </li>
-                <li class="nav-item dropdown">
-                    <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown2" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                        Statistics
-                    </a>
-                    <div class="dropdown-menu" aria-labelledby="navbarDropdown2">
-                        <a class="dropdown-item" href="/main/stats">View</a>
-                    </div>
-                </li>
-                <li class="nav-item dropdown">
-                    <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown3" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                        Game
-                    </a>
-                    <div class="dropdown-menu" aria-labelledby="navbarDropdown3">
-                        <a class="dropdown-item" href="/main/game">Player vs CPU</a>
-                        <a class="dropdown-item" href="/game4">Player vs Player (local)</a>
-                        <a class="dropdown-item" href="/game2">Player vs Player (remote)</a>
-                        <a class="dropdown-item" href="/chat">Chat</a>
-                    </div>
-                </li>
-            </ul>
-	    <div class="navbar-text" style="display: flex">
-                <img src="{{User.avatar}}" width="30" height="30" style="margin-right: 0.4rem;" class="rounded-circle" alt="Usuario" onerror="this.onerror=null; this.src='/static/avatars/default.jpg'">
-                <p id="displayname" class="mb-0 me-3" style="color:white">{{ User.displayname }}</p>
+        {% if User %}
+        <div id="navbarNavDropdown">
+            <ul class="navbar-nav mr-auto"></ul>
+            <div class="user-menu">
+		    <button id="toggleButton"><i class="fas fa-users"></i></button>
+		    <div class="user-menu">
+                <img src="{{ User.avatar }}" width="40" height="40" style="margin-right: 0.4rem;" class="rounded-circle" alt="Usuario" onerror="this.onerror=null; this.src='/static/avatars/default.jpg'">
+                <a id="displayname" class="nav-link dropdown-toggle" href="#" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false" style="color:white">{{ User.displayname }}</a>
+                <div class="dropdown-menu" aria-labelledby="displayname">
+                    <a class="dropdown-item" href="/main/edituser">Edit profile</a>
+                    <a class="dropdown-item" onclick="return confirm('Are you sure want to close the session?')" href="/main/logoff">Logoff</a>
+                </div>
             </div>
-	    <div class="nav-item">
-		    <button id="toggleButton"> <i class="fas fa-users"></i></button>
-		    </div>
+	    </div>
         </div>
-    </nav>
+</nav>
+        {% endif %}
     <div id="iframeContainer" style="z-index: 2; position: fixed; top: 0; right: 0; height: 100%; width: 14%; display: none;">
-	    <iframe src="/friends" style="height: 100%; width: 100%;"></iframe></div>
+        <iframe src="/friends" style="height: 100%; width: 100%;"></iframe>
+    </div>
     <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.9.2/dist/umd/popper.min.js"></script>
     <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
     <script>
-        var displayName = document.getElementById('displayname').innerText;
-        if (displayName !== '') {
-            document.getElementById('toggleButton').style.display = 'block';
-        }
-    	        document.getElementById('toggleButton').addEventListener('click', function() {
+         document.getElementById('toggleButton').addEventListener('click', function() {
             var iframeContainer = document.getElementById('iframeContainer');
             if (iframeContainer.style.display === 'none' || iframeContainer.style.display === '') {
                 iframeContainer.style.display = 'block';

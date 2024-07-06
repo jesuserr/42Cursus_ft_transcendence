@@ -63,6 +63,10 @@ nav {
 	color: white !important;
 }
 
+.nav-link {
+	margin-right: 50px;
+}
+
 .navbar-brand {
     position: absolute;
     left: 50%;
@@ -70,7 +74,8 @@ nav {
 }
 
 .navbar-nav {
-    flex-direction: row;
+    display: flex;
+    flex-wrap: nowrap;
 }
 
 .nav-item {
@@ -134,31 +139,4 @@ ul li a:hover:before{
   transition:transform 0.5s;
   transform-origin:left;
   transform:scaleX(1);
-}
-
-
-@media (max-width: 1216px) {
-    .navbar-brand {
-        position: static;
-        transform: none;
-        margin-left: auto;
-        margin-right: auto;
-    }
-
-    .navbar-nav {
-        flex-direction: column;
-    }
-
-    .nav-item {
-        margin-right: 0;
-        margin-bottom: 10px;
-    }
-
-    .navbar-collapse {
-        margin-top: 10px; 
-    }
-
-	.navbar-light .navbar-toggler {
-		background-color: white;
-	}
 }
