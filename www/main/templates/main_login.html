@@ -19,22 +19,8 @@
         }
     </style>
 </head>
-
 <body>
-    <div class="background-container">
-        <canvas id="test"></canvas>
-    </div>
-    <div class="all-welcome">
-        <div class="welcome">
-            <h1>Welcome</h1>
-        </div>
-        <div class="button-container">
-            <a href="#" class="button submit arrow" id="boton1">Login or register</a>
-            <a href="{{Data.URL42}}" class="button submit" id="boton2" target="_top">Login with 42</a>
-            <a href="/main/logina" class="button" id="boton3">Play anonymous</a>
-        </div>
-    </div>
-    <div class="all-login hidden">
+    <div class="all-login">
         <div class="login" style="z-index: 1;">
             <form class="post-form" method="POST">{% csrf_token %}
                 <h2>Welcome</h2>
@@ -47,22 +33,6 @@
             </form>
         </div>
     </div>
-    <script>
-        document.addEventListener('DOMContentLoaded', function () {
-            document.querySelector('.all-login').classList.add('hidden');
-            document.querySelector('.all-welcome').classList.remove('hidden');
-            
-            document.getElementById('boton1').addEventListener('click', function (event) {
-                event.preventDefault();
-                document.querySelector('.all-welcome').classList.add('hidden');
-                let allLogin = document.querySelector('.all-login');
-                allLogin.classList.remove('hidden');
-                allLogin.classList.add('visible');
-            });
-        });
-    </script>
-    <script src="/static/main/background.js"></script>
 </body>
-
 </html>
 

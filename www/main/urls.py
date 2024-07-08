@@ -12,7 +12,9 @@ urlpatterns = [
 	path("logina", views.logina, name="logina"),
 	path("logoff", views.logoff, name="logoff"),
 	path("42auth", views.fourtytwo, name="fourtytwo"),
-    path("game", views.game, name="game"),
+	path("game2", views.game2, name="game2"),
+    path("game3", views.game3, name="game3"),
+	path("game4", views.game4, name="game4"),
     path("stats", views.stats, name="stats"),
 	path("tournament", views.tournament, name="tournament"),
 

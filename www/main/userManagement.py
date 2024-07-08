@@ -118,7 +118,7 @@ def mainPage(request):
         response = render(request, 'main_index.html', {'User': tmp})
         return response
     except:
-        return HttpResponseRedirect("login")
+        return HttpResponseRedirect("welcome")
         
 ## New user section ##
 

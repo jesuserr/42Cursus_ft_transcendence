@@ -1,34 +1,91 @@
-{% include "main_menu.html" %}
 <!DOCTYPE html>
 <html lang="en">
-
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, shrink-to-fit=no">
-    <title>Pong 42 New User</title>
+    <title>Pong 42 Welcome</title>
     <link rel="stylesheet" href="/static/assets/bootstrap/css/bootstrap.min.css">
     <link rel="stylesheet" href="/static/assets/css/login.css">
     <link rel="stylesheet" href="/static/assets/css/background.css">
+    <link rel="stylesheet" href="/static/assets/css/welcome.css">
+    <style>
+        .hidden {
+            display: none;
+        }
+        .visible {
+            z-index: 1;
+        }
+    </style>
 </head>
-
 <body>
-	<div class="background-container">
-        <canvas id="test"></canvas>
-	</div>
-	<div class="all-login" style="z-index: 1;">
-    	<div class="login" style="z-index: 1;">
-			<form class="post-form" method="POST" style="z-index: 1;">{% csrf_token %}
-        	<h2>Welcome</h2>
-			{{ form.as_p }}
-			<button type="submit" class="submit arrow" >Login</button>
-			<div class="buttons">
-			<a href="/main/newuser"><button class="submit">New User</button></a>
-			<div><p style="color:black;">{{ Data.ErrorMsg }}</p></div>
-			</div>
-			</form>
-	</div>
-	</div>
-	<script src="/static/main/background.js"></script>
-</body>
+	
+    <div class="all-welcome">
+        <div class="welcome">
+            <h1>Welcome</h1>
+        </div>
+        <div class="button-container">
+            <a href="/main/login" class="button submit arrow" id="boton1">Login or register</a>
+            <a href="{{Data.URL42}}" class="button submit" id="boton2" target="_top">Login with 42</a>
+            <a href="/main/logina" class="button" id="boton3">Play anonymous</a>
+        </div>
+    </div>
+	<iframe id="iframelogin" src=""></iframe>
+		<script>
+		boton1.addEventListener('click', function(e) {
+			console.log('boton1');
+			e.preventDefault(); // Previene el comportamiento predeterminado del enlace
+			const href = this.getAttribute('href'); // Obtiene el href del botón
 
+			const content = document.getElementById('content');
+			content.innerHTML = ''; // Borra el contenido actual de 'content'
+
+			// Crea el elemento iframe
+			const iframe = document.createElement('iframe');
+
+			// Establece los atributos de estilo
+			iframe.style.width = '100vw'; // 100% del ancho de la ventana
+			iframe.style.height = '100vh'; // 100% de la altura de la ventana
+			iframe.style.border = 'none'; // Elimina el borde
+
+			// Establece el atributo src
+			iframe.src = "/main/login";
+
+			// Añade el iframe al elemento con ID 'content'
+			const content = document.getElementById('content');
+			content.appendChild(iframe);
+		});
+		document.querySelectorAll('#content a').forEach(link => {
+			if (link.id !== 'boton2' && link.id !== 'boton1') {
+				link.addEventListener('click', function(e) {
+					e.preventDefault();
+					const href = this.getAttribute('href');
+					fetch(href)
+						.then(response => {
+							if (!response.ok) {
+								throw new Error('Network response was not ok');
+							}
+							return response.text();
+						})
+						.then(html => {
+							const content = document.getElementById('content');
+							content.innerHTML = html;
+							const scripts = Array.from(content.querySelectorAll('script'));
+							scripts.forEach(script => {
+								const newScript = document.createElement('script');
+								if (script.src) {
+									newScript.src = script.src;
+								} else {
+									newScript.textContent = script.textContent;
+								}
+								script.parentNode.replaceChild(newScript, script);
+							});
+						})
+						.catch(error => {
+							console.error('Error loading the page: ', error);
+						});
+				});
+			}
+		});
+	</script>
+</body>
 </html>

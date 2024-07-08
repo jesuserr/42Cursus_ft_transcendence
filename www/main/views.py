@@ -5,8 +5,9 @@ from django.core.mail import send_mail
 from .token import *
 
 def welcome(request):
-    response = render(request, "main_welcome.html")
-    return response
+	FormDataLogin = {'ErrorMsg': '', 'URL42': os.environ["URL42"]}
+	response = render(request, 'main_welcome.html', {'Data': FormDataLogin})
+	return response
 
 def index(request):
 	response = render(request, "main_iframe.html")
@@ -46,10 +47,24 @@ def fourtytwo(request):
 	return fourtytwoLogin(request)
 
 @token_required
-def game(request):
+def game2(request):
 	token = request.COOKIES.get('tokenid')
 	tmp = get_user_from_token(token)
-	response = render(request, "main_game.html", {'User': tmp})
+	response = render(request, "main_game2.html", {'User': tmp})
+	return response
+
+@token_required
+def game3(request):
+	token = request.COOKIES.get('tokenid')
+	tmp = get_user_from_token(token)
+	response = render(request, "main_game3.html", {'User': tmp})
+	return response
+
+@token_required
+def game4(request):
+	token = request.COOKIES.get('tokenid')
+	tmp = get_user_from_token(token)
+	response = render(request, "main_game4.html", {'User': tmp})
 	return response
 
 @token_required
