@@ -483,17 +483,18 @@ document.getElementById('FriendStats').addEventListener('click', function() {
     if (!selectedUser || selectedUser.dataset.value == '') {
         alert("Please select a user to view their stats.");
     } else {
-		var form = document.createElement("form");
-		form.setAttribute("method", "post");
-		form.setAttribute("action", `/stats/friendstat`);
-		form.setAttribute("target", "_parent"); 
-		var hiddenField = document.createElement("input");
-		hiddenField.setAttribute("type", "hidden");
-		hiddenField.setAttribute("name", "email");
-		hiddenField.setAttribute("value", selectedUser.dataset.pk);
-		form.appendChild(hiddenField);
-		document.body.appendChild(form);
-		form.submit();
+        var formData = new FormData();
+        formData.append("email", selectedUser.dataset.pk);
+        fetch(`/stats/friendstat`, {
+            method: "POST",
+            body: formData,
+            credentials: 'same-origin'
+        })
+        .then(response => response.text()) // Asume que la respuesta es texto/HTML
+        .then(html => {
+            parent.document.getElementById("content").innerHTML = html;
+        })
+        .catch(error => console.error('Error:', error));
     }
 });
 

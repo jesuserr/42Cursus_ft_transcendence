@@ -102,27 +102,24 @@ document.getElementById('FriendStats').addEventListener('click', function() {
     const friendsList = document.getElementById('friendsList');
     const userList = document.getElementById('userList');
     let selectedEmail = null;
-
     if (friendsList.value) {
         selectedEmail = friendsList.value;
     } else if (userList.value) {
         selectedEmail = userList.value;
     }
-
-	if (selectedEmail) {
-		var form = document.createElement("form");
-		form.setAttribute("method", "post");
-		form.setAttribute("action", `/stats/friendstat`);
-		form.setAttribute("target", "_parent");
-		var hiddenField = document.createElement("input");
-		hiddenField.setAttribute("type", "hidden");
-		hiddenField.setAttribute("name", "email");
-		hiddenField.setAttribute("value", selectedEmail);
-		form.appendChild(hiddenField);
-		document.body.appendChild(form);
-		form.submit();
-		document.body.removeChild(form);
-	} else {
+    if (selectedEmail) {
+        var formData = new FormData();
+        formData.append("email", selectedEmail);
+        fetch(`/stats/friendstat`, {
+            method: "POST",
+            body: formData,
+        })
+        .then(response => response.text()) 
+        .then(html => {
+            parent.document.getElementById("content").innerHTML = html;
+        })
+        .catch(error => console.error('Error:', error));
+    } else {
         alert('Por favor, selecciona un amigo o un usuario.');
     }
 });
