@@ -1,4 +1,4 @@
- 
+{% include "main_menu.html" %}
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -11,9 +11,7 @@
     <link rel="stylesheet" href="/static/assets/css/background.css">
 </head>
 <body>
-	<div class="background-container">
-        <canvas id="test"></canvas>
-	</div>
+
 
 <div class="allpage">
     <div class="container play-container">
@@ -47,7 +45,6 @@
 
     </div>
     </div>
-    <script src="/static/main/background.js"></script>
 </body>
 </html>
 <body>
@@ -57,6 +54,7 @@
 </body>
 <script>
 document.querySelectorAll('#content a').forEach(link => {
+	if (link.id !== 'boton2' && link.id !== 'toggleButton') {
     link.addEventListener('click', function(e) {
         e.preventDefault(); // Previene el comportamiento predeterminado
         const href = this.getAttribute('href'); // Obtiene el href del enlace
@@ -84,7 +82,8 @@ document.querySelectorAll('#content a').forEach(link => {
             .catch(error => {
                 console.error('Error loading the page: ', error);
             });
-    });
+    });}
 });
+
 </script>
 </html>

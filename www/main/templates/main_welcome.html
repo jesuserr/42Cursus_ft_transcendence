@@ -1,3 +1,4 @@
+{% include "main_menu.html" %}
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -24,38 +25,15 @@
             <h1>Welcome</h1>
         </div>
         <div class="button-container">
-            <a href="/main/login" class="button submit arrow" id="boton1">Login or register</a>
+            <a href="/main/logini" class="button submit arrow" id="boton1">Login or register</a>
             <a href="{{Data.URL42}}" class="button submit" id="boton2" target="_top">Login with 42</a>
             <a href="/main/logina" class="button" id="boton3">Play anonymous</a>
         </div>
     </div>
 	<iframe id="iframelogin" src=""></iframe>
 		<script>
-		boton1.addEventListener('click', function(e) {
-			console.log('boton1');
-			e.preventDefault(); // Previene el comportamiento predeterminado del enlace
-			const href = this.getAttribute('href'); // Obtiene el href del botón
-
-			const content = document.getElementById('content');
-			content.innerHTML = ''; // Borra el contenido actual de 'content'
-
-			// Crea el elemento iframe
-			const iframe = document.createElement('iframe');
-
-			// Establece los atributos de estilo
-			iframe.style.width = '100vw'; // 100% del ancho de la ventana
-			iframe.style.height = '100vh'; // 100% de la altura de la ventana
-			iframe.style.border = 'none'; // Elimina el borde
-
-			// Establece el atributo src
-			iframe.src = "/main/login";
-
-			// Añade el iframe al elemento con ID 'content'
-			const content = document.getElementById('content');
-			content.appendChild(iframe);
-		});
 		document.querySelectorAll('#content a').forEach(link => {
-			if (link.id !== 'boton2' && link.id !== 'boton1') {
+			if (link.id !== 'boton2' && link.id !== 'toggleButton') {
 				link.addEventListener('click', function(e) {
 					e.preventDefault();
 					const href = this.getAttribute('href');

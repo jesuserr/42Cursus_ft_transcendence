@@ -85,7 +85,7 @@ def loginPage(request):
                   tmpuser = User.objects.get(email=request.POST['email'])
                   if (tmpuser.password == hashlib.sha256(str(request.POST['password']).encode('utf-8')).hexdigest()):
                         if (tmpuser.tfa == False):
-                            response = render(request, 'main_index.html', {'User': tmpuser})
+                            response = render(request, 'main_root.html', {'User': tmpuser})
                             refresh = get_tokens_for_user(tmpuser)
                             tokenid = str(refresh)
                             tmpuser.tokenid = tokenid
@@ -214,7 +214,7 @@ def NewUserCodeOkFillData(request):
                         tmpuser.tokenid = tokenid
                         tmpuser.totp_secret = pyotp.random_base32()
                         tmpuser.save()
-                        response = render(request, 'main_index.html', {'User': tmpuser})
+                        response = render(request, 'main_root.html', {'User': tmpuser})
                         response.set_cookie('tokenid', tokenid, secure=True, httponly=True)
                         return response
         except:

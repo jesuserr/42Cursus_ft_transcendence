@@ -46,6 +46,10 @@ def logoff(request):
 def fourtytwo(request):    
 	return fourtytwoLogin(request)
 
+def logini(request):
+	response = render(request, "main_logini.html")
+	return response
+
 @token_required
 def game2(request):
 	token = request.COOKIES.get('tokenid')
