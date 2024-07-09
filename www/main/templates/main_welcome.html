@@ -33,7 +33,7 @@
 	<iframe id="iframelogin" src=""></iframe>
 		<script>
 		document.querySelectorAll('#content a').forEach(link => {
-			if (link.id !== 'boton2' && link.id !== 'toggleButton') {
+			if (link.id !== 'boton2' && link.id !== 'toggleButton' && link.id !== 'displayname') { 
 				link.addEventListener('click', function(e) {
 					e.preventDefault();
 					const href = this.getAttribute('href');

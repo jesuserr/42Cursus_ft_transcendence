@@ -54,7 +54,7 @@
 </body>
 <script>
 document.querySelectorAll('#content a').forEach(link => {
-	if (link.id !== 'boton2' && link.id !== 'toggleButton') {
+	if (link.id !== 'boton2' && link.id !== 'toggleButton' && link.id !== 'displayname') {
     link.addEventListener('click', function(e) {
         e.preventDefault(); // Previene el comportamiento predeterminado
         const href = this.getAttribute('href'); // Obtiene el href del enlace

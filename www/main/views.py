@@ -51,6 +51,13 @@ def logini(request):
 	return response
 
 @token_required
+def edituseri(request):
+	token = request.COOKIES.get('tokenid')
+	tmp = get_user_from_token(token)
+	response = render(request, "main_edituseri.html", {'User': tmp})
+	return response
+
+@token_required
 def game2(request):
 	token = request.COOKIES.get('tokenid')
 	tmp = get_user_from_token(token)

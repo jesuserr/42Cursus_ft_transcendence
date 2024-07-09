@@ -42,7 +42,8 @@ def editProfile(request):
                 formtmp = form.save(commit=False)
                 if (tmpuser.fourtytwo == True):
                       formtmp.save()
-                      return HttpResponseRedirect("/")
+                      response = render(request, 'main_root.html', {'User': tmpuser})
+                      return response
                 else:
                     formtmp.password = hashlib.sha256(str(request.POST['password']).encode('utf-8')).hexdigest()
                     formtmp.save()
@@ -52,7 +53,8 @@ def editProfile(request):
                            tmpuser.avatar = '/' + str(tmpuser.avatar)
                            tmpuser.save()
                     ##end add / to url of avatar
-                return HttpResponseRedirect("/")
+                response = render(request, 'main_root.html', {'User': tmpuser})
+                return response
         else:
               if (tmpuser.fourtytwo == False):
                     form = EditProfileUserForm(request.POST, request.FILES, instance=tmpuser)

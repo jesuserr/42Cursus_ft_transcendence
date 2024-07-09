@@ -16,6 +16,7 @@ urlpatterns = [
     path("game3", views.game3, name="game3"),
 	path("game4", views.game4, name="game4"),
 	path("logini", views.logini, name="logini"),
+	path("edituseri", views.edituseri, name="edituseri"),
     path("stats", views.stats, name="stats"),
 	path("tournament", views.tournament, name="tournament"),
 
