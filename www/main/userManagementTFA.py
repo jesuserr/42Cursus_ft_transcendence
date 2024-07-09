@@ -39,7 +39,7 @@ def tfacheckcode(request, tmpuser):
 			if totp.verify(request.POST['securitycode']):
 				tmp.code = request.POST['securitycode']
 		if (tmp.code == request.POST['securitycode']):
-			response = render(request, 'main_index.html', {'User': tmpuser})
+			response = render(request, 'main_root.html', {'User': tmpuser})
 			refresh = get_tokens_for_user(tmpuser)
 			tokenid = str(refresh)
 			tmpuser.tokenid = tokenid
