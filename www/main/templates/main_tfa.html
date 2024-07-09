@@ -1,6 +1,4 @@
 
-<!DOCTYPE html>
-<html lang="en">
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, shrink-to-fit=no">
@@ -14,9 +12,12 @@
     	width: 70%;
 		color: black;
 	}
+	body {
+			background-color: transparent;
+	}
 </style>
 <body>
-    <div class="container d-flex justify-content-center align-items-center" style="margin-top: 10%;">
+    <div class="container d-flex justify-content-center align-items-center" style="margin-top: 0%;">
         <div class="card p-4 bg-light mb-3 form-email">
 			{% if Data.QRCode %}
 			<button id="showQRCodeButton">Show/Hide QR Code</button>
@@ -51,5 +52,4 @@
         }
     });
 </script>
-</html>
 
