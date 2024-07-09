@@ -10,7 +10,7 @@ def welcome(request):
 	return response
 
 def index(request):
-	response = render(request, "main_iframe.html")
+	response = render(request, "main_spa.html")
 	return response
 
 def main(request):

@@ -52,38 +52,5 @@
 		{{ Data.ErrorMsg }}
 	</center>
 </body>
-<script>
-document.querySelectorAll('#content a').forEach(link => {
-	if (link.id !== 'boton2' && link.id !== 'toggleButton' && link.id !== 'displayname') {
-    link.addEventListener('click', function(e) {
-        e.preventDefault(); // Previene el comportamiento predeterminado
-        const href = this.getAttribute('href'); // Obtiene el href del enlace
-        fetch(href)
-            .then(response => {
-                if (!response.ok) {
-                    throw new Error('Network response was not ok');
-                }
-                return response.text();
-            })
-            .then(html => {
-                const content = document.getElementById('content');
-                content.innerHTML = html;
-                const scripts = content.querySelectorAll('script');
-                scripts.forEach(script => {
-                    const newScript = document.createElement('script');
-                    if (script.src) {
-                        newScript.src = script.src;
-                    } else {
-                        newScript.textContent = script.textContent;
-                    }
-                    document.head.appendChild(newScript).parentNode.removeChild(newScript);
-                });
-            })
-            .catch(error => {
-                console.error('Error loading the page: ', error);
-            });
-    });}
-});
-
-</script>
+<script src="/static/main/spalinks.js"></script>
 </html>
