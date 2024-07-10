@@ -62,11 +62,30 @@
         #userTable, #friendsList, #userList, .button {
             margin-bottom: 20px;
         }
+
+	#userTable {
+		height: 180px;
+		background-color: white;
+		color: black;
+		display: flex;
+		margin-top: 10px;
+		width: 150px;
+	}
+
+	@media (max-width: 555px)
+	{
+		body {
+			font-size: 10px;
+		}
+		.button {
+			font-size: 8px;
+		}
+	}
     </style>
 </head>
 <body>
     Friends connected
-    <table id="userTable">
+    <table id="userTable" style="background-color: white">
         <tr>
             <th></th>
             <th></th>
