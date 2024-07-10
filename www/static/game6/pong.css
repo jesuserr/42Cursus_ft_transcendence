@@ -1,0 +1,12 @@
+@import "https://fonts.googleapis.com/css?family=Press%20Start%202P";
+
+#canvas {
+    font-family: 'Press Start 2P';
+    background-color: black;
+    display: none;
+    margin: 0 auto;
+}
+#gameContainer {
+    background-color: black;
+    text-align: center;
+}

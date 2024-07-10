@@ -50,6 +50,7 @@ INSTALLED_APPS = [
     'game3.apps.Game3Config',
     'game4.apps.Game4Config',
     'game5.apps.Game5Config',
+    'game6.apps.Game6Config',
 	'rest_framework',
     'rest_framework_simplejwt',
     'corsheaders',
