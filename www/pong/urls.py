@@ -19,11 +19,12 @@ from django.urls import include, path
 from django.views.generic import RedirectView
 from django.urls import path
 from rest_framework_simplejwt.views import TokenObtainPairView, TokenRefreshView
+from . import views
 
 
 urlpatterns = [
     path('admin/', admin.site.urls),
-	path('', RedirectView.as_view(url='/pongapi/', permanent=True)),
+	path("", views.index, name="index"),
 	path("pongapi/", include("pongapi.urls")),
 	path("deploy/", include("deploy.urls")),
 	path("chat/", include("chat.urls")),

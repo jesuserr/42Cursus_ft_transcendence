@@ -1,15 +1,7 @@
-// Obtener la URL actual
 baseUrl = window.location.href;
-
-// Crear un objeto URL para facilitar el acceso a los parámetros de la URL
 currentUrl = new URL(window.location);
-
-// Intentar obtener el parámetro 'url'
 urlParam = currentUrl.searchParams.get("url");
-
-// Determinar la URL del contenido basado en la presencia del parámetro 'url'
-contentUrl = urlParam ? decodeURIComponent(urlParam) : baseUrl + "main";
-
+contentUrl = urlParam ? decodeURIComponent(urlParam) : baseUrl + "pongapi/main";
 fetch(contentUrl)
     .then(response => {
         if (!response.ok) {
