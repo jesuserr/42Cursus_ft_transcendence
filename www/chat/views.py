@@ -8,4 +8,4 @@ def index(request):
     
 @token_required
 def room(request, room_name):
-    return render(request, "chat_pongapi.html", {"room_name": room_name})
+    return render(request, "chat_main.html", {"room_name": room_name})

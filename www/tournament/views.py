@@ -8,4 +8,4 @@ def index(request):
     
 @token_required
 def tournament(request, tournament_name):
-    return render(request, "tournament_pongapi.html", {"tournament_name": tournament_name})	
+    return render(request, "tournament_main.html", {"tournament_name": tournament_name})	
