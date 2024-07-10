@@ -32,6 +32,18 @@
         .nav-tabs .nav-item .nav-link:hover {
             color: #4CAF50;
         }
+
+	.card-img {
+		width: 150;
+		height: 150;
+	}
+
+	@media (max-width: 400px) {
+		.card-img {
+			width: 350;
+			height: 150;
+			}
+	}
     </style>
 </head>
 <body id="statsContainer">
@@ -39,7 +51,7 @@
     <div class="card bg-dark text-white" style="max-width: 540px;">
         <div class="row no-gutters">
             <div class="col-md-4">
-                <img src="{{user_stats.avatar}}" class="card-img" alt="" width="150" height="150" onerror="this.onerror=null; this.src='/static/avatars/default.jpg'"/>
+                <img src="{{user_stats.avatar}}" class="card-img" alt="" onerror="this.onerror=null; this.src='/static/avatars/default.jpg'"/>
             </div>
             <div class="col-md-8 d-flex align-items-center">
                 <div class="card-body">

@@ -15,11 +15,10 @@
             flex-direction: column;
 i        }
 
-        .main-content {
-            display: flex;
-            flex: 1;
-        }
-
+	.main-content {
+		display: flex;
+		justify-content: center;
+	}
 
         .iframegame {
 		height: 50vh;
@@ -55,17 +54,14 @@ i        }
             background: transparent !important;
         }
 
-        #userTable tr {
-            font-size: small;
-            margin-left: auto;
-            margin-right: auto;
-            text-align: center;
+        #userTable {
             background-color: rgba(128, 128, 128, 0.5);
-            width: 90%;
-            height: 100px;
+            width: 70%;
+	    height: 200px;
             overflow: scroll;
             display: flex;
             padding: 10px;
+	    justify-content: center;
         }
 
         .container {
@@ -90,9 +86,10 @@ i        }
             background-color: #4CAF50;
         }
 
-        th, td {
-            padding: 10px;
-        }
+	.content {
+            height: 200px; 
+            overflow-y: scroll;
+	}
 
         @media (max-width: 768px) {
             .container {
@@ -103,13 +100,14 @@ i        }
                 font-size: 10px;
             }
         }
+
     </style>
 </head>
 <body>
     <div class="container">
         <div class="left-content">
             <h1 style="text-align: center; font-size: small;">Tournaments:</h1>    
-            <center><table id="tournamentTable">
+	    <center><table id="tournamentTable">
                 <thead>
                     <tr>
                         <th>Name</th>
@@ -137,21 +135,24 @@ i        }
                 <h3 id="winner" style="text-align: center; color: lime; animation: blinker 1s linear infinite;"></h3>
             </div>
         </div>
-    </div>
-    <div class="main-content">
-        <div class="content">
+        <div class="usertable">
             <h1 style="text-align: center; font-size: small;">Connected participants:</h1>
+	    <div class="content">
             <table id="userTable">
                 <tr>
                     <th></th>
                 </tr>
             </table>
+	    </div>
+	</div>
             <h3 id="tstatus" style="text-align: center; font-size: small;"></h3>
             <table id="tstatusTable">
                 <tr>
                 </tr>
             </table>
         </div>
+    </div>
+    <div class="main-content">
         <iframe id="iframegame" class="iframegame" src=""></iframe>
     </div>
     <iframe id="iframechat" class="iframechat" src="/chat/{{tournament_name}}"></iframe>
