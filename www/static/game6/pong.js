@@ -26,7 +26,13 @@ let winSound = new Audio(`/static/game/sounds/win.mp3`);
 var font = new FontFaceObserver('Press Start 2P');
 
 const gameName = JSON.parse(document.getElementById('game_name').textContent);
-const socket = new WebSocket('wss://' + window.location.host + '/ws/game6/' + gameName + '/');
+// Paso 1: Obtener player1 y player2 de la URL
+const urlParams = new URLSearchParams(window.location.search);
+const player1 = urlParams.get('player1');
+const player2 = urlParams.get('player2');
+
+// Paso 2: Conectar al WebSocket (modifica la URL según sea necesario)
+const socket = new WebSocket(`wss://${window.location.host}/ws/game6/${gameName}/?player1=${player1}&player2=${player2}`);
 
 // ***************************** DRAW FUNCTIONS ********************************
 
@@ -156,6 +162,10 @@ function makeNoises() {
 // Listen messages from server
 socket.onmessage = function(event) {
     position = JSON.parse(event.data);
+	if (position.WINNER) { // Comprueba si el mensaje contiene "WINNER"
+		window.parent.postMessage({ winner: position.WINNER }, '*');
+        console.log("aui:" + position.WINNER); // Imprime el nombre del ganador en la consola
+    }
     if (messageNumber == 0)
         drawCountdown();
     else {

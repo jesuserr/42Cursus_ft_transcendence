@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Torneo de Pong</title>
+    <script src="/static/localt/main.js" defer></script>
+    <style>
+        table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+        table, th, td {
+            border: 1px solid black;
+        }
+        th, td {
+            padding: 10px;
+            text-align: left;
+        }
+        .error {
+            color: red;
+        }
+    </style>
+</head>
+<body>
+    <h1>Torneo de Pong</h1>
+    <form id="playerForm">
+        <div id="playersContainer">
+            <div class="player-entry">
+                <label for="player1">Jugador 1:</label>
+                <input type="text" id="player1" name="player1" required>
+                <button type="button" class="removePlayer">Eliminar</button>
+                <br>
+            </div>
+            <div class="player-entry">
+                <label for="player2">Jugador 2:</label>
+                <input type="text" id="player2" name="player2" required>
+                <button type="button" class="removePlayer">Eliminar</button>
+                <br>
+            </div>
+            <div class="player-entry">
+                <label for="player3">Jugador 3:</label>
+                <input type="text" id="player3" name="player3" required>
+                <button type="button" class="removePlayer">Eliminar</button>
+                <br>
+            </div>
+        </div>
+        <button type="button" id="addPlayer">Agregar Jugador</button>
+        <button type="submit">Iniciar Torneo</button>
+        <div id="errorMessage" class="error" style="display: none;"></div>
+    </form>
+    <div id="gameContainer" style="display: none;">
+        <iframe id="pongGame" width="800" height="600"></iframe>
+    </div>
+    <div id="result" style="display: none;">
+        <h2>Ganador: <span id="winner"></span></h2>
+    </div>
+    <div id="tournamentTable" style="display: none;">
+        <h2>Estado del Torneo</h2>
+        <table>
+            <thead>
+                <tr>
+                    <th>Jugador</th>
+                    <th>Estado</th>
+                </tr>
+            </thead>
+            <tbody id="tournamentBody">
+                <!-- Dynamic Content -->
+            </tbody>
+        </table>
+    </div>
+</body>
+</html>

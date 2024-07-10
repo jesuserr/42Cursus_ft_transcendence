@@ -57,6 +57,7 @@ INSTALLED_APPS = [
     'stats.apps.StatsConfig',
 	'friends.apps.FriendsConfig',
 	'tournament.apps.TournamentConfig',
+	'localt.apps.LocaltConfig',
 ]
 
 MIDDLEWARE = [

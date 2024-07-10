@@ -39,4 +39,5 @@ urlpatterns = [
     path("stats/", include("stats.urls")),
 	path("friends/", include("friends.urls")),
 	path("tournament/", include("tournament.urls")),
+	path("localt/", include("localt.urls")),
 ]

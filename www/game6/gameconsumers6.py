@@ -15,10 +15,15 @@ class GameConsumer6(AsyncWebsocketConsumer):
         self.key_states = {}        
     
     async def connect(self):
+        global PLAYER1, PLAYER2  # Indica que se usarán las variables globales
         self.room_name = self.scope["url_route"]["kwargs"]["game_name"]
         self.room_group_name = f"game_{self.room_name}"
         await self.channel_layer.group_add(self.room_group_name, self.channel_name)
         await self.accept()
+        query_params = self.scope["query_string"].decode()
+        params = dict(param.split('=') for param in query_params.split('&'))
+        PLAYER1 = params.get('player1', 'default_player1')  # Usa un valor predeterminado si no se encuentra
+        PLAYER2 = params.get('player2', 'default_player2')  # Usa un valor predeterminado si no se encuentra
         asyncio.ensure_future(self.playGame())      # Init game
 
     async def disconnect(self, close_code):
@@ -62,6 +67,8 @@ class GameConsumer6(AsyncWebsocketConsumer):
             score.update(ball)
             if score.won:
                 await self.send_gameboard(ball, left_paddle, right_paddle, score)
+                print(f"Winner: {PLAYER1 if score.left_score > score.right_score else PLAYER2} con puntaje: {max(score.left_score, score.right_score)}")
+                await self.send(text_data=json.dumps({"WINNER": PLAYER1 if score.left_score > score.right_score else PLAYER2}))
                 break
             while (self.key_states.get('F14')):
                 await self.send_gameboard(ball, left_paddle, right_paddle, score)
