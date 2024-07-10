@@ -6,7 +6,7 @@
 				const href = this.getAttribute('href');
 				// Añadir al historial sin formato especial
 				var baseUrl = window.location.origin; // Obtiene la base URL del sitio
-				var newUrl = baseUrl + '/main/spa?url=' + encodeURIComponent(href);
+				var newUrl = baseUrl + '/pongapi/spa?url=' + encodeURIComponent(href);
 				history.pushState({ path: newUrl }, '', newUrl);
 				fetch(href)
 					.then(response => {

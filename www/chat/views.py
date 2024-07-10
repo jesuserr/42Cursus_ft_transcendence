@@ -1,6 +1,6 @@
 from django.shortcuts import render
 from django.http import HttpResponse, HttpResponseRedirect
-from main.token import *
+from pongapi.token import *
 
 @token_required
 def index(request):
@@ -8,4 +8,4 @@ def index(request):
     
 @token_required
 def room(request, room_name):
-    return render(request, "chat_main.html", {"room_name": room_name})
+    return render(request, "chat_pongapi.html", {"room_name": room_name})

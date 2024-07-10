@@ -1,6 +1,6 @@
 from django.conf import settings
 from django.db import models
-from main.models import User
+from pongapi.models import User
 
 class ChatRooms(models.Model):
 	room_name = models.CharField(max_length=50, primary_key=True)

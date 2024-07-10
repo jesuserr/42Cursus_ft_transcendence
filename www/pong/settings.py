@@ -26,7 +26,7 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 SECRET_KEY = os.environ.get('DJANGO_SECRET_KEY')
 
 #tengo que hacer que funcione la BBDD 
-AUTH_USER_MODEL = 'main.User'
+AUTH_USER_MODEL = 'pongapi.User'
 
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
@@ -42,7 +42,7 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
-	'main.apps.MainConfig',
+	'pongapi.apps.PongapiConfig',
 	'deploy.apps.DeployConfig',
 	'chat.apps.ChatConfig',
 	'game.apps.GameConfig',

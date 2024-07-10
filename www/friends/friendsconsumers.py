@@ -1,8 +1,8 @@
 import json
 from channels.generic.websocket import AsyncJsonWebsocketConsumer
-from main.models import User
+from pongapi.models import User
 from channels.db import database_sync_to_async
-from  main.token import *
+from  pongapi.token import *
 from .models import Friends_Connected_Users, Friends_List
 from django.core import serializers
 

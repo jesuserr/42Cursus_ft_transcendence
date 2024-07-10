@@ -1,7 +1,7 @@
 window.addEventListener('popstate', function(event) {
     const currentUrl = new URL(window.location.href);
     const targetUrl = currentUrl.searchParams.get('url');
-    if (currentUrl.pathname === '/main/spa' && targetUrl) {
+    if (currentUrl.pathname === '/pongapi/spa' && targetUrl) {
         fetch(targetUrl)
             .then(response => {
                 if (!response.ok) {
@@ -15,7 +15,7 @@ window.addEventListener('popstate', function(event) {
             .catch(error => {
                 console.error('Error fetching the page: ', error);
             });
-    } else if (currentUrl.pathname === '/main/') {
+    } else if (currentUrl.pathname === '/pongapi/') {
         window.location.reload();
     }
 });

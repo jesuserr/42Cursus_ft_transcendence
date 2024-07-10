@@ -1,11 +1,11 @@
 import json
 import asyncio
 from channels.generic.websocket import AsyncJsonWebsocketConsumer
-from main.models import User
+from pongapi.models import User
 from channels.db import database_sync_to_async
 from django.core import serializers
 from .models import Connected_Users, ChatRooms, Blocked_Users, Messages, PrivateRooms, PrivateMessages
-from  main.token import *
+from  pongapi.token import *
 
 class ChatConsumer(AsyncJsonWebsocketConsumer):
     #When the connection is established

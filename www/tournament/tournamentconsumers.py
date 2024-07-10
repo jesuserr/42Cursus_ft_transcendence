@@ -1,8 +1,8 @@
 import json
 from channels.generic.websocket import AsyncJsonWebsocketConsumer
-from main.models import User
+from pongapi.models import User
 from channels.db import database_sync_to_async
-from  main.token import *
+from  pongapi.token import *
 from django.core import serializers
 from .models import Tournament_Connected_Users, Tournament_List, Tournament_Play, Tournament_Round
 import time

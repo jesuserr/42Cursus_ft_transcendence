@@ -1,10 +1,10 @@
 from django.shortcuts import render
 from django.http import HttpResponse, HttpResponseRedirect
-from main.token import *
+from pongapi.token import *
 from game3.models import stats as stats_pvc         # pvc -> player vs cpu
 from game2.models import stats as stats_pvp         # pvp -> player vs player
 from game5.models import stats as stats_pvp_tour    # pvp -> player vs player (tournament)
-from main.models import User
+from pongapi.models import User
 import json
 from itertools import chain
 from django.views.decorators.csrf import csrf_exempt

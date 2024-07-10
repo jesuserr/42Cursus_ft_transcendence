@@ -6,9 +6,9 @@ from . import gamecore5
 from .gamecore5 import *
 from .models import stats
 from channels.db import database_sync_to_async
-from main.models import User
-#from main.token import *                   -> makes time.time() crash
-from main.token import get_user_from_token  # solution
+from pongapi.models import User
+#from pongapi.token import *                   -> makes time.time() crash
+from pongapi.token import get_user_from_token  # solution
 from tournament.models import Tournament_List, Tournament_Round, Tournament_Play
 
 class GameConsumer5(AsyncWebsocketConsumer):

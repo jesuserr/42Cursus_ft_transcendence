@@ -3,7 +3,7 @@ import time
 from django.shortcuts import render
 from django.http import HttpResponse, HttpResponseRedirect
 from django.template import loader, RequestContext
-from main.models import User
+from pongapi.models import User
 
 def index(request):
     try:

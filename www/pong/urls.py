@@ -23,8 +23,8 @@ from rest_framework_simplejwt.views import TokenObtainPairView, TokenRefreshView
 
 urlpatterns = [
     path('admin/', admin.site.urls),
-	path('', RedirectView.as_view(url='/main/', permanent=True)),
-	path("main/", include("main.urls")),
+	path('', RedirectView.as_view(url='/pongapi/', permanent=True)),
+	path("pongapi/", include("pongapi.urls")),
 	path("deploy/", include("deploy.urls")),
 	path("chat/", include("chat.urls")),
 	path("game/", include("game.urls")),

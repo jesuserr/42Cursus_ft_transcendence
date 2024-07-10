@@ -1,6 +1,6 @@
 from django.contrib.postgres.fields import ArrayField
 from django.db import models
-from main.models import User
+from pongapi.models import User
 from django.utils import timezone
 
 class stats(models.Model):
