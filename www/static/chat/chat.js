@@ -94,10 +94,11 @@ function New_Private_msg(data) {
 				// Comprobar si el enlace es del mismo dominio
 				if (new URL(part).hostname === window.location.hostname) {
 					a.target = '_parent'; // Mismo dominio, abrir en el contexto del padre
+					a.textContent = "Play Game"; // Cambiar el texto del enlace para enlaces del mismo dominio
 				} else {
 					a.target = '_blank'; // Diferente dominio, abrir en una nueva ventana/tab
+					a.textContent = part;
 				}
-				a.textContent = part;
 				messageContent.appendChild(a);
 			} else {
 				messageContent.appendChild(document.createTextNode(part));
@@ -139,11 +140,13 @@ function Set_Chat_History(alldata) {
                 a.href = part;
                 a.textContent = part;
                 // Comprobar si el enlace es del mismo dominio
-                if (new URL(part).hostname === window.location.hostname) {
-                    a.target = '_parent'; // Mismo dominio, abrir en el contexto del padre
-                } else {
-                    a.target = '_blank'; // Diferente dominio, abrir en una nueva ventana/tab
-                }
+				if (new URL(part).hostname === window.location.hostname) {
+					a.target = '_parent'; // Mismo dominio, abrir en el contexto del padre
+					a.textContent = "Play Game"; // Cambiar el texto del enlace para enlaces del mismo dominio
+				} else {
+					a.target = '_blank'; // Diferente dominio, abrir en una nueva ventana/tab
+					a.textContent = part;
+				}
                 messageElement.appendChild(a);
             } else {
                 messageElement.appendChild(document.createTextNode(part));
@@ -474,7 +477,7 @@ botonPrivateGame.addEventListener('click', function() {
         const randomNumber = Math.floor(Math.random() * (122 - 97 + 1)) + 97;
         randomString += String.fromCharCode(randomNumber);
     }
-    const link = `${baseUrl}/game2/${randomString}`;
+	const link = `${baseUrl}/pongapi/spa?url=/pongapi/game2?play=${randomString}`;
     socket.send(JSON.stringify({ 'SEND_PRIVATE_MSG': currentchat, 'DISPLAYNAMETO': currentchatdisplayname , 'MESSAGE': 'Follow the link to play a private game with me: ' + link }));
 });
 
