@@ -240,7 +240,7 @@ def AnonimousUser(request):
         tokenid = str(refresh.access_token)
         tmpuser.tokenid = tokenid
         tmpuser.save()
-        response = render(request, 'main_index.html', {'User': tmpuser})
+        response = render(request, 'main_root.html', {'User': tmpuser})
         response.set_cookie('tokenid', tokenid, secure=True, httponly=True)
         return response
       except:
