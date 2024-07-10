@@ -5,6 +5,10 @@ from channels.generic.websocket import AsyncWebsocketConsumer
 from . import gamecore6
 from .gamecore6 import *
 
+# Temporary names to test pong.js
+PLAYER1 = "Jesus"
+PLAYER2 = "Satan"
+
 class GameConsumer6(AsyncWebsocketConsumer):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
@@ -31,7 +35,7 @@ class GameConsumer6(AsyncWebsocketConsumer):
             "right_paddle_x": r_paddle.x, "right_paddle_y": r_paddle.y,
             "paddle_width": r_paddle.width, "paddle_height": r_paddle.height,
             "score_left": score.left_score, "score_right": score.right_score,
-            "winner": score.won
+            "winner": score.won,  "p1_nick": PLAYER1, "p2_nick": PLAYER2
             }
         await self.send(text_data=json.dumps(gameboard))
 

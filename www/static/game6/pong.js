@@ -36,10 +36,9 @@ function drawCountdown() {
         if (countdown >= 0) {
             drawGameboard();            
             drawText(textSize, "M to mute / P to pause", 1, 0, 0, 1.3);
-            drawText(textSize, "Player 1", 2, 0, 0, 1.06);
-            drawText(textSize, "Player 2", 3, 0, 0, 1.06);
             drawText(textSize / 2, "Key W: Up / Key S: Down", 2, 0, 0, 1.02);
             drawText(textSize / 2, "Key \u2191: Up / Key \u2193: Down", 3, 0, 0, 1.02);
+            drawText(textSize, "vs", 1, 0, 0, 1.06);
             if (countdown > 0) {
                 drawText(textSize, `${countdown}`, 1, 0, 0, 3.5);
                 if (!muted)
@@ -66,10 +65,9 @@ function initGameboard() {
     drawGameboard();
     drawText(textSize, "Get Ready!!", 1, 0, 0, 3.5);
     drawText(textSize, "M to mute / P to pause", 1, 0, 0, 1.3);
-    drawText(textSize, "Player 1", 2, 0, 0, 1.06);
-    drawText(textSize, "Player 2", 3, 0, 0, 1.06);
     drawText(textSize / 2, "Key W: Up / Key S: Down", 2, 0, 0, 1.02);
     drawText(textSize / 2, "Key \u2191: Up / Key \u2193: Down", 3, 0, 0, 1.02);
+    drawText(textSize, "vs", 1, 0, 0, 1.06);
 }
 
 function drawGameboard() {
@@ -103,8 +101,8 @@ function drawGameboard() {
     // Print the scores
     drawText(textSize, `${position.score_left}`, 0, canvas.width * 0.25 - textSize / 2 * scale, canvas.height / 12, 0);
     drawText(textSize, `${position.score_right}`, 0, canvas.width * 0.75 - textSize / 2 * scale, canvas.height / 12, 0);
-    drawText(textSize, "Player 1", 2, 0, 0, 1.06);
-    drawText(textSize, "Player 2", 3, 0, 0, 1.06);    
+    drawText(textSize, String(position.p1_nick).slice(0, 11), 2, 0, 0, 1.06);
+    drawText(textSize, String(position.p2_nick).slice(0, 11), 3, 0, 0, 1.06);
     if (muted)
         drawText(textSize / 3, "Muted", 0, canvas.width / 100, canvas.height * 0.03, 0);
     if (keys['F14'] && messageNumber > 0)
@@ -171,9 +169,9 @@ socket.onmessage = function(event) {
                 if (!muted)
                     winSound.play();
                 if (position.score_left > position.score_right)
-                    drawText(textSize, "Player 1 wins!!", 1, 0, 0, 3.5);
+                    drawText(textSize, String(position.p1_nick).slice(0, 20) + " wins!!", 1, 0, 0, 3.5);                    
                 else
-                    drawText(textSize, "Player 2 wins!!", 1, 0, 0, 3.5);
+                    drawText(textSize, String(position.p2_nick).slice(0, 20) + " wins!!", 1, 0, 0, 3.5);                    
             }, 500);
         }
     }
@@ -228,7 +226,7 @@ function drawPlayAgainButton() {
     ctx.strokeStyle = 'white';
     ctx.rect(canvas.width / 3, canvas.height / 1.45, canvas.width / 3, canvas.height / 9);
     ctx.stroke();
-    drawText(textSize, "Play again", 1, 0, 0, 1.3);
+    drawText(textSize, "Next Match", 1, 0, 0, 1.3);
     canvas.addEventListener('click', function(event) {
         const rect = canvas.getBoundingClientRect();
         const x = event.clientX - rect.left - ctx.lineWidth * 2;
