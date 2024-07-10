@@ -4,6 +4,11 @@ from .userManagement42 import *
 from django.core.mail import send_mail
 from .token import *
 
+@token_required
+def spa(request):
+	response = render(request, "main_spa.html")
+	return response
+
 def welcome(request):
 	FormDataLogin = {'ErrorMsg': '', 'URL42': os.environ["URL42"]}
 	response = render(request, 'main_welcome.html', {'Data': FormDataLogin})
