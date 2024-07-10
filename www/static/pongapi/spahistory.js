@@ -15,7 +15,7 @@ window.addEventListener('popstate', function(event) {
             .catch(error => {
                 console.error('Error fetching the page: ', error);
             });
-    } else if (currentUrl.pathname === '/pongapi/') {
+    } else if (currentUrl.pathname === '/') {
         window.location.reload();
     }
 });
