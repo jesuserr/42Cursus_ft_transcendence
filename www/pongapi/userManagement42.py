@@ -21,7 +21,7 @@ def fourtytwoLogin(request):
 	try:
 		## Get information for 42 network
 		accesscode = request.GET.get('code')
-		url = 'https://pongapi.intra.42.fr/oauth/token'
+		url = 'https://api.intra.42.fr/oauth/token'
 		postdata = {
 			'grant_type': 'authorization_code',
 			'client_id' : os.environ["CLIENT_ID"],
@@ -29,7 +29,7 @@ def fourtytwoLogin(request):
 			'redirect_uri': os.environ["REDIRECT_URI"],
 			}
 		requestToken = requests.post(url, data=postdata)
-		requestUserProfile=requests.get("https://pongapi.intra.42.fr/v2/me", headers={"Authorization": "Bearer " + requestToken.json()['access_token']})
+		requestUserProfile=requests.get("https://api.intra.42.fr/v2/me", headers={"Authorization": "Bearer " + requestToken.json()['access_token']})
 		UserProfile42 = requestUserProfile.json()
 		try:
 			## check if the user exist in teh database
