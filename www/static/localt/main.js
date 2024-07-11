@@ -141,7 +141,7 @@ function startNextGame() {
         document.getElementById('winner').innerText = players[0];
         document.getElementById('result').style.display = 'block';
         document.getElementById('gameContainer').style.display = 'none';
-        updateTournamentTable(players[0], 'Winner');
+        document.getElementById('tournamentTable').style.display = 'none';
         return;
     }
 
@@ -180,8 +180,20 @@ window.addEventListener('message', function(event) {
         updateTournamentTable(winner, 'Round Winner');
         updateTournamentTable(loser, 'Loser');
 
-        players.push(winner);
-        localStorage.setItem('players', JSON.stringify(players));
-        startNextGame();
+        if (players.length === 0) {
+            // End of tournament
+            document.getElementById('winner').innerText = winner;
+            document.getElementById('result').style.display = 'block';
+            document.getElementById('gameContainer').style.display = 'none';
+            document.getElementById('tournamentTable').style.display = 'none';
+        } else {
+            players.push(winner);
+            localStorage.setItem('players', JSON.stringify(players));
+            startNextGame();
+        }
     }
-}, { once: true });
+});
+
+document.getElementById('restartButton').addEventListener('click', function() {
+    location.reload(); // Reload the page to start a new tournament
+});

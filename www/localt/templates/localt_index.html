@@ -11,7 +11,7 @@
     <link rel="stylesheet" href="/static/assets/css/styles.css">
     <style>
         body {
-            color: #FFD700;
+            color: #FFFFFF;
             background-color: black;
             font-family: 'Press Start 2P';
             display: flex;
@@ -22,7 +22,7 @@
             margin: 0;
         }
         h1, h2 {
-            color: #00FF00;
+            color: #FFFFFF;
             text-align: center;
         }
         form {
@@ -30,7 +30,7 @@
             background-color: #222;
             padding: 20px;
             border-radius: 10px;
-            box-shadow: 0 0 10px #00FF00;
+            box-shadow: 0 0 10px #FFFFFF;
             margin-bottom: 20px;
         }
         #mainContainer {
@@ -66,7 +66,7 @@
             margin-top: 20px;
         }
         table, th, td {
-            border: 1px solid #00FF00;
+            border: 1px solid #FFFFFF;
         }
         th, td {
             padding: 10px;
@@ -86,10 +86,25 @@
             background-color: #222;
             padding: 20px;
             border-radius: 10px;
-            box-shadow: 0 0 10px #00FF00;
+            box-shadow: 0 0 10px #FFFFFF;
         }
         #gameContainer {
             width: 75%;
+        }
+        #result {
+            text-align: center;
+            margin-top: 20px;
+            display: none;
+        }
+        #winner {
+            animation: winnerAnimation 2s infinite;
+            font-size: 2em;
+            margin-bottom: 20px;
+        }
+        @keyframes winnerAnimation {
+            0% { color: #FFD700; }
+            50% { color: #FF4500; }
+            100% { color: #FFD700; }
         }
     </style>
 </head>
@@ -139,8 +154,9 @@
             </table>
         </div>
     </div>
-    <div id="result" style="display: none;">
+    <div id="result">
         <h2>Winner: <span id="winner"></span></h2>
+        <button id="restartButton">Start New Tournament</button>
     </div>
 </body>
 </html>
