@@ -19,6 +19,7 @@ urlpatterns = [
 	path("edituseri", views.edituseri, name="edituseri"),
     path("stats", views.stats, name="stats"),
 	path("tournament", views.tournament, name="tournament"),
+	path("localt", views.localt, name="localt"),
 	path("spa", views.spa, name="spa"),
 
 ]

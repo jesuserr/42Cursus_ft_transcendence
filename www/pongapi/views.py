@@ -96,3 +96,10 @@ def tournament(request):
 	tmp = get_user_from_token(token)
 	response = render(request, "main_tournament.html", {'User': tmp})
 	return response
+
+@token_required
+def localt(request):
+	token = request.COOKIES.get('tokenid')
+	tmp = get_user_from_token(token)
+	response = render(request, "main_localt.html", {'User': tmp})
+	return response
