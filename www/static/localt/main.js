@@ -9,7 +9,7 @@ document.getElementById('addPlayer').addEventListener('click', function() {
     
     const newPlayerLabel = document.createElement('label');
     newPlayerLabel.setAttribute('for', 'player' + playerCount);
-    newPlayerLabel.textContent = 'Jugador ' + playerCount + ':';
+    newPlayerLabel.textContent = 'Player ' + playerCount + ':';
     
     const newPlayerInput = document.createElement('input');
     newPlayerInput.type = 'text';
@@ -20,7 +20,7 @@ document.getElementById('addPlayer').addEventListener('click', function() {
     const removeButton = document.createElement('button');
     removeButton.type = 'button';
     removeButton.classList.add('removePlayer');
-    removeButton.textContent = 'Eliminar';
+    removeButton.textContent = 'Remove';
     
     removeButton.addEventListener('click', function() {
         playersContainer.removeChild(playerEntry);
@@ -47,12 +47,12 @@ document.getElementById('playerForm').addEventListener('submit', function(event)
         const player = input.value.trim();
         const alphanumeric = /^[a-zA-Z0-9]+$/;
         if (!alphanumeric.test(player)) {
-            errorMessage.textContent = 'Los nombres de los jugadores solo pueden contener letras y números: ' + player;
+            errorMessage.textContent = 'Player names can only contain letters and numbers: ' + player;
             errorMessage.style.display = 'block';
             return;
         }
         if (players.includes(player)) {
-            errorMessage.textContent = 'No se permiten nombres de jugadores repetidos: ' + player;
+            errorMessage.textContent = 'Duplicate player names are not allowed: ' + player;
             errorMessage.style.display = 'block';
             return;
         }
@@ -60,21 +60,21 @@ document.getElementById('playerForm').addEventListener('submit', function(event)
     }
 
     if (players.length < 3) {
-        errorMessage.textContent = 'Se requieren al menos 3 jugadores.';
+        errorMessage.textContent = 'At least 3 players are required.';
         errorMessage.style.display = 'block';
         return;
     }
 
-    // Mezclar jugadores de manera aleatoria
+    // Shuffle players randomly
     players.sort(() => Math.random() - 0.5);
 
-    // Guardar los jugadores mezclados en localStorage
+    // Save shuffled players in localStorage
     localStorage.setItem('players', JSON.stringify(players));
 
-    // Crear la tabla de torneo
+    // Create tournament table
     createTournamentTable(players);
 
-    // Iniciar el primer juego
+    // Start the first game
     startNextGame();
 });
 
@@ -87,7 +87,7 @@ function updatePlayerLabels() {
         const input = entry.querySelector('input');
         
         label.setAttribute('for', 'player' + (index + 1));
-        label.textContent = 'Jugador ' + (index + 1) + ':';
+        label.textContent = 'Player ' + (index + 1) + ':';
         input.id = 'player' + (index + 1);
         input.name = 'player' + (index + 1);
     });
@@ -104,7 +104,7 @@ function createTournamentTable(players) {
         playerCell.textContent = player;
         
         const statusCell = document.createElement('td');
-        statusCell.textContent = 'Pendiente';
+        statusCell.textContent = 'Pending';
         
         row.appendChild(playerCell);
         row.appendChild(statusCell);
@@ -112,6 +112,7 @@ function createTournamentTable(players) {
         tournamentBody.appendChild(row);
     });
 
+    document.getElementById('mainContainer').style.display = 'flex';
     document.getElementById('tournamentTable').style.display = 'block';
 }
 
@@ -124,6 +125,15 @@ function updateTournamentTable(player, status) {
     });
 }
 
+function generateRandomString(length) {
+    const characters = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
+    let result = '';
+    for (let i = 0; i < length; i++) {
+        result += characters.charAt(Math.floor(Math.random() * characters.length));
+    }
+    return result;
+}
+
 function startNextGame() {
     const players = JSON.parse(localStorage.getItem('players'));
 
@@ -131,7 +141,7 @@ function startNextGame() {
         document.getElementById('winner').innerText = players[0];
         document.getElementById('result').style.display = 'block';
         document.getElementById('gameContainer').style.display = 'none';
-        updateTournamentTable(players[0], 'Ganador');
+        updateTournamentTable(players[0], 'Winner');
         return;
     }
 
@@ -139,12 +149,13 @@ function startNextGame() {
     const player2 = players.shift();
     localStorage.setItem('players', JSON.stringify(players));
     
-    updateTournamentTable(player1, 'Jugando');
-    updateTournamentTable(player2, 'Jugando');
+    updateTournamentTable(player1, 'Playing');
+    updateTournamentTable(player2, 'Playing');
     
     const iframe = document.getElementById('pongGame');
-    const remotePongGameUrl = "/game6/general";
-    const baseUrl = window.location.origin; // Obtiene el origen del dominio actual
+    const randomString = generateRandomString(10); // Generate a random string of length 10
+    const remotePongGameUrl = `/game6/${randomString}`;
+    const baseUrl = window.location.origin; // Get the current domain origin
     const url = new URL(remotePongGameUrl, baseUrl);
 
     url.searchParams.set('player1', player1);
@@ -153,18 +164,24 @@ function startNextGame() {
 
     document.getElementById('gameContainer').style.display = 'block';
     document.getElementById('playerForm').style.display = 'none';
-    
-    window.addEventListener('message', function(event) {
-        if (event.origin === baseUrl) {
-            const winner = event.data.winner;
-            const loser = winner === player1 ? player2 : player1;
-            
-            updateTournamentTable(winner, 'Ganador de ronda');
-            updateTournamentTable(loser, 'Perdedor');
-
-            players.push(winner);
-            localStorage.setItem('players', JSON.stringify(players));
-            startNextGame();
-        }
-    }, { once: true });
 }
+
+window.addEventListener('message', function(event) {
+    const baseUrl = window.location.origin; // Ensure the message comes from the same origin
+    if (event.origin === baseUrl) {
+        const winner = event.data.winner;
+        const players = JSON.parse(localStorage.getItem('players'));
+        const iframe = document.getElementById('pongGame');
+        const urlParams = new URLSearchParams(new URL(iframe.src).search);
+        const player1 = urlParams.get('player1');
+        const player2 = urlParams.get('player2');
+        const loser = winner === player1 ? player2 : player1;
+
+        updateTournamentTable(winner, 'Round Winner');
+        updateTournamentTable(loser, 'Loser');
+
+        players.push(winner);
+        localStorage.setItem('players', JSON.stringify(players));
+        startNextGame();
+    }
+}, { once: true });
