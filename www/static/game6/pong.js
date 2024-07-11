@@ -24,13 +24,12 @@ let pointSound = new Audio(`/static/game/sounds/point.mp3`);
 let winSound = new Audio(`/static/game/sounds/win.mp3`);
 
 var font = new FontFaceObserver('Press Start 2P');
-
 const gameName = JSON.parse(document.getElementById('game_name').textContent);
+
 // Paso 1: Obtener player1 y player2 de la URL
 const urlParams = new URLSearchParams(window.location.search);
 const player1 = urlParams.get('player1');
 const player2 = urlParams.get('player2');
-
 // Paso 2: Conectar al WebSocket (modifica la URL según sea necesario)
 const socket = new WebSocket(`wss://${window.location.host}/ws/game6/${gameName}/?player1=${player1}&player2=${player2}`);
 
@@ -162,10 +161,6 @@ function makeNoises() {
 // Listen messages from server
 socket.onmessage = function(event) {
     position = JSON.parse(event.data);
-	if (position.WINNER) { // Comprueba si el mensaje contiene "WINNER"
-		window.parent.postMessage({ winner: position.WINNER }, '*');
-        console.log("aui:" + position.WINNER); // Imprime el nombre del ganador en la consola
-    }
     if (messageNumber == 0)
         drawCountdown();
     else {
@@ -179,10 +174,16 @@ socket.onmessage = function(event) {
                 if (!muted)
                     winSound.play();
                 if (position.score_left > position.score_right)
-                    drawText(textSize, String(position.p1_nick).slice(0, 20) + " wins!!", 1, 0, 0, 3.5);                    
+                    drawText(textSize, String(position.p1_nick).slice(0, 20) + " wins!!", 1, 0, 0, 3.5);
                 else
-                    drawText(textSize, String(position.p2_nick).slice(0, 20) + " wins!!", 1, 0, 0, 3.5);                    
+                    drawText(textSize, String(position.p2_nick).slice(0, 20) + " wins!!", 1, 0, 0, 3.5);
             }, 500);
+            setTimeout(function() {
+                if (position.score_left > position.score_right)
+                    window.parent.postMessage({ winner: position.p1_nick }, '*');
+                else
+                    window.parent.postMessage({ winner: position.p2_nick }, '*');
+            }, 3000);
         }
     }
 }
@@ -218,38 +219,3 @@ font.load().then(function () {
     console.log('Font is not available');
     animationLoop();
   });
-
-// ****************************** PLAY AGAIN ***********************************
-
-// When socket is closed, draw button to play again
-socket.onclose = function(event) {
-    setTimeout(function() {
-        drawPlayAgainButton();
-    }, 2000);
-};
-
-function drawPlayAgainButton() {
-    ctx.clearRect(canvas.width / 3, canvas.height / 1.45, canvas.width / 3, canvas.height / 9);
-    ctx.beginPath();
-    ctx.setLineDash([]);
-    ctx.lineWidth = scale * 6;
-    ctx.strokeStyle = 'white';
-    ctx.rect(canvas.width / 3, canvas.height / 1.45, canvas.width / 3, canvas.height / 9);
-    ctx.stroke();
-    drawText(textSize, "Next Match", 1, 0, 0, 1.3);
-    canvas.addEventListener('click', function(event) {
-        const rect = canvas.getBoundingClientRect();
-        const x = event.clientX - rect.left - ctx.lineWidth * 2;
-        const y = event.clientY - rect.top - ctx.lineWidth * 2;
-        if (isClickInsideButton(x, y))
-            window.location.reload();
-    });
-    window.addEventListener('keydown', function(event) {
-        if (event.code === 'Space' || event.code === 'Enter' || event.code === 'KeyY')
-            window.location.reload();
-    });
-}
-
-function isClickInsideButton(x, y) {
-    return x > canvas.width / 3 && y > canvas.height / 1.45 && x < canvas.width / 1.5 && y < canvas.height * 0.8;
-}

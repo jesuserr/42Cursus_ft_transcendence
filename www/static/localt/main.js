@@ -104,7 +104,7 @@ function createTournamentTable(players) {
         playerCell.textContent = player;
         
         const statusCell = document.createElement('td');
-        statusCell.textContent = 'Pending';
+        statusCell.textContent = 'Waiting';
         
         row.appendChild(playerCell);
         row.appendChild(statusCell);
@@ -178,7 +178,7 @@ window.addEventListener('message', function(event) {
         const loser = winner === player1 ? player2 : player1;
 
         updateTournamentTable(winner, 'Round Winner');
-        updateTournamentTable(loser, 'Loser');
+        updateTournamentTable(loser, 'Defeated');
 
         if (players.length === 0) {
             // End of tournament
