@@ -1,6 +1,6 @@
 (function() {
 	document.querySelectorAll('#content a').forEach(link => {
-		if (link.id !== 'boton2' && link.id !== 'toggleButton' && link.id !== 'displayname' && link.id !== 'mainmenu' && !link.href.includes('#')) {
+		if (link.id !== 'boton2' && link.id !== 'toggleButton' && link.id !== 'displayname' && link.id !== 'mainmenu' && !link.href.includes('/#')) {
 			link.addEventListener('click', function(e) {
 				e.preventDefault();
 				const href = this.getAttribute('href');

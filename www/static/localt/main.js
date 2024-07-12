@@ -161,7 +161,7 @@ function startNextGame() {
     url.searchParams.set('player1', player1);
     url.searchParams.set('player2', player2);
     iframe.src = url.toString();
-
+    iframe.focus();
     document.getElementById('gameContainer').style.display = 'block';
     document.getElementById('playerForm').style.display = 'none';
 }

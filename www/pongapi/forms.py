@@ -8,6 +8,8 @@ class NewUserForm(forms.ModelForm):
         fields = ('email', 'password', 'displayname', 'avatar')
 
 class LoginUserForm(forms.ModelForm):
+    email = forms.EmailField(widget=forms.TextInput(attrs={'style': 'width: 300px; height: 40px;'}))
+    password = forms.CharField(widget=forms.PasswordInput(attrs={'style': 'width: 300px; height: 40px;'}))
 
     class Meta:
         model = User

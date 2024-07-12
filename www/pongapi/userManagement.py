@@ -49,7 +49,7 @@ def editProfile(request):
                     formtmp.save()
                     ##add / to url of avatar
                     tmpuser =  User.objects.get(email=formtmp.email)
-                    if (str(tmpuser.avatar) != ''):
+                    if (str(tmpuser.avatar) != '') and ('static' not in str(tmpuser.avatar)):
                            tmpuser.avatar = '/' + str(tmpuser.avatar)
                            tmpuser.save()
                     ##end add / to url of avatar

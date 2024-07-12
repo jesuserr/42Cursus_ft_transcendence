@@ -60,6 +60,7 @@ function Tournament_Finished(data) {
 function Start_Game(data) {
     var iframe = document.getElementById('iframegame');
     iframe.src = data.name;
+	iframe.focus();
 }
 
 function Refresh_Tournament_Status(data) {
