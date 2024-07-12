@@ -9,13 +9,13 @@ all:
 	@chmod 777 ${HOME}/data/postgresql >/dev/null 2>&1 || true
 	@mkdir ${HOME}/data/django >/dev/null 2>&1 || true
 	@chmod 777 ${HOME}/data/django >/dev/null 2>&1 || true
-	@MYHOME=${HOME} docker compose -f ./scrs/docker-compose.yml up -d --build 
+	@MYHOME=${HOME} docker compose -f ./docker-compose.yml up -d --build 
 
 down:
-	@MYHOME=${HOME} docker compose -f ./scrs/docker-compose.yml down
+	@MYHOME=${HOME} docker compose -f ./docker-compose.yml down
 
 re:
-	@MYHOME=${HOME} docker compose -f ./scrs/docker-compose.yml up -d --build
+	@MYHOME=${HOME} docker compose -f ./docker-compose.yml up -d --build
 
 clean:
 	@docker exec -i postgresql bash -c "service postgresql stop" >/dev/null 2>&1 || true
@@ -25,8 +25,8 @@ clean:
 	docker rm $$(docker ps -qa);\
 	docker rmi -f $$(docker images -qa);\
 	docker volume rm $$(docker volume ls -q);\
-	docker network rm $$(docker network ls --filter name=scrs -q) || true;\
+	docker network rm $$(docker network ls --filter type=custom -q) || true;
 
 	@rm -rf ${HOME}/data >/dev/null 2>&1 || true
 	
-.PHONY: all re down clean
+.PHONY: all re down clea
