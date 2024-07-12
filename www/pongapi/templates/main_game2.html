@@ -2,7 +2,7 @@
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, shrink-to-fit=no">
-    <title>Game</title>
+    <title>Player vs Player (Remote game)</title>
     <link rel="stylesheet" href="/static/assets/bootstrap/css/bootstrap.min.css">
     <link rel="stylesheet" href="/static/assets/css/styles.css">
     <link rel="stylesheet" href="/static/assets/css/background.css">
@@ -30,7 +30,9 @@
 		if (playParam && isValidUrlSegment(playParam)) {
 			iframeSrc = "/game2/" + playParam;
 		}
-		document.getElementById('gameFrame').src = iframeSrc;
+        var gameFrame = document.getElementById('gameFrame');
+        gameFrame.src = iframeSrc;
+        gameFrame.focus();          // Set focus on the iframe
     </script>
 </body>
 </html>

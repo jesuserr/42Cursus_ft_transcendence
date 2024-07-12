@@ -2,18 +2,37 @@
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, shrink-to-fit=no">
-    <title>Game</title>
+    <title>Player vs CPU (Local game)</title>
     <link rel="stylesheet" href="/static/assets/bootstrap/css/bootstrap.min.css">
     <link rel="stylesheet" href="/static/assets/css/styles.css">
     <link rel="stylesheet" href="/static/assets/css/background.css">
-	
 </head>
 <body>
-	<div class="background-container">
-        <canvas id="test"></canvas>
-	</div>
-	<div id="iframegame" style="display: flex; justify-content: center; z-index: 1;">
-	    <iframe src="/game3" style="width: 85%; height: 780px; z-index: 1;"></iframe></div>
-
+    <div id="iframegame" style="display: flex; justify-content: center; z-index: 1;">
+        <iframe id="gameFrame" style="width: 85%; height: 780px; z-index: 1;"></iframe>
     </div>
+    <script>
+        function getParameterByName(name) {
+            name = name.replace(/[\[\]]/g, "\\$&");
+            var url = window.location.href;
+            var regex = new RegExp("[?&]" + name + "(=([^&#]*)|&|#|$)"),
+                results = regex.exec(url);
+            if (!results) return null;
+            if (!results[2]) return '';
+            return decodeURIComponent(results[2].replace(/\+/g, " "));
+        }
+        function isValidUrlSegment(segment) {
+            const pattern = /^[a-zA-Z0-9-_]+$/;
+            return pattern.test(segment);
+        }
+		var playParam = getParameterByName('play');
+		var iframeSrc = "/game3/general";
+		if (playParam && isValidUrlSegment(playParam)) {
+			iframeSrc = "/game3/" + playParam;
+		}
+        var gameFrame = document.getElementById('gameFrame');
+        gameFrame.src = iframeSrc;
+        gameFrame.focus();          // Set focus on the iframe
+    </script>
 </body>
+</html>
