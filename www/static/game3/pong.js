@@ -238,6 +238,13 @@ function drawPlayAgainButton() {
         if (event.code === 'Space' || event.code === 'Enter' || event.code === 'KeyY')
             window.location.reload();
     });
+    window.addEventListener('touchstart', function(event) {
+        const rect = canvas.getBoundingClientRect();
+        const x = event.touches[0].clientX - rect.left - ctx.lineWidth * 2;
+        const y = event.touches[0].clientY - rect.top - ctx.lineWidth * 2;
+        if (isClickInsideButton(x, y))
+            window.location.reload();
+    });
 }
 
 function isClickInsideButton(x, y) {
