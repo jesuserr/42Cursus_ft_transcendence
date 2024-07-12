@@ -80,7 +80,7 @@
             <div class="user-menu">
                 <button id="toggleButton"><i class="fas fa-users"></i></button>
                 <div class="user-menu">
-                    <img src="/{{ User.avatar }}" width="40" height="40" style="margin-right: 0.4rem;" class="rounded-circle" alt="Usuario" onerror="this.onerror=null; this.src='/static/avatars/default.jpg'">
+                    <img src="{{ User.avatar }}" width="40" height="40" style="margin-right: 0.4rem;" class="rounded-circle user-avatar" alt="Usuario" onerror="this.onerror=null; this.src='/static/avatars/default.jpg'">
                     <a id="displayname" class="nav-link dropdown-toggle" href="#" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false" style="color:white">{{ User.displayname }}</a>
                     <div class="dropdown-menu" aria-labelledby="displayname">
                         <a class="dropdown-item" href="/pongapi/edituseri">Edit profile</a>
@@ -90,6 +90,20 @@
             </div>
         </div>
     </nav>
+	<script>
+		// Espera a que el DOM esté completamente cargado
+		document.addEventListener('DOMContentLoaded', function() {
+			// Selecciona la imagen por su clase
+			var img = document.querySelector('.user-avatar');
+			var src = img.getAttribute('src');
+			
+			// Verifica si la ruta es relativa (no comienza con "http")
+			if (!src.startsWith('http')) {
+				// Añade "/" al inicio si la ruta es relativa y no comienza ya con "/"
+				img.src = src.startsWith('/') ? src : '/' + src;
+			}
+		});
+		</script>
     <div id="iframeContainer" style="z-index: 2; position: fixed; top: 0; right: 0; height: 100%; display: none;">
         <iframe src="/friends" style="height: 100%; width: 100%;"></iframe>
     </div>
