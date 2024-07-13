@@ -7,34 +7,44 @@ var w = window.innerWidth,
     time,
     count,
     size = 7,
-    speed = 20,
+    speed = 1.5, 
     parts = new Array,
     colors = ['red','#f57900','yellow','#ce5c00','#5c3566'];
 var mouse = { x: 0, y: 0 };
 
-canvas.setAttribute('width',w);
-canvas.setAttribute('height',h);
+canvas.setAttribute('width', w);
+canvas.setAttribute('height', h);
+
+window.addEventListener('resize', resizeCanvas);
+
+function resizeCanvas() {
+  w = window.innerWidth;
+  h = window.innerHeight;
+  canvas.setAttribute('width', w);
+  canvas.setAttribute('height', h);
+  create(); // Re-crear partículas
+}
 
 function create() {
   time = 0;
   count = 0;
 
-  for(var i = 0; i < arc; i++) {
+  for (var i = 0; i < arc; i++) {
     parts[i] = {
       x: Math.ceil(Math.random() * w),
       y: Math.ceil(Math.random() * h),
       toX: Math.random() * 5 - 1,
       toY: Math.random() * 2 - 1,
-      c: colors[Math.floor(Math.random()*colors.length)],
+      c: colors[Math.floor(Math.random() * colors.length)],
       size: Math.random() * size
     }
   }
 }
 
 function particles() {
-  ctx.clearRect(0,0,w,h);
+  ctx.clearRect(0, 0, w, h);
   canvas.addEventListener('mousemove', MouseMove, false);
-  for(var i = 0; i < arc; i++) {
+  for (var i = 0; i < arc; i++) {
     var li = parts[i];
     var distanceFactor = DistanceBetween(mouse, parts[i]);
     var distanceFactor = Math.max(Math.min(15 - (distanceFactor / 10), 10), 1);
@@ -42,31 +52,31 @@ function particles() {
     ctx.rect(li.x, li.y, li.size * distanceFactor, li.size * distanceFactor); // Dibujar cuadrados
     ctx.fillStyle = li.c;
     ctx.strokeStyle = li.c;
-    if(i % 2 == 0)
+    if (i % 2 == 0)
       ctx.stroke();
     else
       ctx.fill();
 
-    li.x = li.x + li.toX * (time * 0.05);
-    li.y = li.y + li.toY * (time * 0.05);
+    li.x += li.toX * speed;
+    li.y += li.toY * speed;
 
-    if(li.x > w){
-       li.x = 0;
+    if (li.x > w) {
+      li.x = 0;
     }
-    if(li.y > h) {
-       li.y = 0;
+    if (li.y > h) {
+      li.y = 0;
     }
-    if(li.x < 0) {
-       li.x = w;
+    if (li.x < 0) {
+      li.x = w;
     }
-    if(li.y < 0) {
-       li.y = h;
+    if (li.y < 0) {
+      li.y = h;
     }
   }
-  if(time < speed) {
+  if (time < speed) {
     time++;
   }
-  setTimeout(particles, 1000/rate);
+  setTimeout(particles, 1000 / rate);
 }
 
 function MouseMove(e) {

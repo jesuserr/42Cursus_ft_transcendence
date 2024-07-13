@@ -4,10 +4,20 @@
         if (toggleButton) {
             toggleButton.addEventListener('click', function() {
                 var iframeContainer = document.getElementById('iframeContainer');
+		var userMenu = document.querySelector('.user-menu');
                 if (iframeContainer.style.display === 'none' || iframeContainer.style.display === '') {
                     iframeContainer.style.display = 'block';
                 } else {
                     iframeContainer.style.display = 'none';
+                }
+		 if (window.innerWidth >= 768) { 
+                    if (iframeContainer.style.display === 'block') {
+                        userMenu.style.marginRight = '150px';
+                    } else {
+                        userMenu.style.marginRight = ''; 
+                    }
+                } else {
+                    userMenu.style.marginRight = '';
                 }
             });
         }

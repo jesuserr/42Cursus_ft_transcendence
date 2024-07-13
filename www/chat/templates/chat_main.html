@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="es">
+<html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -63,26 +63,35 @@
         </div>
         <div class="col-md-9">
             <span><div style="margin-top: 10px;" id="CURRENTUSER">General</div></span>
-            <div id="CONTAINER_CHAT_TEXT">
-                <div id="CHATTEXT" class="chat-text" contenteditable="false" style="font-size: 12px;"></div>
-				<div class="input-group mb-3">
-					<input style="margin-top: 5px;" id="CHAT_MSG_INPUT" type="text" class="form-control" placeholder="Escribe tu mensaje...">
+	    <div id="CONTAINER_CHAT_TEXT">
+                <div id="CHATTEXT" class="chat-text" contenteditable="false" style="font-size: 12px;"><span>a: fegre</span><br><span>a: hthtr</span><br><span>a: weffewf</span><br></div>
+				<input style="margin-top: 5px;" id="CHAT_MSG_INPUT" type="text" class="form-control" placeholder="Escribe tu mensaje..."><div class="input-group mb-3">
+
 					<div id="divsendmsg" class="input-group-append">
 						<input style="margin-top: 8px;" id="SEND_MSG" type="button" value="Send message" class="btn button">
 					</div>
-				</div>
-				<div id="MSG_STATUS_USERS">...</div>
+				<div id="MSG_STATUS_USERS">...</div></div>
+
                 </div>
-            </div>
-        </div>
+		</div>
     </div>
 </div>
 
     {{ room_name|json_script:"room_name" }}
-    <script src="/static/chat/chat.js"></script>
-    <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.5.4/dist/umd/popper.min.js"></script>
-    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+<script>
+    function sendHeight() {
+        var height = document.documentElement.scrollHeight;
+        parent.postMessage({ type: 'resize-iframe', height: height }, '*');
+    }
+
+    window.addEventListener('load', sendHeight);
+    window.addEventListener('resize', sendHeight);
+</script>
+
+<script src="/static/chat/chat.js"></script>
+<script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.5.4/dist/umd/popper.min.js"></script>
+<script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
 </body>
 </html>
 
