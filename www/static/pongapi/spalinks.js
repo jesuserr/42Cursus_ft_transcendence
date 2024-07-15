@@ -88,7 +88,7 @@
 
 (function() {
     document.querySelectorAll('#content a').forEach(link => {
-        if (link.id !== 'boton2' && link.id !== 'toggleButton' && link.id !== 'displayname' && link.id !== 'mainmenu') {
+        if (link.id !== 'boton2' && link.id !== 'boton3' && link.id !== 'toggleButton' && link.id !== 'displayname' && link.id !== 'mainmenu') {
             link.addEventListener('click', function(e) {
                 e.preventDefault();
                 const href = this.getAttribute('href');
