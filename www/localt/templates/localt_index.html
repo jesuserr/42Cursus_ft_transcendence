@@ -27,11 +27,11 @@
         }
         form {
             width: 50%;
+	    margin-top: 20px;
             background-color: #222;
             padding: 20px;
             border-radius: 10px;
             box-shadow: 0 0 10px #FFFFFF;
-            margin-bottom: 20px;
         }
         #mainContainer {
             display: flex;
@@ -45,6 +45,7 @@
             margin: 5px 0;
             border: none;
             border-radius: 5px;
+	    margin-top: 10px;
         }
         input {
             flex: 1;
@@ -86,7 +87,6 @@
             background-color: #222;
             padding: 20px;
             border-radius: 10px;
-            box-shadow: 0 0 10px #FFFFFF;
         }
         #gameContainer {
             width: 75%;
@@ -106,6 +106,54 @@
             50% { color: #FF4500; }
             100% { color: #FFD700; }
         }
+
+	@media (max-width: 856px) {
+		form {
+		  width: 70%;
+		  margin-top: 20px;
+		}
+		.removePlayer {
+			font-size: 11px;
+		}
+		.player-entry {
+ 			 font-size: 10px;
+		}
+
+		input {
+		  width: 10%;
+		}
+
+		button {
+  			padding: 8px;
+  		font-size: 10px;
+		}
+
+		h1 {
+			font-size: 12px;
+			margin-bottom: 10px;
+		}
+
+		            #mainContainer {
+                flex-direction: column;
+                align-items: center;
+            }
+            #gameContainer, #tournamentTable {
+                width: 100%;
+                margin: 0;
+            }
+            #tournamentTable {
+                margin-top: 20px;
+		width: 70%;
+		font-size: 12px;
+            }
+
+	    iframe {
+		height: 300px;
+	    }
+
+}
+
+
     </style>
 </head>
 <body>
