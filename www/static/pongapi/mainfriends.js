@@ -10,15 +10,11 @@
                 } else {
                     iframeContainer.style.display = 'none';
                 }
-		 if (window.innerWidth >= 768) { 
                     if (iframeContainer.style.display === 'block') {
                         userMenu.style.marginRight = '150px';
                     } else {
                         userMenu.style.marginRight = ''; 
                     }
-                } else {
-                    userMenu.style.marginRight = '';
-                }
             });
         }
 

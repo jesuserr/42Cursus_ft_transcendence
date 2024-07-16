@@ -19,6 +19,30 @@ html, body {
 }
 
 #content {
-	overflow-y: scroll;
+	overflow-y: hidden;
 	overflow-x: hidden;
 }
+
+.card {
+	margin-top: 20px;
+	width: 90% !important;
+}
+
+@media (max-width: 400px) {
+ 	input {
+		width: 200px;
+	}
+}
+
+ @media (max-width: 994px) {
+	 #content {
+		 overflow-y: scroll;
+	 }
+  }
+
+  @media (max-width: 856px), (max-height: 856px) and (orientation: landscape) {
+  	#content {
+		overflow-y: hidden;
+	}
+  }
+

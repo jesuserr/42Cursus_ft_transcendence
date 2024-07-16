@@ -83,10 +83,11 @@
         }
         #tournamentTable {
             width: 20%;
-            margin-left: 20px;
+            margin-right: 100px;
             background-color: #222;
             padding: 20px;
             border-radius: 10px;
+	    margin-top: 80px;
         }
         #gameContainer {
             width: 75%;
@@ -150,6 +151,52 @@
 	    iframe {
 		height: 300px;
 	    }
+
+	    @media (max-width: 856px), (orientation: landscape) and (max-width: 856px) {
+	form {
+		width: 70%;
+		margin-top: 20px;
+	}
+	.removePlayer {
+		font-size: 11px;
+	}
+	.player-entry {
+		font-size: 10px;
+	}
+
+	input {
+		width: 10%;
+	}
+
+	button {
+		padding: 8px;
+		font-size: 10px;
+	}
+
+	h1 {
+		font-size: 12px;
+		margin-bottom: 10px;
+	}
+
+	#mainContainer {
+		flex-direction: column;
+		align-items: center;
+	}
+	#gameContainer, #tournamentTable {
+		width: 100%;
+		margin: 0;
+	}
+	#tournamentTable {
+		margin-top: 20px;
+		width: 70%;
+		font-size: 12px;
+	}
+
+	iframe {
+		height: 300px;
+	}
+}
+
 
 }
 
