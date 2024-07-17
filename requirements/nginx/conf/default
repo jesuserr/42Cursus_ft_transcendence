@@ -8,7 +8,6 @@ server {
 
 	ssl_protocols		TLSv1.2 TLSv1.3;
 
-    location = /favicon.ico { access_log off; log_not_found off; }
     location /static/ {
         root /pong/base/www;
     }

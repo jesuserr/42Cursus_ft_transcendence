@@ -52,14 +52,22 @@
     function resizeIframe(iframe) {
         iframe.style.height = iframe.contentWindow.document.body.scrollHeight + 'px';
     }
-    window.addEventListener('message', function(event) {
-        if (event.data && event.data.type === 'resize-iframe') {
-            document.getElementById('chatiframe').style.height = event.data.height + 'px';
-        }
-    });
-    window.addEventListener('resize', function() {
-        const iframe = document.getElementById('chatiframe');
-        resizeIframe(iframe);
+
+    document.addEventListener('DOMContentLoaded', function() {
+        window.addEventListener('message', function(event) {
+            if (event.data && event.data.type === 'resize-iframe') {
+                var chatIframe = document.getElementById('chatiframe');
+                if (chatIframe) {
+                    chatIframe.style.height = event.data.height + 'px';
+                }
+            }
+        });
+        window.addEventListener('resize', function() {
+            const iframe = document.getElementById('chatiframe');
+            if (iframe) {
+                resizeIframe(iframe);
+            }
+        });
     });
 </script>
 </body>
