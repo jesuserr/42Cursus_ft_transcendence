@@ -90,7 +90,7 @@
     // Manejador de clics para los enlaces
     function handleLinkClick(e) {
         const link = e.currentTarget;
-        if (link.id !== 'toggleButton' && link.id !== 'displayname' && link.id !== 'mainmenu' && link.id !== 'boton1' && link.id !== 'boton2') {
+        if (link.id !== 'toggleButton' && link.id !== 'displayname' && link.id !== 'mainmenu' && link.id !== 'boton2') {
             e.preventDefault();
             const href = link.getAttribute('href');
 
