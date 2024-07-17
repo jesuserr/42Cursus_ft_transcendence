@@ -31,7 +31,6 @@
             background-color: #222;
             padding: 20px;
             border-radius: 10px;
-            box-shadow: 0 0 10px #FFFFFF;
         }
         #mainContainer {
             display: flex;
@@ -53,14 +52,22 @@
             width: calc(100% - 120px);
         }
         button {
-            background-color: #FFD700;
-            color: black;
-            cursor: pointer;
+		background-color: #333;
+		color: #FFFFFF;
+		border: none;
+		cursor: pointer;
+		text-shadow: 1px 1px #000000;
+
         }
-        button.removePlayer {
+
+	button:hover {
+		background-color: #4CAF50;
+	}
+
+/*        button.removePlayer {
             background-color: red;
             color: white;
-        }
+        }*/
         table {
             width: 100%;
             border-collapse: collapse;
@@ -151,8 +158,9 @@
 	    iframe {
 		height: 300px;
 	    }
+	}
 
-	    @media (max-width: 856px), (orientation: landscape) and (max-width: 856px) {
+/*	    @media only screen and (orientation: landscape) and (max-width: 856px) {
 	form {
 		width: 70%;
 		margin-top: 20px;
@@ -195,10 +203,18 @@
 	iframe {
 		height: 300px;
 	}
-}
+}*/
 
-
-}
+        @media only screen and (max-device-width: 768px) and (orientation: landscape) {
+            iframe {
+                position: fixed;
+                top: 0;
+                left: 0;
+                width: 100vw;
+                height: 100vh;
+                z-index: 9999; /* Asegura que esté por encima de otros elementos */
+            }
+        }
 
 
     </style>
