@@ -39,8 +39,8 @@
         	<p class="teletext-description">3 min game with friends</p>
         	<a href="/pongapi/localt"><button class="btn teletext-button">Play</button></a>
    	 </div>
-<div style="display: flex; flex-direction: column;">
-    <div id="iframechat" style="flex-grow: 1;">
+<div style="display: flex; flex-direction: column; z-index: 1;">
+    <div id="iframechat">
         <iframe src="/chat" id="chatiframe" style="width: 100%; border: none;" onload="resizeIframe(this)"></iframe>
     </div>
 </div>
@@ -48,28 +48,30 @@
     {{ Data.ErrorMsg }}
 </center>
 <script src="/static/pongapi/spalinks.js"></script>
-<script>
-    function resizeIframe(iframe) {
-        iframe.style.height = iframe.contentWindow.document.body.scrollHeight + 'px';
-    }
+    <script>
+        function resizeIframe(iframe) {
+            iframe.style.height = iframe.contentWindow.document.body.scrollHeight + 'px';
+        }
 
-    document.addEventListener('DOMContentLoaded', function() {
-        window.addEventListener('message', function(event) {
-            if (event.data && event.data.type === 'resize-iframe') {
-                var chatIframe = document.getElementById('chatiframe');
-                if (chatIframe) {
-                    chatIframe.style.height = event.data.height + 'px';
+        document.addEventListener('DOMContentLoaded', function() {
+            window.addEventListener('message', function(event) {
+                if (event.data && event.data.type === 'resize-iframe') {
+                    var chatIframe = document.getElementById('chatiframe');
+                    if (chatIframe) {
+                        chatIframe.style.height = event.data.height + 'px';
+                    }
                 }
-            }
+            });
+
+            window.addEventListener('resize', function() {
+                const iframe = document.getElementById('chatiframe');
+                if (iframe) {
+                    iframe.style.height = 'auto';
+                    resizeIframe(iframe);
+                }
+            });
         });
-        window.addEventListener('resize', function() {
-            const iframe = document.getElementById('chatiframe');
-            if (iframe) {
-                resizeIframe(iframe);
-            }
-        });
-    });
-</script>
+    </script>
 </body>
 </html>
 

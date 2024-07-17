@@ -71,6 +71,9 @@
         <li class="nav-item" role="presentation">
             <a class="nav-link" id="server-history-tab" data-toggle="tab" href="#server-history" role="tab" aria-controls="server-history" aria-selected="false"><i class="fas fa-server"></i> Server History</a>
         </li>
+	 <li class="nav-item" role="presentation">
+            <a class="nav-link" id="server-history-tab" data-toggle="tab" href="#stats" role="tab" aria-controls="server-history" aria-selected="false"><i class="fas fa-chart-bar"></i> Player Graph</a>
+        </li>
     </ul>
     
     <!-- Contenido de las pestañas -->
@@ -161,24 +164,6 @@
                     </tr>
                 </tbody>
             </table>
-	    <div class="container-fluid d-flex justify-content-center" style="margin-bottom: 15px">
-			<div class="col-md-2">
-                <canvas id="donutChart" style="margin-top: 10px;"></canvas>
-			</div>
-		</div>
-	<div class="container-fluid">
-		<div class="row row-cols-3 d-flex justify-content-between">
-			<div class="col-md-4 mb-4">
-				<canvas id="matchesChart"></canvas>
-			</div>
-       			<div class="col-md-4 mb-4">
-            			<canvas id="goalsChart"></canvas>
-        		</div>
-			<div class="col-md-4 mb-4">
-			<canvas id="matchDurationChart" width="400" height="200"></canvas>
-			</div>
-    		</div>
-	</div>
 
         </div>
         <div class="tab-pane fade" id="player-history" role="tabpanel" aria-labelledby="player-history-tab">
@@ -265,59 +250,78 @@
                 </tbody>
             </table>
         </div>
+	<div class="tab-pane fade" id="stats" role="tabpanel" aria-labelledby="player-history-tab">
+		<div class="container-fluid">
+    			<div class="row d-flex justify-content-center">
+        			<div class="col-md-2 mb-2 text-center">
+            				<canvas id="matchesChart"></canvas>
+        			</div>
+        			<div class="col-md-2 mb-2 text-center">
+            				<canvas id="donutChart"></canvas>
+       				 </div>
+   			 </div>
+			 <div class="row d-flex justify-content-center">
+				<div class="col-md-4 mb-4">
+				<canvas id="matchesChart2"></canvas>
+				</div>
+       				<div class="col-md-4 mb-4">
+            			<canvas id="goalsChart2"></canvas>
+        			</div>
+    			</div>
+		</div>
+	</div>
     </div>
     <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.5.4/dist/umd/popper.min.js"></script>
     <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
 	    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-	<script>
-        document.addEventListener('DOMContentLoaded', function () {
-    const tournamentsWon = {{ user_stats.tournaments_won }};
-            const tournamentsLost = {{ user_stats.tournaments_lost }};
-            const tournamentsPlayed = {{ user_stats.tournaments_played }};
 
-			 const remainingTournaments = tournamentsPlayed - (tournamentsWon + tournamentsLost);
-    const allZero = (tournamentsWon === 0 && tournamentsLost === 0 && remainingTournaments === 0);
+<script>
+    document.addEventListener('DOMContentLoaded', function () {
+        const tournamentsWon = {{ user_stats.tournaments_won }};
+        const tournamentsLost = {{ user_stats.tournaments_lost }};
+        const tournamentsPlayed = {{ user_stats.tournaments_played }};
 
-    const emptyDonutColor = 'rgba(255, 255, 255, 0.5)';
-    const emptyDonutBorderColor = 'rgba(255, 255, 255, 1)';
-    const donutData = allZero ? [1] : [tournamentsWon, tournamentsLost, remainingTournaments];
-    const donutLabels = allZero ? ['No Tournaments yet'] : ['Tournaments Won', 'Tournaments Lost', 'Remaining Tournaments'];
-    const donutColors = allZero ? [emptyDonutColor] : ['rgba(153, 102, 255, 0.2)', 'rgba(255, 206, 86, 0.2)', 'rgba(54, 162, 235, 0.5)'];
-    const donutBorders = allZero ? [emptyDonutBorderColor] : ['rgba(153, 102, 255, 1)', 'rgba(255, 206, 86, 1)', 'rgba(54, 162, 235, 1)'];
+        const remainingTournaments = tournamentsPlayed - (tournamentsWon + tournamentsLost);
+        const allZero = (tournamentsWon === 0 && tournamentsLost === 0 && remainingTournaments === 0);
 
-    const ctxDonut = document.getElementById('donutChart').getContext('2d');
-    const donutChart = new Chart(ctxDonut, {
-        type: 'doughnut',
-        data: {
-            labels: donutLabels,
-            datasets: [{
-                data: donutData,
-                backgroundColor: donutColors,
-                borderColor: donutBorders,
-                borderWidth: 1
-            }]
-        },
-        options: {
-            responsive: true,
-            plugins: {
-                legend: {
-                    position: 'top',
-                },
-                tooltip: {
-                    callbacks: {
-                        label: function (tooltipItem) {
-                            return tooltipItem.label + ': ' + tooltipItem.raw;
+        const emptyDonutColor = 'rgba(255, 255, 255, 0.5)';
+        const emptyDonutBorderColor = 'rgba(255, 255, 255, 1)';
+        const donutData = allZero ? [1] : [tournamentsWon, tournamentsLost, remainingTournaments];
+        const donutLabels = allZero ? ['No Tournaments yet'] : ['Tournaments Won', 'Tournaments Lost', 'Remaining Tournaments'];
+        const donutColors = allZero ? [emptyDonutColor] : ['rgba(153, 102, 255, 0.2)', 'rgba(255, 206, 86, 0.2)', 'rgba(54, 162, 235, 0.5)'];
+        const donutBorders = allZero ? [emptyDonutBorderColor] : ['rgba(153, 102, 255, 1)', 'rgba(255, 206, 86, 1)', 'rgba(54, 162, 235, 1)'];
+
+        const ctxDonut = document.getElementById('donutChart').getContext('2d');
+        const donutChart = new Chart(ctxDonut, {
+            type: 'doughnut',
+            data: {
+                labels: donutLabels,
+                datasets: [{
+                    data: donutData,
+                    backgroundColor: donutColors,
+                    borderColor: donutBorders,
+                    borderWidth: 1
+                }]
+            },
+            options: {
+                responsive: true,
+                plugins: {
+                    legend: {
+                        position: 'top',
+                    },
+                    tooltip: {
+                        callbacks: {
+                            label: function (tooltipItem) {
+                                return tooltipItem.label + ': ' + tooltipItem.raw;
+                            }
                         }
                     }
                 }
             }
-        }
-	     });
+        });
 
-
-
-	var matchesPlayedPVC = {{ user_stats.matches_played_pvc }};
+        var matchesPlayedPVC = {{ user_stats.matches_played_pvc }};
         var matchesPlayedPVP = {{ user_stats.matches_played_pvp }};
         var matchesPlayedOverall = {{ user_stats.matches_played }};
         
@@ -329,8 +333,41 @@
         var goalsScoredPVP = {{ user_stats.scored_goals_per_match_pvp }};
         var goalsScoredOverall = {{ user_stats.scored_goals_per_match }};
 
+        const allMatchesZero = (matchesPlayedPVC === 0 && matchesPlayedPVP === 0 && matchesPlayedOverall === 0 && 
+                                matchesWonPVC === 0 && matchesWonPVP === 0 && matchesWonOverall === 0 &&
+                                goalsScoredPVC === 0 && goalsScoredPVP === 0 && goalsScoredOverall === 0);
+
         // Gráfico de partidos jugados
-        var ctx = document.getElementById('matchesChart').getContext('2d');
+        var ctxMatches = document.getElementById('matchesChart').getContext('2d');
+        var matchesChart = new Chart(ctxMatches, {
+            type: 'doughnut',
+            data: {
+                labels: allMatchesZero ? ['No Matches yet'] : ['vs CPU', 'vs Human', 'Overall'],
+                datasets: [{
+                    data: allMatchesZero ? [1] : [matchesPlayedPVC, matchesPlayedPVP, matchesPlayedOverall],
+                    backgroundColor: allMatchesZero ? [emptyDonutColor] : ['rgba(75, 192, 192, 0.2)', 'rgba(153, 102, 255, 0.2)', 'rgba(255, 206, 86, 0.2)'],
+                    borderColor: allMatchesZero ? [emptyDonutBorderColor] : ['rgba(75, 192, 192, 1)', 'rgba(153, 102, 255, 1)', 'rgba(255, 206, 86, 1)'],
+                    borderWidth: 1
+                }]
+            },
+            options: {
+                responsive: true,
+                plugins: {
+                    legend: {
+                        position: 'top',
+                    },
+                    tooltip: {
+                        callbacks: {
+                            label: function (tooltipItem) {
+                                return tooltipItem.label + ': ' + tooltipItem.raw;
+                            }
+                        }
+                    }
+                }
+            }
+        });
+      // Gráfico de partidos jugados
+        var ctx = document.getElementById('matchesChart2').getContext('2d');
         var matchesChart = new Chart(ctx, {
             type: 'bar',
             data: {
@@ -358,8 +395,7 @@
             }
         });
 
-        // Gráfico de goles por partido
-        var ctx2 = document.getElementById('goalsChart').getContext('2d');
+	 var ctx2 = document.getElementById('goalsChart2').getContext('2d');
         var goalsChart = new Chart(ctx2, {
             type: 'bar',
             data: {
@@ -381,51 +417,10 @@
             }
         });
 
-			 var shortestMatches = [
-            {{ user_stats.shortest_match_pvc }},
-            {{ user_stats.shortest_match_pvp }},
-            {{ user_stats.shortest_match }}
-        ];
-        var longestMatches = [
-            {{ user_stats.longest_match_pvc }},
-            {{ user_stats.longest_match_pvp }},
-            {{ user_stats.longest_match }}
-        ];
-        var labels = ['PVC', 'PVP', 'Total'];
+    });
+</script>
 
-        // Configurar el gráfico
-        var ctx = document.getElementById('matchDurationChart').getContext('2d');
-        var myChart = new Chart(ctx, {
-            type: 'bar',
-            data: {
-                labels: labels,
-                datasets: [{
-                    label: 'Shortest Matches (secs)',
-                    data: shortestMatches,
-                    backgroundColor: 'rgba(54, 162, 235, 0.5)',
-                    borderColor: 'rgba(54, 162, 235, 1)',
-                    borderWidth: 1
-                }, {
-                    label: 'Longest Matches (secs)',
-                    data: longestMatches,
-                    backgroundColor: 'rgba(255, 99, 132, 0.5)',
-                    borderColor: 'rgba(255, 99, 132, 1)',
-                    borderWidth: 1
-                }]
-            },
-            options: {
-                scales: {
-                    yAxes: [{
-                        ticks: {
-                            beginAtZero: true
-                        }
-                    }]
-                }
-            }
-        });
-
-        });
-	</script>
 </body>
 </html>
+
 
