@@ -7,6 +7,7 @@ const socket = new WebSocket(
 );
 
 currentchat = '';
+USERID = '';
 
 // When the socket is open, display the connection status
 socket.onopen = function(e) {

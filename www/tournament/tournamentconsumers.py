@@ -169,17 +169,16 @@ class TournamentConsumer(AsyncJsonWebsocketConsumer):
 	#Receive message from the group to finish the tournament
     async def finish_tournament(self, event):
         pass
-		#await self.close()
-    
-	# update model with the new round
     @database_sync_to_async
     def update_round(self, data):
-        tmp = Tournament_Play.objects.get(tournament_name=self.tournament, email=data['winner'])
-        tmp.status = 'WON'
-        tmp.save()
-        tmp = Tournament_Play.objects.get(tournament_name=self.tournament, status='PLAYING')
-        tmp.status = 'LOST'
-        tmp.save()
+        tmp = Tournament_Play.objects.filter(tournament_name=self.tournament, email=data['winner']).first()
+        if tmp:
+            tmp.status = 'WON'
+            tmp.save()
+        tmp = Tournament_Play.objects.filter(tournament_name=self.tournament, status='PLAYING').first()
+        if tmp:
+            tmp.status = 'LOST'
+            tmp.save()
     
 	#Receive message from the group to refresh the button play
     async def send_group_msg_client(self, event):
@@ -256,13 +255,13 @@ class TournamentConsumer(AsyncJsonWebsocketConsumer):
             return tmp.displayname
         except:
             return "UnName"
-                    
-	#change status of the player
+        
     @database_sync_to_async
     def change_status(self, player, status):
-        tmp = Tournament_Play.objects.get(tournament_name=self.tournament, email=player)
-        tmp.status = status
-        tmp.save()
+        tmp = Tournament_Play.objects.filter(tournament_name=self.tournament, email=player).first()
+        if tmp:
+            tmp.status = status
+            tmp.save()
 
     async def request_group_refresh_tournament_status(self, message):
         await self.channel_layer.group_send(
@@ -371,7 +370,6 @@ class TournamentConsumer(AsyncJsonWebsocketConsumer):
                 tournament_play.save()
         except:
         	pass
-        
         try:
             tmp = Tournament_Connected_Users.objects.get(tournament_name=self.tournament, email=self.user.email)
             tmp.delete()
