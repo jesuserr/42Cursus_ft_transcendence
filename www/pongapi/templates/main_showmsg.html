@@ -1,4 +1,4 @@
-{% include "main_menu.html" %}
+
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, shrink-to-fit=no">
@@ -6,11 +6,28 @@
     <link rel="stylesheet" href="/static/assets/bootstrap/css/bootstrap.min.css">
     <link rel="stylesheet" href="/static/assets/css/custom.css">
     <link rel="stylesheet" href="/static/assets/css/background.css">
-	
+    
 </head>
 <body>
+    <div id="errorContainer" style="display: flex; flex-direction: column; justify-content: center; align-items: center; height: 100vh; color: white; z-index: 1">
+        {{ Data.ErrorMsg }}
+		<br>
+		<br>
+        <h5>Returning to the main site in</h5>
+        <div id="countdown">5</div>
+    </div>
+    <script>
+        let countdownElement = document.getElementById('countdown');
+        let countdownTime = 5; // Countdown time in seconds
 
-	<div style="display: flex; justify-content: center; align-items: center; height: 100vh; color: white; z-index: 1">
-		{{ Data.ErrorMsg }}
-	</div>
+        let countdownInterval = setInterval(function() {
+            countdownElement.innerHTML = countdownTime;
+            countdownTime--; // Decrement the counter
+
+            if (countdownTime < 0) {
+                clearInterval(countdownInterval); // Stop the interval
+                window.location.href = '/'; // Redirect to the domain root
+            }
+        }, 1000); // Update every second
+    </script>
 </body>

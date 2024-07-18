@@ -116,7 +116,20 @@ document.getElementById('FriendStats').addEventListener('click', function() {
         })
         .then(response => response.text()) 
         .then(html => {
-            parent.document.getElementById("content").innerHTML = html;
+            const content = parent.document.getElementById("content");
+            content.innerHTML = html;
+            // Ejecutar scripts después de cargar el contenido
+            const scripts = content.querySelectorAll("script");
+            scripts.forEach((oldScript) => {
+                const newScript = document.createElement("script");
+                // Si el script tiene un atributo src, copiarlo al nuevo script
+                if (oldScript.src) {
+                    newScript.src = oldScript.src;
+                } else {
+                    newScript.text = oldScript.text;
+                }
+                oldScript.parentNode.replaceChild(newScript, oldScript);
+            });
         })
         .catch(error => console.error('Error:', error));
     } else {

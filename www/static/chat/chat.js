@@ -88,23 +88,29 @@ function New_Private_msg(data) {
         messageContent.appendChild(document.createTextNode(data.displaynamefrom + ': '));
         let parts = data.message.split(urlRegex);
 
-		parts.forEach(part => {
-			if (part.match(urlRegex)) {
-				let a = document.createElement('a');
-				a.href = part;
-				// Comprobar si el enlace es del mismo dominio
-				if (new URL(part).hostname === window.location.hostname) {
-					a.target = '_parent'; // Mismo dominio, abrir en el contexto del padre
-					a.textContent = "Play Game"; // Cambiar el texto del enlace para enlaces del mismo dominio
-				} else {
-					a.target = '_blank'; // Diferente dominio, abrir en una nueva ventana/tab
-					a.textContent = part;
-				}
-				messageContent.appendChild(a);
-			} else {
-				messageContent.appendChild(document.createTextNode(part));
-			}
-		});
+        parts.forEach(part => {
+            if (part.match(urlRegex)) {
+                let a = document.createElement('a');
+                a.href = part;
+                if (part.includes("pongapi")) {
+                    let parsedUrl = new URL(part);
+                    let pathAfterDomain = parsedUrl.pathname + parsedUrl.search;
+                    let baseUrl = `${window.location.protocol}//${window.location.host}`;
+                    a.href = `${baseUrl}${pathAfterDomain}`; // Usa toda la URL desde la primera '/' después del dominio
+                    a.textContent = "Play Game!"; // Texto personalizado para estos enlaces
+                    a.target = '_parent';
+                } else if (new URL(part).hostname === window.location.hostname) {
+                    a.target = '_parent'; // Mismo dominio, abrir en el contexto del padre
+                    a.textContent = "Play Game"; // Cambiar el texto del enlace para enlaces del mismo dominio
+                } else {
+                    a.target = '_blank'; // Diferente dominio, abrir en una nueva ventana/tab
+                    a.textContent = part;
+                }
+                messageContent.appendChild(a);
+            } else {
+                messageContent.appendChild(document.createTextNode(part));
+            }
+        });
 
         messageDiv.appendChild(messageContent);
         chatTextDiv.appendChild(messageDiv);
@@ -139,15 +145,23 @@ function Set_Chat_History(alldata) {
             if (part.match(urlRegex)) {
                 let a = document.createElement('a');
                 a.href = part;
-                a.textContent = part;
-                // Comprobar si el enlace es del mismo dominio
-				if (new URL(part).hostname === window.location.hostname) {
-					a.target = '_parent'; // Mismo dominio, abrir en el contexto del padre
-					a.textContent = "Play Game"; // Cambiar el texto del enlace para enlaces del mismo dominio
-				} else {
-					a.target = '_blank'; // Diferente dominio, abrir en una nueva ventana/tab
-					a.textContent = part;
-				}
+                // Comprobar si el enlace contiene "pongapi"
+                if (part.includes("pongapi")) {
+                    // Analizar la URL y extraer la parte después del dominio
+                    let parsedUrl = new URL(part);
+                    let pathAfterDomain = parsedUrl.pathname + parsedUrl.search;
+                    // Construir la URL con la base del cliente
+                    let baseUrl = `${window.location.protocol}//${window.location.host}`;
+                    a.href = `${baseUrl}${pathAfterDomain}`; // Usa toda la URL desde la primera '/' después del dominio
+                    a.textContent = "Play Game!"; // Texto personalizado para estos enlaces
+                    a.target = '_parent';
+                } else if (new URL(part).hostname === window.location.hostname) {
+                    a.target = '_parent'; // Mismo dominio, abrir en el contexto del padre
+                    a.textContent = "Play Game"; // Cambiar el texto del enlace para enlaces del mismo dominio
+                } else {
+                    a.target = '_blank'; // Diferente dominio, abrir en una nueva ventana/tab
+                    a.textContent = part;
+                }
                 messageElement.appendChild(a);
             } else {
                 messageElement.appendChild(document.createTextNode(part));
@@ -496,7 +510,19 @@ document.getElementById('FriendStats').addEventListener('click', function() {
         })
         .then(response => response.text()) // Asume que la respuesta es texto/HTML
         .then(html => {
-            parent.document.getElementById("content").innerHTML = html;
+            const content = parent.document.getElementById("content");
+            content.innerHTML = html;
+            // Ejecutar scripts después de cargar el contenido
+            const scripts = content.querySelectorAll("script");
+            scripts.forEach((oldScript) => {
+                const newScript = document.createElement("script");
+                if (oldScript.src) {
+                    newScript.src = oldScript.src;
+                } else {
+                    newScript.textContent = oldScript.textContent;
+                }
+                oldScript.parentNode.replaceChild(newScript, oldScript);
+            });
         })
         .catch(error => console.error('Error:', error));
     }
