@@ -72,7 +72,7 @@ function Typing(data)
 	{
 		document.getElementById('MSG_STATUS_USERS').innerText = data['WHO'] + ' is typing...';
 		setTimeout(function() {
-			document.getElementById('MSG_STATUS_USERS').innerText = '...';
+			document.getElementById('MSG_STATUS_USERS').innerText = '';
 		}, 500);
 	}
 }
