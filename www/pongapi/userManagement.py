@@ -230,7 +230,8 @@ def NewUserCodeOkFillData(request):
 
 def AnonimousUser(request):
       try:
-        tmpusername = str(datetime.now(timezone.utc).timestamp())
+        timestamp = str(datetime.now(timezone.utc).timestamp())
+        tmpusername = 'A' + timestamp.split('.')[1]
         tmpuser = User()
         tmpuser.email = tmpusername + '@pong42.com'
         tmpuser.displayname = tmpusername
