@@ -248,4 +248,3 @@ class GameConsumer5(AsyncWebsocketConsumer):
 
     async def close_all_connections(self, event):
         await self.close()
-        print("Connection Closed")

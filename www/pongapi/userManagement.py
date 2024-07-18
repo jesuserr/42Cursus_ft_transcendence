@@ -11,6 +11,8 @@ import os
 from  .token import *
 from .userManagementTFA import *
 import pyotp
+import random
+import string
 
 
 ## EditProfile ##
@@ -229,9 +231,9 @@ def NewUserCodeOkFillData(request):
         return response
 
 def AnonimousUser(request):
-      try:
-        timestamp = str(datetime.now(timezone.utc).timestamp())
-        tmpusername = 'A' + timestamp.split('.')[1]
+    try:
+        characters = string.ascii_letters + string.digits
+        tmpusername = ''.join(random.choice(characters) for i in range(6))
         tmpuser = User()
         tmpuser.email = tmpusername + '@pong42.com'
         tmpuser.displayname = tmpusername
@@ -244,7 +246,7 @@ def AnonimousUser(request):
         response = render(request, 'main_root.html', {'User': tmpuser})
         response.set_cookie('tokenid', tokenid, secure=True, httponly=True)
         return response
-      except:
+    except:
         return HttpResponseRedirect("/")
 
 def urlavatar(ori):

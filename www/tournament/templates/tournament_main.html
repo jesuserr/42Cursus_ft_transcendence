@@ -124,6 +124,15 @@
             border-top: 1px solid #333;
         }
 
+        #tournamentTable th, #tournamentTable td {
+            cursor: default;
+        }
+
+        #tournamentTable td:hover {
+            cursor: pointer;
+            color: #FFD700; /* Cambia el color del texto al pasar el ratón */
+        }
+
         #tstatusTable, #tournamentTable th, #tournamentTable td, #tstatusTable th, #tstatusTable td {
             border: none;
         }
@@ -247,12 +256,5 @@
     </div>
     {{ tournament_name|json_script:"tournament_name" }}
     <script src="/static/tournament/tournament.js"></script>
-    <script>
-        document.addEventListener('DOMContentLoaded', () => {
-            const tournamentName = JSON.parse(document.getElementById('tournament_name').textContent);
-            document.getElementById('iframechat').src = `/chat/${tournamentName}`;
-        });
-    </script>
 </body>
 </html>
-
