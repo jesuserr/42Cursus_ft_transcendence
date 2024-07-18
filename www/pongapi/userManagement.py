@@ -233,7 +233,7 @@ def NewUserCodeOkFillData(request):
 def AnonimousUser(request):
     try:
         characters = string.ascii_letters + string.digits
-        tmpusername = ''.join(random.choice(characters) for i in range(6))
+        tmpusername = 'A' + ''.join(random.choice(characters) for i in range(6))
         tmpuser = User()
         tmpuser.email = tmpusername + '@pong42.com'
         tmpuser.displayname = tmpusername
