@@ -2,33 +2,94 @@
 <html>
 <head>
     <meta charset="utf-8" />
-    <title>Pong 42 tournament</title>
+    <title>Pong 42 Tournament</title>
     <style>
         @import "https://fonts.googleapis.com/css?family=Press%20Start%202P";
 
         body {
             margin: 0;
-            background-color: #000;
-            display: flex;
+            background-color: transparent;
             color: white;
             font-family: 'Press Start 2P';
+            display: flex;
             flex-direction: column;
-i        }
-
-	.main-content {
-		display: flex;
-		justify-content: center;
-	}
-
-        .iframegame {
-		height: 50vh;
-		width: 70%;
+            align-items: center;
+            height: 100vh;
+            overflow: hidden;
         }
 
-	.iframechat {
-		height: 100vh;
-		border: none;
-	}
+        .main-container {
+            display: grid;
+            grid-template-areas:
+                "left game right"
+                "chat chat chat";
+            grid-template-rows: 1fr 60%;
+            grid-template-columns: 1fr 2fr 1fr;
+            width: 100%;
+            height: 100%;
+            gap: 10px;
+            padding: 10px;
+            box-sizing: border-box;
+            background-color: transparent;
+            transition: all 0.5s ease;
+        }
+
+        .main-container.tournament-started {
+            grid-template-rows: 2fr 40%;
+        }
+
+        .iframegame {
+            grid-area: game;
+            height: 100%;
+            width: 100%;
+            border: none;
+            background-color: #000; /* Fondo negro para el juego */
+            transition: all 0.5s ease;
+        }
+
+        .iframechat {
+            grid-area: chat;
+            height: 100%;
+            width: 100%;
+            border: none;
+        }
+
+        .left-content, .right-content {
+            background-color: rgba(128, 128, 128, 0.5);
+            padding: 10px;
+            overflow-y: auto;
+            box-sizing: border-box;
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+            max-height: 40vh; /* Máxima altura del 40% de la altura de la pantalla */
+            transition: all 0.5s ease;
+            border-radius: 10px;
+        }
+
+        .left-content {
+            grid-area: left;
+        }
+
+        .right-content {
+            grid-area: right;
+        }
+
+        .usertable {
+            overflow-y: auto;
+        }
+
+        .tstatus {
+            display: none;
+            text-align: center;
+            padding: 10px;
+            background-color: rgba(128, 128, 128, 0.5);
+            border-radius: 10px;
+        }
+
+        .tstatus.visible {
+            display: block;
+        }
 
         button:enabled {
             color: grey;
@@ -40,35 +101,32 @@ i        }
 
         #userTable, #tstatusTable, #tournamentTable {
             font-size: small;
-            margin-left: auto;
-            margin-right: auto;
             text-align: center;
+            width: 100%;
+            border-collapse: separate;
+            border-spacing: 0;
+            margin-bottom: 20px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.5);
+            border-radius: 10px;
+            overflow: hidden;
+        }
+
+        #userTable th, #tstatusTable th, #tournamentTable th {
+            background-color: #444;
+            color: white;
+            padding: 10px;
+        }
+
+        #userTable td, #tstatusTable td, #tournamentTable td {
+            background-color: rgba(34, 34, 34, 0.8);
+            color: white;
+            padding: 10px;
+            border-top: 1px solid #333;
         }
 
         #tstatusTable, #tournamentTable th, #tournamentTable td, #tstatusTable th, #tstatusTable td {
-            border: 1px solid #333;
-            border-collapse: collapse;
+            border: none;
         }
-
-        body, html {
-            background: transparent !important;
-        }
-
-        #userTable {
-            background-color: rgba(128, 128, 128, 0.5);
-            width: 70%;
-	    height: 200px;
-            overflow: scroll;
-            display: flex;
-            padding: 10px;
-	    justify-content: center;
-        }
-
-        .container {
-            display: flex;
-	    justify-content: center;
-        }
-
 
         button {
             background-color: #333;
@@ -80,84 +138,121 @@ i        }
             font-size: 8px;
             border-radius: 4px;
             font-family: 'Press Start 2P';
+            transition: all 0.5s ease;
         }
 
         button:hover {
             background-color: #4CAF50;
         }
 
-	.content {
-            height: 200px; 
+        .content {
+            height: 100px;
             overflow-y: scroll;
-	}
+        }
 
         @media (max-width: 768px) {
-            .container {
-                flex-direction: column;
+            .main-container {
+                grid-template-areas:
+                    "game"
+                    "left"
+                    "right"
+                    "chat";
+                grid-template-rows: 50vh auto auto 1fr;
+                grid-template-columns: 1fr;
+            }
+
+            .main-container.tournament-started {
+                grid-template-rows: 70vh auto auto 1fr;
+            }
+
+            .left-content, .right-content {
+                max-height: none;
+                height: auto;
             }
 
             #userTable, #tstatusTable, #tournamentTable {
                 font-size: 10px;
             }
         }
-
     </style>
 </head>
 <body>
-    <div class="container">
+    <div class="main-container" id="mainContainer">
         <div class="left-content">
-            <h1 style="text-align: center; font-size: small;">Tournaments:</h1>    
-	    <center><table id="tournamentTable">
-                <thead>
-                    <tr>
-                        <th>Name</th>
-                        <th>Users</th>
-                        <th>Status</th>
-                    </tr>
-                </thead>
-                <tbody>
-                </tbody>
-            </table></center>
+            <div>
+                <h1 style="text-align: center; font-size: small;">Tournament {{ tournament_name }}</h1>
+                <div style="display: flex; justify-content: center; margin-top: 20px;">
+                    <button id="play" disabled>Waiting for players</button>
+                </div>
+                <div>
+                    <h3 id="winner" style="text-align: center; color: lime; animation: blinker 1s linear infinite;"></h3>
+                </div>
+            </div>
+            <div class="usertable">
+                <h1 style="text-align: center; font-size: small;">Connected participants:</h1>
+                <div class="content">
+                    <table id="userTable">
+                        <tr>
+                            <th>Participant</th>
+                        </tr>
+                    </table>
+                </div>
+            </div>
+            <div id="tstatus" class="tstatus">
+                <h3 style="text-align: center; font-size: small;">Tournament Status</h3>
+                <table id="tstatusTable">
+                    <thead>
+                        <tr>
+                            <th>Player</th>
+                            <th>Status</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <!-- Dynamic content will be inserted here -->
+                    </tbody>
+                </table>
+            </div>
         </div>
+
+        <iframe id="iframegame" class="iframegame" src=""></iframe>
+
         <div class="right-content">
             <h1 style="text-align: center; font-size: small;">Tournament list</h1>
             <div style="display: flex; justify-content: center; margin-top: 20px;">
                 <button id="create">Go/Create tournament</button>
             </div>
             <br>
-            <div><center><input type="text" style="margin-top: 10px;" id="tournamentName" placeholder="All_star" pattern="[^_]*(_{0,2}[^_]*)*"></center></div>
-            <br>
-            <h1 style="text-align: center; font-size: small;">Tournament {{ tournament_name }}</h1>
-            <div style="display: flex; justify-content: center; margin-top: 20px;">
-                <button id="play" disabled>Waiting for players</button>
-            </div>
             <div>
-                <h3 id="winner" style="text-align: center; color: lime; animation: blinker 1s linear infinite;"></h3>
+                <center><input type="text" style="margin-top: 10px;" id="tournamentName" placeholder="All_star" pattern="[^_]*(_{0,2}[^_]*)*"></center>
             </div>
+            <br>
+            <h1 style="text-align: center; font-size: small;">Tournaments:</h1>
+            <center>
+                <table id="tournamentTable">
+                    <thead>
+                        <tr>
+                            <th>Name</th>
+                            <th>Users</th>
+                            <th>Status</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <!-- Dynamic content will be inserted here -->
+                    </tbody>
+                </table>
+            </center>
         </div>
-        <div class="usertable">
-            <h1 style="text-align: center; font-size: small;">Connected participants:</h1>
-	    <div class="content">
-            <table id="userTable">
-                <tr>
-                    <th></th>
-                </tr>
-            </table>
-	    </div>
-	</div>
-            <h3 id="tstatus" style="text-align: center; font-size: small;"></h3>
-            <table id="tstatusTable">
-                <tr>
-                </tr>
-            </table>
-        </div>
+
+        <iframe id="iframechat" class="iframechat" src=""></iframe>
     </div>
-    <div class="main-content">
-        <iframe id="iframegame" class="iframegame" src=""></iframe>
-    </div>
-    <iframe id="iframechat" class="iframechat" src="/chat/{{tournament_name}}"></iframe>
     {{ tournament_name|json_script:"tournament_name" }}
     <script src="/static/tournament/tournament.js"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            const tournamentName = JSON.parse(document.getElementById('tournament_name').textContent);
+            document.getElementById('iframechat').src = `/chat/${tournamentName}`;
+        });
+    </script>
 </body>
 </html>
 

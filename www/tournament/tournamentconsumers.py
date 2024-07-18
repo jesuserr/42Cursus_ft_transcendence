@@ -282,7 +282,7 @@ class TournamentConsumer(AsyncJsonWebsocketConsumer):
     def PlayModel(self):
         data = serializers.serialize('json', Tournament_Play.objects.filter(tournament_name=self.tournament), fields=('email', 'display_name', 'status'))
         data_obj = json.loads(data)
-        new_obj = {'REFRESH_TURNAMENT_STATUS': data_obj,}
+        new_obj = {'REFRESH_TOURNAMENT_STATUS': data_obj,}
         return new_obj	
 
     @database_sync_to_async
@@ -299,7 +299,7 @@ class TournamentConsumer(AsyncJsonWebsocketConsumer):
             tmpuser.save()
         data = serializers.serialize('json', Tournament_Play.objects.filter(tournament_name=self.tournament), fields=('email', 'display_name', 'status'))
         data_obj = json.loads(data)
-        new_obj = {'REFRESH_TURNAMENT_STATUS': data_obj,}
+        new_obj = {'REFRESH_TOURNAMENT_STATUS': data_obj,}
         return new_obj
             
 	#send message to the group
