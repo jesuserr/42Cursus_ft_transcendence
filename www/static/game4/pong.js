@@ -39,7 +39,7 @@ function drawCountdown() {
             drawText(textSize, "Player 1", 2, 0, 0, 1.06);
             drawText(textSize, "Player 2", 3, 0, 0, 1.06);
             drawText(textSize / 2, "Key W: Up / Key S: Down", 2, 0, 0, 1.02);
-            drawText(textSize / 2, "Key \u2191: Up / Key \u2193: Down", 3, 0, 0, 1.02);
+            drawText(textSize / 2, "Key O: Up / Key K: Down", 3, 0, 0, 1.02);
             if (countdown > 0) {
                 drawText(textSize, `${countdown}`, 1, 0, 0, 3.5);
                 if (!muted)
@@ -69,7 +69,7 @@ function initGameboard() {
     drawText(textSize, "Player 1", 2, 0, 0, 1.06);
     drawText(textSize, "Player 2", 3, 0, 0, 1.06);
     drawText(textSize / 2, "Key W: Up / Key S: Down", 2, 0, 0, 1.02);
-    drawText(textSize / 2, "Key \u2191: Up / Key \u2193: Down", 3, 0, 0, 1.02);
+    drawText(textSize / 2, "Key O: Up / Key K: Down", 3, 0, 0, 1.02);
 }
 
 function drawGameboard() {

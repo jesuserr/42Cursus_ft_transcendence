@@ -77,9 +77,9 @@ def handle_paddle_movement(key_states, left_paddle, right_paddle):
         left_paddle.move(up=True)
     if key_states.get('KeyS') and left_paddle.y + left_paddle.height + PADDLE_VEL <= HEIGHT:
         left_paddle.move(up=False)    
-    if key_states.get('ArrowUp') and right_paddle.y - PADDLE_VEL >= 0:
+    if key_states.get('KeyO') and right_paddle.y - PADDLE_VEL >= 0:
         right_paddle.move(up=True)
-    if key_states.get('ArrowDown') and right_paddle.y + right_paddle.height + PADDLE_VEL <= HEIGHT:
+    if key_states.get('KeyK') and right_paddle.y + right_paddle.height + PADDLE_VEL <= HEIGHT:
         right_paddle.move(up=False)
 
 def handle_collision(ball, left_paddle, right_paddle):

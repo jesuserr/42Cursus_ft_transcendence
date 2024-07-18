@@ -7,8 +7,8 @@ gameContainer.addEventListener('touchend', function(event) {
         keys['KeyW'] = false;
         keys['KeyS'] = false;
     } else {
-        keys['ArrowUp'] = false;
-        keys['ArrowDown'] = false;
+        keys['KeyO'] = false;
+        keys['KeyK'] = false;
     }
 }, {passive: false});
 
@@ -20,8 +20,8 @@ gameContainer.addEventListener('touchmove', function(event) {
             keys['KeyW'] = false;
             keys['KeyS'] = true;
         } else {
-            keys['ArrowUp'] = false;
-            keys['ArrowDown'] = true;
+            keys['KeyO'] = false;
+            keys['KeyK'] = true;
         }
     }
     else if (currentTouchY < previousTouchY) {
@@ -29,8 +29,8 @@ gameContainer.addEventListener('touchmove', function(event) {
             keys['KeyW'] = true;
             keys['KeyS'] = false;
         } else {
-            keys['ArrowUp'] = true;
-            keys['ArrowDown'] = false;
+            keys['KeyO'] = true;
+            keys['KeyK'] = false;
         }
     }
     previousTouchY = currentTouchY;

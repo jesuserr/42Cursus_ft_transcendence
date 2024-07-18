@@ -39,7 +39,7 @@ function initGameboard() {
         drawText(textSize / 2, "Key W: Up / Key S: Down", 2, 0, 0, 1.02);
     }
     else
-        drawText(textSize / 2, "Key \u2191: Up / Key \u2193: Down", 3, 0, 0, 1.02);
+        drawText(textSize / 2, "Key O: Up / Key K: Down", 3, 0, 0, 1.02);
     drawText(textSize, "Press M to mute", 1, 0, 0, 1.3);
 }
 

@@ -12,8 +12,8 @@ window.addEventListener('mouseup', function(event) {
             keys['KeyW'] = false;
             keys['KeyS'] = false;
         } else {
-            keys['ArrowUp'] = false;
-            keys['ArrowDown'] = false;
+            keys['KeyO'] = false;
+            keys['KeyK'] = false;
         }
     }
 });
@@ -24,8 +24,8 @@ window.addEventListener('mousemove', function(event) {
             keys['KeyW'] = false;
             keys['KeyS'] = true;
         } else {
-            keys['ArrowUp'] = false;
-            keys['ArrowDown'] = true;
+            keys['KeyO'] = false;
+            keys['KeyK'] = true;
         }
     }
     else if (event.clientY < previousMouseY && isMiddleButtonDown) {
@@ -33,8 +33,8 @@ window.addEventListener('mousemove', function(event) {
             keys['KeyW'] = true;
             keys['KeyS'] = false;
         } else {
-            keys['ArrowUp'] = true;
-            keys['ArrowDown'] = false;
+            keys['KeyO'] = true;
+            keys['KeyK'] = false;
         }
     }
     previousMouseY = event.clientY;
