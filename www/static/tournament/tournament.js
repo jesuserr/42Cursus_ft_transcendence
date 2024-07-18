@@ -128,11 +128,13 @@ document.addEventListener('DOMContentLoaded', () => {
         winnerElement.textContent = "The winner is " + data;
     }
 
-    function Start_Game(data) {
-        var iframe = document.getElementById('iframegame');
-        iframe.src = data.name;
-        iframe.focus();
-    }
+	function Start_Game(data) {
+		var iframe = document.getElementById('iframegame');
+		iframe.src = data.name;
+		setTimeout(function() {
+			iframe.focus();
+		}, 100); 
+	}
 
     document.getElementById('create').addEventListener('click', function() {
         var tournamentName = document.getElementById('tournamentName').value;
