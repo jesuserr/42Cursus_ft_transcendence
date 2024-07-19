@@ -77,7 +77,7 @@ def calculate_games_stats(player_vs_cpu, player_vs_player, player_vs_player_tour
     user_stats['matches_won_pvp_ratio'] = round(user_stats['matches_won_pvp'] / user_stats['matches_played_pvp'] * 100, 1) if user_stats['matches_played_pvp'] else 0
     user_stats['matches_lost_pvp_ratio'] = round(user_stats['matches_lost_pvp'] / user_stats['matches_played_pvp'] * 100, 1) if user_stats['matches_played_pvp'] else 0
     user_stats['tournaments_won'] = player_vs_player_tour.filter(player_one_tournament_win = True).count()
-    user_stats['tournaments_played'] = countPlayedTournaments(stats_pvp_tour.objects.all())
+    user_stats['tournaments_played'] = countPlayedTournaments(player_vs_player_tour) if player_vs_player_tour else 0
     user_stats['tournaments_lost'] = user_stats['tournaments_played'] - user_stats['tournaments_won']
     user_stats['tournaments_won_ratio'] = round(user_stats['tournaments_won'] / user_stats['tournaments_played'] * 100, 1) if user_stats['tournaments_played'] else 0
     user_stats['tournaments_lost_ratio'] = round(user_stats['tournaments_lost'] / user_stats['tournaments_played'] * 100, 1) if user_stats['tournaments_played'] else 0
@@ -86,7 +86,7 @@ def calculate_games_stats(player_vs_cpu, player_vs_player, player_vs_player_tour
 def countPlayedTournaments(object_pvp_tour):
     played_tournaments = 0
     for match in object_pvp_tour:
-        if (match.player_one_tournament_win):
+        if (match.player_one_tournament_win or match.player_two_tournament_win or match.player_two_win):
             played_tournaments += 1
     return played_tournaments
 
