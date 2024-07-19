@@ -46,16 +46,25 @@ document.getElementById('playerForm').addEventListener('submit', function(event)
     for (const input of playerInputs) {
         const player = input.value.trim();
         const alphanumeric = /^[a-zA-Z0-9]+$/;
+        
         if (!alphanumeric.test(player)) {
             errorMessage.textContent = 'Player names can only contain letters and numbers: ' + player;
             errorMessage.style.display = 'block';
             return;
         }
+        
+        if (player.length > 7) {
+            errorMessage.textContent = 'Player names cannot be more than 7 characters: ' + player;
+            errorMessage.style.display = 'block';
+            return;
+        }
+        
         if (players.includes(player)) {
             errorMessage.textContent = 'Duplicate player names are not allowed: ' + player;
             errorMessage.style.display = 'block';
             return;
         }
+        
         players.push(player);
     }
 
