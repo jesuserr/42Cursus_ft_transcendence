@@ -31,7 +31,9 @@ const socket = new WebSocket('wss://' + window.location.host + '/ws/game5/' + ga
 // ***************************** DRAW FUNCTIONS ********************************
 
 function initGameboard() {
+    canvas.setAttribute('tabindex', '0');       // Makes canvas focusable
     canvas.style.display = 'block';
+    canvas.style.outline = 'none';              // Prevents blue outline on focus
     drawGameboard();
     if (position.player == 1 && position.p2_nick && position.p1_nick)
         drawText(textSize / 2, "Key W: Up / Key S: Down", 2, 0, 0, 1.02);    
@@ -40,6 +42,7 @@ function initGameboard() {
     else if (position.player == 3 && position.p2_nick && position.p1_nick)
         drawText(textSize, "Match Starting!!", 1, 0, 0, 3.5);
     drawText(textSize, "Press M to mute", 1, 0, 0, 1.3);
+    canvas.focus();                             // Gives focus to the canvas
 }
 
 function drawGameboard() {

@@ -66,13 +66,16 @@ function drawCountdown() {
 }
 
 function initGameboard() {
+    canvas.setAttribute('tabindex', '0');       // Makes canvas focusable
     canvas.style.display = 'block';
+    canvas.style.outline = 'none';              // Prevents blue outline on focus
     drawGameboard();
     drawText(textSize, "Get Ready!!", 1, 0, 0, 3.5);
     drawText(textSize, "M to mute / P to pause", 1, 0, 0, 1.3);
     drawText(textSize / 2, "Key W: Up / Key S: Down", 2, 0, 0, 1.02);
     drawText(textSize / 2, "Key O: Up / Key K: Down", 3, 0, 0, 1.02);
     drawText(textSize, "vs", 1, 0, 0, 1.06);
+    canvas.focus();                             // Gives focus to the canvas
 }
 
 function drawGameboard() {
