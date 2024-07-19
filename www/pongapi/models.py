@@ -3,6 +3,7 @@ from django.db import models
 from django.utils import timezone
 from django.contrib.auth.models import AbstractBaseUser, PermissionsMixin
 from django.contrib.auth.models import BaseUserManager
+import uuid
 
 
 class UserManager(BaseUserManager):
@@ -49,7 +50,10 @@ class User(AbstractBaseUser, PermissionsMixin):
     is_superuser = models.BooleanField(default=False)
     USERNAME_FIELD = 'email'
     totp_secret = models.CharField(max_length=200, blank=True)
-    objects = UserManager() 
+    objects = UserManager()
+    uuid = models.UUIDField(default=uuid.uuid4, editable=False, unique=True)
+    def __str__(self):
+        return self.email
     
         
 class SecurityCode(models.Model):
