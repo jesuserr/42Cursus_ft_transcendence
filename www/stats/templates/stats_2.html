@@ -280,15 +280,13 @@
     document.addEventListener('DOMContentLoaded', function () {
         const tournamentsWon = {{ user_stats.tournaments_won }};
         const tournamentsLost = {{ user_stats.tournaments_lost }};
-        const tournamentsPlayed = {{ user_stats.tournaments_played }};
 
-        const remainingTournaments = tournamentsPlayed - (tournamentsWon + tournamentsLost);
-        const allZero = (tournamentsWon === 0 && tournamentsLost === 0 && remainingTournaments === 0);
+        const allZero = (tournamentsWon === 0 && tournamentsLost === 0);
 
         const emptyDonutColor = 'rgba(255, 255, 255, 0.5)';
         const emptyDonutBorderColor = 'rgba(255, 255, 255, 1)';
-        const donutData = allZero ? [1] : [tournamentsWon, tournamentsLost, remainingTournaments];
-        const donutLabels = allZero ? ['No Tournaments yet'] : ['Tournaments Won', 'Tournaments Lost', 'Remaining Tournaments'];
+        const donutData = allZero ? [1] : [tournamentsWon, tournamentsLost];
+        const donutLabels = allZero ? ['No Tournaments yet'] : ['Tournaments Won', 'Tournaments Lost'];
         const donutColors = allZero ? [emptyDonutColor] : ['rgba(153, 102, 255, 0.2)', 'rgba(255, 206, 86, 0.2)', 'rgba(54, 162, 235, 0.5)'];
         const donutBorders = allZero ? [emptyDonutBorderColor] : ['rgba(153, 102, 255, 1)', 'rgba(255, 206, 86, 1)', 'rgba(54, 162, 235, 1)'];
 
@@ -323,30 +321,27 @@
 
         var matchesPlayedPVC = {{ user_stats.matches_played_pvc }};
         var matchesPlayedPVP = {{ user_stats.matches_played_pvp }};
-        var matchesPlayedOverall = {{ user_stats.matches_played }};
-        
+         
         var matchesWonPVC = {{ user_stats.matches_won_pvc }};
         var matchesWonPVP = {{ user_stats.matches_won_pvp }};
-        var matchesWonOverall = {{ user_stats.matches_won }};
-        
+         
         var goalsScoredPVC = {{ user_stats.scored_goals_per_match_pvc }};
         var goalsScoredPVP = {{ user_stats.scored_goals_per_match_pvp }};
-        var goalsScoredOverall = {{ user_stats.scored_goals_per_match }};
-
-        const allMatchesZero = (matchesPlayedPVC === 0 && matchesPlayedPVP === 0 && matchesPlayedOverall === 0 && 
-                                matchesWonPVC === 0 && matchesWonPVP === 0 && matchesWonOverall === 0 &&
-                                goalsScoredPVC === 0 && goalsScoredPVP === 0 && goalsScoredOverall === 0);
+ 
+        const allMatchesZero = (matchesPlayedPVC === 0 && matchesPlayedPVP === 0 && 
+                                matchesWonPVC === 0 && matchesWonPVP === 0 &&
+                                goalsScoredPVC === 0 && goalsScoredPVP === 0);
 
         // Gráfico de partidos jugados
         var ctxMatches = document.getElementById('matchesChart').getContext('2d');
         var matchesChart = new Chart(ctxMatches, {
             type: 'doughnut',
             data: {
-                labels: allMatchesZero ? ['No Matches yet'] : ['vs CPU', 'vs Human', 'Overall'],
+                labels: allMatchesZero ? ['No Matches yet'] : ['vs CPU', 'vs Human'],
                 datasets: [{
-                    data: allMatchesZero ? [1] : [matchesPlayedPVC, matchesPlayedPVP, matchesPlayedOverall],
-                    backgroundColor: allMatchesZero ? [emptyDonutColor] : ['rgba(75, 192, 192, 0.2)', 'rgba(153, 102, 255, 0.2)', 'rgba(255, 206, 86, 0.2)'],
-                    borderColor: allMatchesZero ? [emptyDonutBorderColor] : ['rgba(75, 192, 192, 1)', 'rgba(153, 102, 255, 1)', 'rgba(255, 206, 86, 1)'],
+                    data: allMatchesZero ? [1] : [matchesPlayedPVC, matchesPlayedPVP],
+                    backgroundColor: allMatchesZero ? [emptyDonutColor] : ['rgba(75, 192, 192, 0.2)', 'rgba(153, 102, 255, 0.2)'],
+                    borderColor: allMatchesZero ? [emptyDonutBorderColor] : ['rgba(75, 192, 192, 1)', 'rgba(153, 102, 255, 1)'],
                     borderWidth: 1
                 }]
             },
@@ -371,16 +366,16 @@
         var matchesChart = new Chart(ctx, {
             type: 'bar',
             data: {
-                labels: ['vs CPU', 'vs Human', 'Overall'],
+                labels: ['vs CPU', 'vs Human'],
                 datasets: [{
                     label: 'Played matches',
-                    data: [matchesPlayedPVC, matchesPlayedPVP, matchesPlayedOverall],
+                    data: [matchesPlayedPVC, matchesPlayedPVP],
                     backgroundColor: 'rgba(75, 192, 192, 0.2)',
                     borderColor: 'rgba(75, 192, 192, 1)',
                     borderWidth: 1
                 }, {
                     label: 'Won matches',
-                    data: [matchesWonPVC, matchesWonPVP, matchesWonOverall],
+                    data: [matchesWonPVC, matchesWonPVP],
                     backgroundColor: 'rgba(153, 102, 255, 0.2)',
                     borderColor: 'rgba(153, 102, 255, 1)',
                     borderWidth: 1
@@ -399,10 +394,10 @@
         var goalsChart = new Chart(ctx2, {
             type: 'bar',
             data: {
-                labels: ['vs CPU', 'vs Human', 'Overall'],
+                labels: ['vs CPU', 'vs Human'],
                 datasets: [{
                     label: 'Goals scored per match',
-                    data: [goalsScoredPVC, goalsScoredPVP, goalsScoredOverall],
+                    data: [goalsScoredPVC, goalsScoredPVP],
                     backgroundColor: 'rgba(255, 206, 86, 0.2)',
                     borderColor: 'rgba(255, 206, 86, 1)',
                     borderWidth: 1

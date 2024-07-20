@@ -9,6 +9,7 @@ html, body {
     height: 100%;
     overflow-y: scroll;
     overflow-x: hidden;
+    scrollbar-width: none;
 }
 
 .form-email {
@@ -42,7 +43,7 @@ html, body {
 
   @media (max-width: 856px), (max-height: 856px) and (orientation: landscape) {
   	#content {
-		overflow-y: hidden;
+		overflow-y: scroll;
 	}
   }
 
