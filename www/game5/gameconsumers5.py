@@ -66,16 +66,17 @@ class GameConsumer5(AsyncWebsocketConsumer):
             self.rooms[self.room_group_name]["player1_connected"] = False
         if 'player2' in players and players['player2'] == self:
             self.rooms[self.room_group_name]["player2_connected"] = False
-        if not room["player2_connected"] and not room["player1_connected"]:
-            del self.rooms[self.room_group_name]                        # delete room_group_name from dictionary when both players disconnect
+        #if not room["player2_connected"] and not room["player1_connected"]:
+        #    del self.rooms[self.room_group_name]                        # delete room_group_name from dictionary when both players disconnect
         await self.channel_layer.group_discard(self.room_group_name, self.channel_name)
 
     async def receive(self, text_data):
-        players = self.rooms[self.room_group_name]['players']           # alias
-        if players['player1'] == self:
-            self.rooms[self.room_group_name]['key_states_1'] = json.loads(text_data)
-        elif players['player2'] == self:
-            self.rooms[self.room_group_name]['key_states_2'] = json.loads(text_data)
+        if self.room_group_name in self.rooms:
+            players = self.rooms[self.room_group_name]['players']           # alias
+            if players['player1'] == self:
+                self.rooms[self.room_group_name]['key_states_1'] = json.loads(text_data)
+            elif players['player2'] == self:
+                self.rooms[self.room_group_name]['key_states_2'] = json.loads(text_data)
             
     @database_sync_to_async
     def isValidUser(self):
