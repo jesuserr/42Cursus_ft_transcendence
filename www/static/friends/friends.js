@@ -73,28 +73,21 @@ function Set_User_List(data) {
 
 function Set_Connected_Users(data) {
     let table = document.getElementById("userTable");
-    let existingRows = new Map();
-    for (let i = 0; i < table.rows.length; i++) {
-        let row = table.rows[i];
-        existingRows.set(row.id, row);
+    // Borrar todas las filas existentes excepto el encabezado si existe
+    while (table.rows.length > 1) {
+        table.deleteRow(1);
     }
+    // Procesar los usuarios conectados
     data.SET_CONNECTED_USERS.forEach(user => {
-        if (existingRows.has(user.fields.id)) {
-            existingRows.delete(user.fields.id); 
-        } else {
-            const row = table.insertRow(-1);
-            row.id = user.fields.id; 
-            const cell1 = row.insertCell(0);
-            const cell2 = row.insertCell(1);
-            cell1.textContent = user.fields.displayname;
-            const img = document.createElement('img');
-            img.src = '/static/friends/images/connected-plug-icon.png';
-            img.width = 20;
-            cell2.appendChild(img);
-        }
-    });
-    existingRows.forEach(row => {
-        table.deleteRow(row.rowIndex);
+        const row = table.insertRow(-1);
+        row.id = user.fields.id;
+        const cell1 = row.insertCell(0);
+        const cell2 = row.insertCell(1);
+        cell1.textContent = user.fields.displayname;
+        const img = document.createElement('img');
+        img.src = '/static/friends/images/connected-plug-icon.png';
+        img.width = 20;
+        cell2.appendChild(img);
     });
 }
 
