@@ -39,13 +39,17 @@ class GameConsumer6(AsyncWebsocketConsumer):
             }
         await self.send(text_data=json.dumps(gameboard))
 
-    async def waiting_countdown(self):
+    async def waiting_countdown(self, timeout = 10):
+        countdown_start_time = time.time()
         while True:
             if self.key_states:
                 if 'F15' in self.key_states:
                     break
+            if (time.time() - countdown_start_time) > timeout:
+                await self.close()
+                break
             await asyncio.sleep(0.1)
-            
+
     async def playGame(self):
         left_paddle = Paddle(PADDLE_GAP, HEIGHT // 2 - PADDLE_HEIGHT // 2, PADDLE_WIDTH, PADDLE_HEIGHT)
         right_paddle = Paddle(WIDTH - PADDLE_GAP - PADDLE_WIDTH, HEIGHT // 2 - PADDLE_HEIGHT // 2, PADDLE_WIDTH, PADDLE_HEIGHT)

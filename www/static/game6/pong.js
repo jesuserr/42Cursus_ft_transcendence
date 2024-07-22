@@ -5,7 +5,7 @@ let scale = 1.00;
 let scaleFactor = 0.867;
 let browserHeight = 0;
 let browserWidth = 0;
-let countdown = 5;
+let countdown = 5;                  // timeout = 10 in gameconsumers6.py
 let keys = {};
 let messageNumber = 0;
 let prevBallXSpeed = 0;
