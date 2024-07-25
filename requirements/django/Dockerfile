@@ -12,10 +12,8 @@ RUN 	pip3 install --upgrade pip setuptools wheel
 COPY    ./conf/requirements.txt /tmp/requirements.txt
 RUN 	pip3 install -r /tmp/requirements.txt
 RUN 	pip3 install -U setuptools
-COPY    ./conf/id_rsa /root/.ssh/id_rsa
-COPY    ./conf/id_rsa.pub /root/.ssh/id_rsa.pub
-COPY    ./conf/known_hosts /root/.ssh/known_hosts
-RUN 	chmod 100 /root/.ssh/id_rsa
+RUN		mkdir -p /pong/base
+COPY 	../www /pong/base/www
 COPY 	./conf/entry.sh /bin/entry.sh
 COPY    ./conf/settings.py /tmp/settings.py
 WORKDIR /pong/base/www
