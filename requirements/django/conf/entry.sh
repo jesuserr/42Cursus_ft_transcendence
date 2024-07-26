@@ -3,8 +3,12 @@ echo root:$ROOT_PASSWORD | sudo chpasswd
 service ssh start
 if [ -f "/pong/base/www/manage.py" ]
 then
-	echo Waiting postgresql .....
-	sleep 4
+	if [ ! -f "/pong/psqltouch" ]
+	then
+		echo Waiting postgresql .....
+		sleep 4
+		touch /pong/psqltouch
+	fi
 	python3 manage.py makemigrations --noinput
 	python3 manage.py migrate --noinput
 	python3 manage.py createsuperuser --no-input
