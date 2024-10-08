@@ -2,7 +2,7 @@ Django~=4.2.11
 psycopg
 pillow~=10.3
 gunicorn~=22.0.0
-requests~=2.31.0
+requests~=2.32.0
 channels[daphne]~=4.0
 channels-redis~=4.2
 asyncio~=3.4.3
